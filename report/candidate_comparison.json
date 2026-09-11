@@ -249,6 +249,84 @@
     }
   },
   {
+    "run": "mixed_resnet18_native_v2",
+    "checkpoint_hashes_consistent": true,
+    "cifake_val_auc": 0.9950076954069299,
+    "cifake_val_fpr": 0.0258,
+    "genimage_val_auc": 0.9275820535983137,
+    "genimage_val_fpr": 0.1002710027100271,
+    "genimage_per_source_auc": {
+      "BigGAN": 0.8890199837770075,
+      "stable_diffusion_v_1_5": 0.9695343507183185
+    },
+    "as_distributed": {
+      "mean_auc": 0.659352,
+      "guided_auc": 0.7440880000000001,
+      "ldm_200_auc": 0.574616,
+      "guided_real_fpr": 0.062,
+      "ldm_200_real_fpr": 0.382,
+      "guided_ai_tpr": 0.282,
+      "ldm_200_ai_tpr": 0.528
+    },
+    "matched": {
+      "mean_auc": 0.6393840000000001,
+      "guided_auc": 0.668412,
+      "ldm_200_auc": 0.6103560000000001,
+      "guided_real_fpr": 0.296,
+      "ldm_200_real_fpr": 0.452,
+      "guided_ai_tpr": 0.496,
+      "ldm_200_ai_tpr": 0.608
+    },
+    "matched_native": {
+      "mean_auc": 0.674493,
+      "guided_auc": 0.6996960000000001,
+      "ldm_200_auc": 0.6492899999999999,
+      "guided_real_fpr": 0.204,
+      "ldm_200_real_fpr": 0.412,
+      "guided_ai_tpr": 0.418,
+      "ldm_200_ai_tpr": 0.652
+    }
+  },
+  {
+    "run": "mixed_resnet18_native_vqdm_v1",
+    "checkpoint_hashes_consistent": true,
+    "cifake_val_auc": 0.9921040290088637,
+    "cifake_val_fpr": 0.0618,
+    "genimage_val_auc": 0.9362358116334786,
+    "genimage_val_fpr": 0.14905149051490515,
+    "genimage_per_source_auc": {
+      "BigGAN": 0.9169186146547699,
+      "stable_diffusion_v_1_5": 0.9596679523729666
+    },
+    "as_distributed": {
+      "mean_auc": 0.6089899999999999,
+      "guided_auc": 0.619136,
+      "ldm_200_auc": 0.5988439999999999,
+      "guided_real_fpr": 0.12,
+      "ldm_200_real_fpr": 0.35,
+      "guided_ai_tpr": 0.236,
+      "ldm_200_ai_tpr": 0.526
+    },
+    "matched": {
+      "mean_auc": 0.5752459999999999,
+      "guided_auc": 0.553048,
+      "ldm_200_auc": 0.597444,
+      "guided_real_fpr": 0.286,
+      "ldm_200_real_fpr": 0.384,
+      "guided_ai_tpr": 0.338,
+      "ldm_200_ai_tpr": 0.562
+    },
+    "matched_native": {
+      "mean_auc": 0.5947899999999999,
+      "guided_auc": 0.561672,
+      "ldm_200_auc": 0.6279079999999999,
+      "guided_real_fpr": 0.202,
+      "ldm_200_real_fpr": 0.37,
+      "guided_ai_tpr": 0.282,
+      "ldm_200_ai_tpr": 0.58
+    }
+  },
+  {
     "run": "mixed_resnet18_v1",
     "checkpoint_hashes_consistent": true,
     "cifake_val_auc": 0.9953008863819501,

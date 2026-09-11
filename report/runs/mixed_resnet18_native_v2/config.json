@@ -1,0 +1,153 @@
+{
+  "run": "mixed_resnet18_native_v2",
+  "epochs": 10,
+  "crop": 128,
+  "cifake_limit": 8000,
+  "batch_size": 64,
+  "lr": 0.0002,
+  "final_jpeg_prob": 0.5,
+  "seed": 2026,
+  "extra_manifests": [
+    "data/manifests/genimage_vqdm.csv",
+    "data/manifests/genimage_midjourney.csv"
+  ],
+  "architecture": "resnet18",
+  "image_size": 128,
+  "preprocessing": "native_multicrop_v1",
+  "created_utc": "2026-09-11T21:23:23.949501+00:00",
+  "train_count": 18947,
+  "validation_selection": "Mean ROC-AUC over GenImage subset val and fixed 4000-image CIFAKE val, multi-crop inference; external data never used for gradients",
+  "format_balancing": "Every generated GenImage training image, and BigGAN real photos after 128 px matching, JPEG-compressed at stored resolution with quality drawn from real training JPEGs; SD1.5 real photos keep their original JPEG",
+  "augmentations": "Symmetric global rescale 0.5-1.0 (p=0.3), random native crop, flip, mild blur (p=0.1), crop JPEG quality 60-95 (p=0.5)",
+  "inference": "Up to five native-resolution crops (centre and quadrant centres); images with short side below the crop are bilinearly upscaled; crop logits averaged",
+  "pretrained_source": "torchvision ResNet18 IMAGENET1K_V1",
+  "data_summary": {
+    "dataset": "CIFAKE + GenImage train-only subset",
+    "genimage": {
+      "dataset": "GenImage class-balanced training subset",
+      "acquired_count": 7808,
+      "retained_count": 7803,
+      "counts": {
+        "train:0:BigGAN": 1614,
+        "val:0:BigGAN": 191,
+        "calibration:0:BigGAN": 186,
+        "train:1:BigGAN": 1583,
+        "calibration:1:BigGAN": 198,
+        "val:1:BigGAN": 213,
+        "train:0:stable_diffusion_v_1_5": 1519,
+        "calibration:0:stable_diffusion_v_1_5": 211,
+        "val:0:stable_diffusion_v_1_5": 178,
+        "train:1:stable_diffusion_v_1_5": 1523,
+        "calibration:1:stable_diffusion_v_1_5": 186,
+        "val:1:stable_diffusion_v_1_5": 201
+      },
+      "exclusions": {
+        "exact_overlap_with_protected_cifake_or_external": 5
+      },
+      "duplicate_groups": 0,
+      "manifest_sha256": "6cc079dccf326403e4507c039420874eba091cf984266bd2fd0e3b476a91e636",
+      "input_cache": "EXIF transpose, RGB, PIL bilinear resize to 160x160, uint8; inference must use identical preprocessing",
+      "protected_data": "All CIFAKE exact pixels plus all external-release exact and 64-bit DCT perceptual hashes; final labels/predictions are not used",
+      "split_method": "80/10/10 deterministic hash on whole exact/perceptual duplicate groups",
+      "near_duplicate_limit": "Conservative pHash Hamming <=4 heuristic; not exhaustive and may exclude false matches",
+      "external_training_overlap_permitted": false
+    },
+    "cifake": {
+      "dataset": "CIFAKE",
+      "seed": 2026,
+      "image_count": 120000,
+      "native_size": [
+        32,
+        32
+      ],
+      "splits": {
+        "train": {
+          "ai_generated": 39689,
+          "real": 40000
+        },
+        "val": {
+          "ai_generated": 4964,
+          "real": 5000
+        },
+        "calibration": {
+          "ai_generated": 4969,
+          "real": 5000
+        },
+        "test": {
+          "ai_generated": 10000,
+          "real": 10000
+        },
+        "excluded": {
+          "ai_generated": 378
+        }
+      },
+      "split_codes": {
+        "train": 0,
+        "val": 1,
+        "calibration": 2,
+        "test": 3,
+        "excluded": 4
+      },
+      "split_method": "stratified_by_label_grouped_by_exact_decoded_pixel_hash_80_10_10",
+      "test_policy": "author test partition retained; no training, tuning or calibration",
+      "duplicate_groups": 1336,
+      "train_images_excluded_for_test_overlap": 378,
+      "train_images_excluded_for_conflicting_duplicate_labels": 0,
+      "duplicate_detection_limit": "Exact decoded-pixel hashes only; no exhaustive perceptual-near-duplicate audit.",
+      "manifest_sha256": "b1bddb1d857b3d6926a9a39796d437256fc02536ff2af772e47adae88f686f3d",
+      "organizer_dataset": false,
+      "unseen_generator_split_available": false
+    },
+    "genimage_extensions": {
+      "data/manifests/genimage_vqdm.csv": {
+        "dataset": "GenImage class-balanced training subset extension: vqdm",
+        "acquired_count": 3988,
+        "retained_count": 3986,
+        "counts": {
+          "val:0:VQDM": 230,
+          "calibration:0:VQDM": 210,
+          "train:0:VQDM": 1552,
+          "calibration:1:VQDM": 206,
+          "train:1:VQDM": 1577,
+          "val:1:VQDM": 211
+        },
+        "exclusions": {
+          "exact_overlap_with_protected_cifake_or_external": 2
+        },
+        "duplicate_groups": 0,
+        "manifest_sha256": "66bb0cba36b1e5d7b8892ac75e112127372ae2344b32f8a39e10590117f1b433",
+        "input_cache": "EXIF transpose, RGB, PIL bilinear resize to 160x160, uint8; inference must use identical preprocessing",
+        "protected_data": "All CIFAKE exact pixels plus all external-release exact and 64-bit DCT perceptual hashes; final labels/predictions are not used; extension also excludes exact/perceptual matches to the existing GenImage subset",
+        "split_method": "80/10/10 deterministic hash on whole exact/perceptual duplicate groups",
+        "near_duplicate_limit": "Conservative pHash Hamming <=4 heuristic; not exhaustive and may exclude false matches",
+        "external_training_overlap_permitted": false
+      },
+      "data/manifests/genimage_midjourney.csv": {
+        "dataset": "GenImage class-balanced training subset extension: midjourney",
+        "acquired_count": 1994,
+        "retained_count": 1994,
+        "counts": {
+          "train:0:Midjourney": 804,
+          "calibration:0:Midjourney": 99,
+          "val:0:Midjourney": 94,
+          "train:1:Midjourney": 775,
+          "calibration:1:Midjourney": 110,
+          "val:1:Midjourney": 112
+        },
+        "exclusions": {},
+        "duplicate_groups": 1,
+        "manifest_sha256": "3414cfc2c36c7433f893670d3e747a103a0b9305cd8903f014283ccb44118d4d",
+        "input_cache": "EXIF transpose, RGB, PIL bilinear resize to 160x160, uint8; inference must use identical preprocessing",
+        "protected_data": "All CIFAKE exact pixels plus all external-release exact and 64-bit DCT perceptual hashes; final labels/predictions are not used; extension also excludes exact/perceptual matches to the existing GenImage subset",
+        "split_method": "80/10/10 deterministic hash on whole exact/perceptual duplicate groups",
+        "near_duplicate_limit": "Conservative pHash Hamming <=4 heuristic; not exhaustive and may exclude false matches",
+        "external_training_overlap_permitted": false
+      }
+    },
+    "real_training_jpeg_quality_percentiles": {
+      "p5": 75.0,
+      "p50": 96.0,
+      "p95": 96.0
+    }
+  }
+}
