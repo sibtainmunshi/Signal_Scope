@@ -1,7 +1,7 @@
 """Project-local paths. User-wide model caches are never required."""
 
-from pathlib import Path
 import os
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 os.environ.setdefault("TORCH_HOME", str(ROOT / ".cache" / "torch"))

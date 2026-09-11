@@ -8,12 +8,14 @@ are not claimed to be exhaustively detected by this procedure.
 from __future__ import annotations
 
 import argparse
-from collections import Counter, defaultdict
 import csv
 import hashlib
+import io
 import json
-from pathlib import Path
 import time
+import zipfile
+from collections import Counter, defaultdict
+from pathlib import Path
 
 import numpy as np
 from PIL import Image
@@ -22,24 +24,28 @@ ROOT = Path(__file__).resolve().parents[1]
 SPLIT_CODES = {"train": 0, "val": 1, "calibration": 2, "test": 3, "excluded": 4}
 
 
-def prepare(data_root: Path, output: Path, seed: int) -> dict:
-    paths = sorted(p for p in data_root.rglob("*") if p.suffix.lower() in {".jpg", ".jpeg", ".png"})
+def prepare(data_root: Path, output: Path, seed: int, archive: Path | None = None) -> dict:
+    zipped = zipfile.ZipFile(archive) if archive and archive.is_file() else None
+    paths = (sorted(Path(n) for n in zipped.namelist() if Path(n).suffix.lower() in {".jpg", ".jpeg", ".png"})
+             if zipped else sorted(p.relative_to(data_root) for p in data_root.rglob("*")
+                                   if p.suffix.lower() in {".jpg", ".jpeg", ".png"}))
     if not paths:
         raise ValueError(f"No images found in {data_root}; run scripts/download_cifake.py first.")
+    print(f"Preparing {len(paths)} images from {'archive' if zipped else 'directory'}", flush=True)
     output.mkdir(parents=True, exist_ok=True)
     images = np.lib.format.open_memmap(output / "images.npy", mode="w+", dtype=np.uint8,
                                       shape=(len(paths), 32, 32, 3))
     rows, groups = [], defaultdict(list)
     start = time.monotonic()
-    for index, path in enumerate(paths):
-        relative = path.relative_to(data_root)
+    for index, relative in enumerate(paths):
         parts = relative.parts
         source_split = next((x.lower() for x in parts if x.lower() in {"train", "test"}), None)
         cls = next((x.upper() for x in parts if x.upper() in {"REAL", "FAKE"}), None)
         if source_split is None or cls is None:
             raise ValueError(f"Unrecognized image layout: {relative}")
         label = 1 if cls == "FAKE" else 0
-        with Image.open(path) as opened:
+        encoded = zipped.read(relative.as_posix()) if zipped else (data_root / relative).read_bytes()
+        with Image.open(io.BytesIO(encoded)) as opened:
             img = opened.convert("RGB")
             if img.size != (32, 32):
                 raise ValueError(f"Unexpected CIFAKE resolution at {relative}: {img.size}")
@@ -48,7 +54,7 @@ def prepare(data_root: Path, output: Path, seed: int) -> dict:
         pixel_hash = hashlib.sha256(array.tobytes()).hexdigest()
         row = {"index": index, "path": relative.as_posix(), "label": label,
                "source_split": source_split, "split": "test" if source_split == "test" else "train",
-               "sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "pixel_sha256": pixel_hash,
+               "sha256": hashlib.sha256(encoded).hexdigest(), "pixel_sha256": pixel_hash,
                "generator": "stable_diffusion_1.4" if label else "real_cifar10",
                "width": 32, "height": 32}
         rows.append(row)
@@ -56,6 +62,8 @@ def prepare(data_root: Path, output: Path, seed: int) -> dict:
         if (index + 1) % 20_000 == 0:
             print(f"Audited {index+1}/{len(paths)} images in {time.monotonic()-start:.0f}s", flush=True)
     images.flush()
+    if zipped:
+        zipped.close()
 
     eligible = {0: [], 1: []}
     excluded_overlap, excluded_conflict = 0, 0
@@ -112,7 +120,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data", type=Path, default=ROOT / "data/raw/cifake")
     parser.add_argument("--output", type=Path, default=ROOT / "data/processed/cifake")
+    parser.add_argument("--archive", type=Path, default=ROOT / "data/downloads/cifake.zip")
     parser.add_argument("--seed", type=int, default=2026)
     args = parser.parse_args()
-    prepare(args.data, args.output, args.seed)
-
+    prepare(args.data, args.output, args.seed, args.archive)

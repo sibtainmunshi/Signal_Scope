@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "release": "v0.1.0",
+  "model_version": "cifake_resnet18_robust_v1",
+  "path": "model/checkpoints/cifake_resnet18_robust_v1/best.pt",
+  "url": "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.1.0/signalscope-resnet18-robust-v1.pt",
+  "bytes": 44778635,
+  "sha256": "fb4d5420f3c49aaa6e651e735ba03d78d9151480819a6f744bc65f0319812127",
+  "status": "Development checkpoint; CIFAKE validation measured, external generalisation not established.",
+  "architecture": "resnet18",
+  "image_size": 96,
+  "threshold": 0.5,
+  "calibrated": false
+}

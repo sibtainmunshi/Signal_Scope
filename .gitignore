@@ -18,6 +18,8 @@ __pycache__/
 .env.*
 !.env.example
 node_modules/
-app/frontend/dist/
 *.log
 
+
+pytest-cache-files-*/
+*.tsbuildinfo

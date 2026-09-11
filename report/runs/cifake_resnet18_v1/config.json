@@ -1,0 +1,67 @@
+{
+  "data": "data/processed/cifake",
+  "run": "cifake_resnet18_v1",
+  "epochs": 5,
+  "batch_size": 128,
+  "image_size": 96,
+  "lr": 0.0003,
+  "train_limit": 20000,
+  "val_limit": 4000,
+  "seed": 2026,
+  "workers": 0,
+  "device": "cuda",
+  "scratch": false,
+  "device_resolved": "cuda",
+  "train_count": 20000,
+  "validation_count": 4000,
+  "architecture": "resnet18",
+  "pretrained_source": "torchvision ResNet18 IMAGENET1K_V1",
+  "created_utc": "2026-09-11T13:06:17.782235+00:00",
+  "torch_version": "2.10.0+cu128",
+  "data_summary": {
+    "dataset": "CIFAKE",
+    "seed": 2026,
+    "image_count": 120000,
+    "native_size": [
+      32,
+      32
+    ],
+    "splits": {
+      "train": {
+        "ai_generated": 39689,
+        "real": 40000
+      },
+      "val": {
+        "ai_generated": 4964,
+        "real": 5000
+      },
+      "calibration": {
+        "ai_generated": 4969,
+        "real": 5000
+      },
+      "test": {
+        "ai_generated": 10000,
+        "real": 10000
+      },
+      "excluded": {
+        "ai_generated": 378
+      }
+    },
+    "split_codes": {
+      "train": 0,
+      "val": 1,
+      "calibration": 2,
+      "test": 3,
+      "excluded": 4
+    },
+    "split_method": "stratified_by_label_grouped_by_exact_decoded_pixel_hash_80_10_10",
+    "test_policy": "author test partition retained; no training, tuning or calibration",
+    "duplicate_groups": 1336,
+    "train_images_excluded_for_test_overlap": 378,
+    "train_images_excluded_for_conflicting_duplicate_labels": 0,
+    "duplicate_detection_limit": "Exact decoded-pixel hashes only; no exhaustive perceptual-near-duplicate audit.",
+    "manifest_sha256": "b1bddb1d857b3d6926a9a39796d437256fc02536ff2af772e47adae88f686f3d",
+    "organizer_dataset": false,
+    "unseen_generator_split_available": false
+  }
+}

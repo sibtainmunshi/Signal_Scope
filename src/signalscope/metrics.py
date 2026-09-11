@@ -3,7 +3,13 @@
 from __future__ import annotations
 
 import numpy as np
-from sklearn.metrics import accuracy_score, brier_score_loss, confusion_matrix, f1_score, roc_auc_score
+from sklearn.metrics import (
+    accuracy_score,
+    brier_score_loss,
+    confusion_matrix,
+    f1_score,
+    roc_auc_score,
+)
 
 
 def binary_metrics(labels, scores, threshold: float = .5) -> dict:

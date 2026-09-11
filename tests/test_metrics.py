@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from signalscope.metrics import binary_metrics, select_threshold
 
 

@@ -3,23 +3,23 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
 import json
-from pathlib import Path
 import random
 import sys
 import time
+from datetime import datetime, timezone
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from signalscope.paths import ROOT, root_path
-from signalscope.dataset import CifakeDataset
-from signalscope.metrics import binary_metrics
-from signalscope.network import build_model, preprocess_batch
-
 import numpy as np
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
+
+from signalscope.dataset import CifakeDataset
+from signalscope.metrics import binary_metrics
+from signalscope.network import build_model, preprocess_batch
+from signalscope.paths import ROOT, root_path
 
 
 def evaluate(model, loader, device, image_size):
@@ -49,6 +49,7 @@ def main():
     parser.add_argument("--workers", type=int, default=0)
     parser.add_argument("--device", default="auto")
     parser.add_argument("--scratch", action="store_true")
+    parser.add_argument("--robust-augment", action="store_true")
     args = parser.parse_args()
     if args.epochs < 1 or args.batch_size < 1 or args.image_size < 32:
         raise ValueError("Invalid training configuration.")
@@ -60,7 +61,7 @@ def main():
         torch.cuda.manual_seed_all(args.seed)
     device = torch.device("cuda" if args.device == "auto" and torch.cuda.is_available()
                           else "cpu" if args.device == "auto" else args.device)
-    training = CifakeDataset(root_path(args.data), "train", args.train_limit, args.seed, True)
+    training = CifakeDataset(root_path(args.data), "train", args.train_limit, args.seed, True, args.robust_augment)
     validation = CifakeDataset(root_path(args.data), "val", args.val_limit, args.seed)
     gen = torch.Generator().manual_seed(args.seed)
     train_loader = DataLoader(training, batch_size=args.batch_size, shuffle=True,

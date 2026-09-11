@@ -1,0 +1,11 @@
+{
+  "source_repository": "https://github.com/WisconsinAIVision/UniversalFakeDetect",
+  "source_url": "https://drive.usercontent.google.com/download?id=1FXlGIRh_Ud3cScMgSVDbEWmPDmjcrm1t&export=download&confirm=t",
+  "citation": "Ojha, Li and Lee. CVPR 2023. Towards Universal Fake Image Detectors that Generalize Across Generative Models.",
+  "archive_bytes": 917979875,
+  "sha256": "916cc972810e51f6ca1be30d7a85c84230310a4e4b141a90c47f20ee310ac0fc",
+  "acquired_utc": "2026-09-11T13:31:18.259032+00:00",
+  "role": "External development and reserved generator evaluation; never classifier training data.",
+  "license_note": "Repository code is MIT. Underlying ImageNet/LAION and generated image rights are not relicensed by our project. Images are not redistributed.",
+  "limitations": "This research release is older and smaller than modern production image distributions."
+}

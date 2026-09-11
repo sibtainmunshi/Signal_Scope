@@ -7,15 +7,15 @@ archive hash records the actual acquired version; it is not a publisher signatur
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
 import hashlib
 import json
-from pathlib import Path
 import shutil
 import stat
 import time
 import urllib.request
 import zipfile
+from datetime import datetime, timezone
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 URL = "https://www.kaggle.com/api/v1/datasets/download/birdy654/cifake-real-and-ai-generated-synthetic-images"

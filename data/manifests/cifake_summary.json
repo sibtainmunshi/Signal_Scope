@@ -1,0 +1,46 @@
+{
+  "dataset": "CIFAKE",
+  "seed": 2026,
+  "image_count": 120000,
+  "native_size": [
+    32,
+    32
+  ],
+  "splits": {
+    "train": {
+      "ai_generated": 39689,
+      "real": 40000
+    },
+    "val": {
+      "ai_generated": 4964,
+      "real": 5000
+    },
+    "calibration": {
+      "ai_generated": 4969,
+      "real": 5000
+    },
+    "test": {
+      "ai_generated": 10000,
+      "real": 10000
+    },
+    "excluded": {
+      "ai_generated": 378
+    }
+  },
+  "split_codes": {
+    "train": 0,
+    "val": 1,
+    "calibration": 2,
+    "test": 3,
+    "excluded": 4
+  },
+  "split_method": "stratified_by_label_grouped_by_exact_decoded_pixel_hash_80_10_10",
+  "test_policy": "author test partition retained; no training, tuning or calibration",
+  "duplicate_groups": 1336,
+  "train_images_excluded_for_test_overlap": 378,
+  "train_images_excluded_for_conflicting_duplicate_labels": 0,
+  "duplicate_detection_limit": "Exact decoded-pixel hashes only; no exhaustive perceptual-near-duplicate audit.",
+  "manifest_sha256": "b1bddb1d857b3d6926a9a39796d437256fc02536ff2af772e47adae88f686f3d",
+  "organizer_dataset": false,
+  "unseen_generator_split_available": false
+}

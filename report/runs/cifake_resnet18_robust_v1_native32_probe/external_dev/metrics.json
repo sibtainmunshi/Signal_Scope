@@ -1,0 +1,78 @@
+{
+  "source": "UniversalFakeDetect CVPR 2023 diffusion release",
+  "split": "dev",
+  "evaluation_kind": "external_development",
+  "model_version": "cifake_resnet18_robust_v1_native32_probe",
+  "checkpoint_sha256": "fb4d5420f3c49aaa6e651e735ba03d78d9151480819a6f744bc65f0319812127",
+  "preprocessing": "Diagnostic only: EXIF transpose, RGB, PIL bicubic resize to 32x32, then unchanged ResNet-18 preprocessing to 96x96.",
+  "threshold": 0.5,
+  "unique_images_evaluated": 2000,
+  "macro_generator_roc_auc": 0.5967819999999999,
+  "per_generator": [
+    {
+      "generator": "guided",
+      "real_source": "imagenet",
+      "count": 1000,
+      "real_count": 500,
+      "ai_count": 500,
+      "roc_auc": 0.46757999999999994,
+      "macro_f1": 0.4361007442609261,
+      "accuracy": 0.476,
+      "false_positive_rate": 0.258,
+      "true_positive_rate": 0.21,
+      "brier_score": 0.4708037610646986,
+      "threshold": 0.5,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          371,
+          129
+        ],
+        [
+          395,
+          105
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    },
+    {
+      "generator": "ldm_200",
+      "real_source": "laion",
+      "count": 1000,
+      "real_count": 500,
+      "ai_count": 500,
+      "roc_auc": 0.725984,
+      "macro_f1": 0.5573202669595336,
+      "accuracy": 0.607,
+      "false_positive_rate": 0.058,
+      "true_positive_rate": 0.272,
+      "brier_score": 0.3567521883147989,
+      "threshold": 0.5,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          471,
+          29
+        ],
+        [
+          364,
+          136
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    }
+  ],
+  "organizer_hidden_result": null,
+  "limitations": [
+    "Domains are unseen in CIFAKE fine-tuning, not necessarily absent from backbone pretraining.",
+    "Development domains may guide model selection and are not a blind final test.",
+    "Shared LAION real images are reused for per-generator comparisons; no inflated pooled sample count is reported."
+  ],
+  "decision": "Not selected: mean external development AUC 0.5968 still inadequate. Released preprocessing remains unchanged."
+}

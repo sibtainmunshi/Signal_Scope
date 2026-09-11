@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
 import hashlib
-from pathlib import Path
+import os
 import time
+from dataclasses import asdict, dataclass
+from pathlib import Path
 
-from PIL import Image, ImageOps
 import numpy as np
 import torch
+from PIL import Image, ImageOps
 
 from .network import build_model, preprocess_batch
 from .paths import root_path
@@ -36,6 +37,7 @@ class Prediction:
 
 class Detector:
     def __init__(self, checkpoint: str | Path, device: str = "auto"):
+        torch.set_num_threads(min(8, os.cpu_count() or 1))
         self.path = root_path(checkpoint)
         if not self.path.is_file():
             raise FileNotFoundError(f"Trained checkpoint missing: {self.path}. Train or download documented weights first.")
@@ -77,7 +79,7 @@ class Detector:
         # Confidence is the score assigned to the returned class, not accuracy.
         confidence = score if label == "ai_generated" else 1-score
         limitations = ["Initial model trained on CIFAKE (32x32 source images).",
-                       "Performance on unseen generators and high-resolution images is not yet established.",
+                       "External development checks show substantial domain-shift errors; broad unseen-generator reliability is not established.",
                        "A visual score does not verify the truth of a depicted event."]
         if not self.calibrated:
             limitations.append("Scores have not yet been probability-calibrated.")

@@ -1,0 +1,24 @@
+{
+  "images": 10000,
+  "manifest_sha256": "8149884f168b1db3093fd8632516539f085dfef0c1d458b191eef9b88c1e2335",
+  "retained_counts": {
+    "dalle:reserved": 1000,
+    "glide_100_10:reserved": 1000,
+    "glide_100_27:reserved": 1000,
+    "glide_50_27:reserved": 1000,
+    "guided:dev": 500,
+    "guided:unused": 500,
+    "imagenet:dev": 500,
+    "imagenet:reserved": 500,
+    "laion:dev": 500,
+    "laion:reserved": 500,
+    "ldm_100:unused": 1000,
+    "ldm_200:dev": 500,
+    "ldm_200:unused": 500,
+    "ldm_200_cfg:unused": 1000
+  },
+  "exclusions": {},
+  "duplicate_groups": 0,
+  "audit_limit": "Exact decoded pixels only; near duplicates and unknown backbone pretraining overlap are not ruled out.",
+  "protocol": "docs/EXTERNAL_EVALUATION.md"
+}

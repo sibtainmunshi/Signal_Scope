@@ -1,0 +1,37 @@
+{
+  "count": 9964,
+  "real_count": 5000,
+  "ai_count": 4964,
+  "roc_auc": 0.9976734488315874,
+  "macro_f1": 0.9782211535376806,
+  "accuracy": 0.9782215977519069,
+  "false_positive_rate": 0.0208,
+  "true_positive_rate": 0.9772360999194198,
+  "brier_score": 0.017180273236886104,
+  "threshold": 0.5,
+  "positive_class": "ai_generated",
+  "confusion_matrix": [
+    [
+      4896,
+      104
+    ],
+    [
+      113,
+      4851
+    ]
+  ],
+  "confusion_matrix_order": [
+    "real",
+    "ai_generated"
+  ],
+  "dataset": "CIFAKE",
+  "split": "val",
+  "evaluation_kind": "self_evaluated_public_benchmark",
+  "model_version": "cifake_resnet18_v1",
+  "checkpoint_sha256": "d95cd05715473e96c38f950933c6ca657550a8a301b49415f1467ad7c318ff45",
+  "calibrated": false,
+  "unseen_generator_auc": null,
+  "unseen_generator_status": "not established: CIFAKE contains one synthetic generator",
+  "organizer_baseline": null,
+  "organizer_hidden_result": null
+}
