@@ -12,8 +12,8 @@ This file records acceptance evidence, not an estimated selection score.
 | Honest train/validation/calibration/test separation | Implemented for acquired data | CIFAKE grouped pixel-hash splits; 378 training/test overlaps excluded. External final generator roles declared before predictions. |
 | Diverse higher-resolution training data | Acquired, audited, used in three candidates | GenImage BigGAN/SD1.5 source-train subset: 7,808 downloaded, five protected overlaps excluded, 7,803 retained. Audit found real JPEG vs generated square PNG shortcut; v2 cache balances it. Released model still uses CIFAKE only. External evaluation data remain evaluation-only. |
 | Overall and unseen-generator AUC, macro-F1, confusion matrix, accuracy, FPR | Development metrics implemented; final evaluation pending | CIFAKE validation and guided/LDM external development recorded. Freeze model/threshold before CIFAKE test and reserved GLIDE/DALLE evaluation. Never claim organizer hidden results. |
-| Calibrated confidence and documented operating point | Pending final model selection | Current release is uncalibrated at threshold 0.5. `model/calibrate_mixed.py` (domain-balanced temperature on calibration splits, strictest per-domain validation threshold at max FPR, ECE) is written and unit-tested but not yet run on a selected model. |
-| A: Faithful explanation and localization | Partial | Returned-class Grad-CAM and masking diagnostic work. Fixed 30?50-image audit, matched masking baselines, attribution sensitivity checks and human-readable explanation review remain. No unverified semantic defect claims. |
+| Calibrated confidence and documented operating point | Run on leading candidate; freeze pending | `model/calibrate_mixed.py` on `mixed_resnet18_native_v1`: temperature 1.65, threshold 0.455 (FPR <= 5% on both validation domains). ECE CIFAKE 0.027 -> 0.009, GenImage 0.047 -> 0.061 (worse): report as imperfect. Released v0.1.0 remains uncalibrated at 0.5. |
+| A: Faithful explanation and localization | Partial | Returned-class Grad-CAM and masking diagnostic work; stitched multi-crop Grad-CAM added for the native candidate. `model/explanation_audit.py` (40 fixed development images, deletion versus random masks with two fill baselines, weight-randomization and JPEG-stability checks, reviewer template) ran on the calibrated native candidate: top windows beat random in 72.5%/67.5% of images (Wilcoxon p=0.002/0.014) with small effects; randomization Spearman median 0.52 (only partly weight-dependent). See `docs/EXPLANATION_AUDIT.md`. Two-person human review of `review_template.csv` pending. Fixed 30?50-image audit, matched masking baselines, attribution sensitivity checks and human-readable explanation review remain. No unverified semantic defect claims. |
 | C: Robustness benchmark | Implemented for development model | Paired JPEG/resize/blur metrics and plots; rerun for final selected model. |
 | F: Usable interface | Implemented locally | Upload, actual CPU inference, overlay, stability, EXIF, JSON export; desktop/mobile browser checks passed. Current prerelease passed fresh-clone CPU setup and real upload checks; repeat for final release. |
 | D: Metadata/provenance | EXIF implemented; C2PA optional and pending | Separate evidence; no score fusion. Do not claim C2PA validation until implemented and tested. |
@@ -30,8 +30,10 @@ This file records acceptance evidence, not an estimated selection score.
 
 ## Current model decision
 
-Keep the released detector for now. External development mean ROC-AUC, as
-distributed / format-matched (see `report/candidate_comparison.md`):
+Leading candidate: `mixed_resnet18_native_v1` (native-resolution crops,
+format-balanced). It is not yet integrated as the app default or released.
+External development mean ROC-AUC, as distributed / format-matched (see
+`report/candidate_comparison.md` and `report/external_bootstrap.md`):
 
 | Candidate | As distributed | Format-matched |
 |---|---:|---:|
@@ -40,6 +42,11 @@ distributed / format-matched (see `report/candidate_comparison.md`):
 | mixed_resnet18_v1 | 0.627 | 0.574 |
 | mixed_clip_b32_v1 | 0.708 | 0.542 |
 | mixed_resnet18_v2 (format-balanced) | 0.550 | 0.549 |
+| **mixed_resnet18_native_v1** | **0.647** | **0.653** |
+| native seed-2027 replicate | 0.670 | see comparison table |
+
+The native candidate's gain over the release is +0.113 [0.083, 0.142] matched
+(paired bootstrap). Absolute AUC ~0.65 is still modest; say so plainly.
 
 As-distributed gains largely come from real-JPEG versus generated-PNG cues.
 With those cues removed, resize-based training transfers near chance. Preserve
@@ -49,7 +56,8 @@ Reserved final generator data and the CIFAKE test remain untouched.
 ## Next execution order
 
 1. Done: acquire/audit GenImage subset; three mixed candidates plus format-matched protocol measured.
-2. Next: native-resolution crop candidate (no resizing, format-balanced); compare on both external protocols and real-image FPR. Stop exploratory training by 14 September noon.
+2. Done: native-resolution candidate, seed replicate, bootstrap CIs and calibration.
+3. Next: evaluate the calibrated checkpoint, run the explanation audit, integrate the native model in the app (manifest, v0.2.0 weights, UI text), then freeze and run reserved CIFAKE test and GLIDE/DALLE once. Stop exploratory training by 14 September noon.
 3. Select the model, fit calibration/threshold on proper partitions, freeze, and evaluate reserved tests.
 4. Complete explanation audit and final robustness/defence evidence.
 5. Verify a clean clone, write the one-page report, record the demo, and check submission links.

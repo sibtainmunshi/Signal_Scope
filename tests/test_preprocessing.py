@@ -2,7 +2,14 @@
 import numpy as np
 from PIL import Image
 
-from signalscope.preprocessing import center_crop_box, center_crop_resize, source_region
+from signalscope.preprocessing import (
+    center_crop_box,
+    center_crop_resize,
+    native_crop_boxes,
+    native_crops,
+    native_region,
+    source_region,
+)
 from signalscope.robustness import matched_format
 
 
@@ -20,6 +27,18 @@ def test_square_input_matches_plain_bilinear_resize():
     direct = np.asarray(image.resize((160, 160), Image.Resampling.BILINEAR))
     assert np.array_equal(np.asarray(center_crop_resize(image, 160)), direct)
     assert source_region(32, 32, 160) == (0.0, 0.0, 1.0, 1.0)
+
+
+def test_native_crops_tile_quadrants_without_resizing():
+    canvas, crops = native_crops(Image.new("RGB", (256, 256)), 128)
+    assert canvas.size == (256, 256) and len(crops) == 5
+    assert native_crop_boxes(256, 256, 128)[1:] == [
+        (0, 0, 128, 128), (128, 0, 256, 128), (0, 128, 128, 256), (128, 128, 256, 256)
+    ]
+    assert native_region(256, 256, 128) == (0.0, 0.0, 1.0, 1.0)
+    assert len(native_crops(Image.new("RGB", (128, 128)), 128)[1]) == 1
+    small, crops = native_crops(Image.new("RGB", (64, 100)), 128)
+    assert min(small.size) == 128 and all(crop.size == (128, 128) for crop in crops)
 
 
 def test_matched_format_returns_square_decoded_rgb():

@@ -1,0 +1,388 @@
+{
+  "method": "Paired bootstrap confidence intervals for external development AUC from saved predictions.\n\nReal and generated images are resampled separately within each generator pairing,\nwith identical draws for every run, so differences between runs are paired.\nNothing is refit; this only quantifies uncertainty of already saved scores.",
+  "samples": 2000,
+  "seed": 2026,
+  "baseline": "cifake_resnet18_robust_v1",
+  "protocols": {
+    "as_distributed": {
+      "cifake_resnet18_robust_v1": {
+        "mean_auc": 0.5534,
+        "ci95": [
+          0.5305,
+          0.5759
+        ],
+        "difference_vs_baseline": 0.0,
+        "difference_ci95": [
+          0.0,
+          0.0
+        ],
+        "images_per_generator": {
+          "guided": [
+            500,
+            500
+          ],
+          "ldm_200": [
+            500,
+            500
+          ]
+        }
+      },
+      "mixed_resnet18_v1": {
+        "mean_auc": 0.6274,
+        "ci95": [
+          0.6043,
+          0.6507
+        ],
+        "difference_vs_baseline": 0.074,
+        "difference_ci95": [
+          0.0437,
+          0.1047
+        ],
+        "images_per_generator": {
+          "guided": [
+            500,
+            500
+          ],
+          "ldm_200": [
+            500,
+            500
+          ]
+        }
+      },
+      "mixed_resnet18_v2": {
+        "mean_auc": 0.5503,
+        "ci95": [
+          0.5258,
+          0.5743
+        ],
+        "difference_vs_baseline": -0.0031,
+        "difference_ci95": [
+          -0.0358,
+          0.0285
+        ],
+        "images_per_generator": {
+          "guided": [
+            500,
+            500
+          ],
+          "ldm_200": [
+            500,
+            500
+          ]
+        }
+      },
+      "mixed_clip_b32_v1": {
+        "mean_auc": 0.7078,
+        "ci95": [
+          0.6861,
+          0.7288
+        ],
+        "difference_vs_baseline": 0.1544,
+        "difference_ci95": [
+          0.1225,
+          0.1852
+        ],
+        "images_per_generator": {
+          "guided": [
+            500,
+            500
+          ],
+          "ldm_200": [
+            500,
+            500
+          ]
+        }
+      },
+      "mixed_resnet18_native_v1": {
+        "mean_auc": 0.6474,
+        "ci95": [
+          0.6241,
+          0.6699
+        ],
+        "difference_vs_baseline": 0.094,
+        "difference_ci95": [
+          0.0626,
+          0.1252
+        ],
+        "images_per_generator": {
+          "guided": [
+            500,
+            500
+          ],
+          "ldm_200": [
+            500,
+            500
+          ]
+        }
+      },
+      "mixed_resnet18_native_v1_seed2027": {
+        "mean_auc": 0.6704,
+        "ci95": [
+          0.6468,
+          0.6933
+        ],
+        "difference_vs_baseline": 0.117,
+        "difference_ci95": [
+          0.0861,
+          0.1475
+        ],
+        "images_per_generator": {
+          "guided": [
+            500,
+            500
+          ],
+          "ldm_200": [
+            500,
+            500
+          ]
+        }
+      }
+    },
+    "matched": {
+      "cifake_resnet18_robust_v1": {
+        "mean_auc": 0.5405,
+        "ci95": [
+          0.5175,
+          0.5631
+        ],
+        "difference_vs_baseline": 0.0,
+        "difference_ci95": [
+          0.0,
+          0.0
+        ],
+        "images_per_generator": {
+          "guided": [
+            500,
+            500
+          ],
+          "ldm_200": [
+            500,
+            500
+          ]
+        }
+      },
+      "mixed_resnet18_v1": {
+        "mean_auc": 0.5736,
+        "ci95": [
+          0.5508,
+          0.5981
+        ],
+        "difference_vs_baseline": 0.0331,
+        "difference_ci95": [
+          0.0022,
+          0.065
+        ],
+        "images_per_generator": {
+          "guided": [
+            500,
+            500
+          ],
+          "ldm_200": [
+            500,
+            500
+          ]
+        }
+      },
+      "mixed_resnet18_v2": {
+        "mean_auc": 0.5488,
+        "ci95": [
+          0.5245,
+          0.5732
+        ],
+        "difference_vs_baseline": 0.0083,
+        "difference_ci95": [
+          -0.0248,
+          0.0396
+        ],
+        "images_per_generator": {
+          "guided": [
+            500,
+            500
+          ],
+          "ldm_200": [
+            500,
+            500
+          ]
+        }
+      },
+      "mixed_clip_b32_v1": {
+        "mean_auc": 0.5425,
+        "ci95": [
+          0.5182,
+          0.5668
+        ],
+        "difference_vs_baseline": 0.002,
+        "difference_ci95": [
+          -0.0307,
+          0.0346
+        ],
+        "images_per_generator": {
+          "guided": [
+            500,
+            500
+          ],
+          "ldm_200": [
+            500,
+            500
+          ]
+        }
+      },
+      "mixed_resnet18_native_v1": {
+        "mean_auc": 0.653,
+        "ci95": [
+          0.6283,
+          0.677
+        ],
+        "difference_vs_baseline": 0.1125,
+        "difference_ci95": [
+          0.0827,
+          0.1423
+        ],
+        "images_per_generator": {
+          "guided": [
+            500,
+            500
+          ],
+          "ldm_200": [
+            500,
+            500
+          ]
+        }
+      },
+      "mixed_resnet18_native_v1_seed2027": {
+        "mean_auc": 0.6665,
+        "ci95": [
+          0.6438,
+          0.69
+        ],
+        "difference_vs_baseline": 0.126,
+        "difference_ci95": [
+          0.096,
+          0.1562
+        ],
+        "images_per_generator": {
+          "guided": [
+            500,
+            500
+          ],
+          "ldm_200": [
+            500,
+            500
+          ]
+        }
+      }
+    },
+    "matched_native": {
+      "cifake_resnet18_robust_v1": {
+        "mean_auc": 0.5378,
+        "ci95": [
+          0.515,
+          0.5604
+        ],
+        "difference_vs_baseline": 0.0,
+        "difference_ci95": [
+          0.0,
+          0.0
+        ],
+        "images_per_generator": {
+          "guided": [
+            500,
+            500
+          ],
+          "ldm_200": [
+            500,
+            500
+          ]
+        }
+      },
+      "mixed_resnet18_v1": {
+        "mean_auc": 0.5799,
+        "ci95": [
+          0.5576,
+          0.605
+        ],
+        "difference_vs_baseline": 0.0421,
+        "difference_ci95": [
+          0.0115,
+          0.0741
+        ],
+        "images_per_generator": {
+          "guided": [
+            500,
+            500
+          ],
+          "ldm_200": [
+            500,
+            500
+          ]
+        }
+      },
+      "mixed_resnet18_v2": {
+        "mean_auc": 0.5532,
+        "ci95": [
+          0.5287,
+          0.5773
+        ],
+        "difference_vs_baseline": 0.0153,
+        "difference_ci95": [
+          -0.0181,
+          0.0462
+        ],
+        "images_per_generator": {
+          "guided": [
+            500,
+            500
+          ],
+          "ldm_200": [
+            500,
+            500
+          ]
+        }
+      },
+      "mixed_resnet18_native_v1": {
+        "mean_auc": 0.6487,
+        "ci95": [
+          0.625,
+          0.6722
+        ],
+        "difference_vs_baseline": 0.1109,
+        "difference_ci95": [
+          0.0792,
+          0.1421
+        ],
+        "images_per_generator": {
+          "guided": [
+            500,
+            500
+          ],
+          "ldm_200": [
+            500,
+            500
+          ]
+        }
+      },
+      "mixed_resnet18_native_v1_seed2027": {
+        "mean_auc": 0.6586,
+        "ci95": [
+          0.6362,
+          0.6812
+        ],
+        "difference_vs_baseline": 0.1207,
+        "difference_ci95": [
+          0.0908,
+          0.1501
+        ],
+        "images_per_generator": {
+          "guided": [
+            500,
+            500
+          ],
+          "ldm_200": [
+            500,
+            500
+          ]
+        }
+      }
+    }
+  }
+}

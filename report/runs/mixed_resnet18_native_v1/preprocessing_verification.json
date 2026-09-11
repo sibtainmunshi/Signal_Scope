@@ -1,0 +1,4 @@
+{
+  "method": "Original GenImage files and stored CIFAKE pixels scored directly by Detector.score_images; no training cache involved",
+  "checkpoint_sha256": "8c2a0e27c47f87bcc2f4e3b673a0a55bee78c42725dedc8473dca2eaa97b5454"
+}

@@ -15,11 +15,16 @@ from PIL import Image
 from signalscope.inference import Detector
 from signalscope.metrics import binary_metrics
 from signalscope.paths import ROOT
-from signalscope.robustness import matched_format
+from PIL import ImageOps
+
+from signalscope.robustness import matched_format, matched_native
 
 PAIRS={"guided":"imagenet","ldm_200":"laion","glide_100_27":"laion","glide_50_27":"laion","glide_100_10":"laion","dalle":"laion"}
 PROTOCOLS={"as_distributed":"Files scored as distributed. Real images are JPEG (ImageNet mostly non-square); generated images are square PNG, so format and aspect-ratio cues remain available.",
-           "matched":"Every image of both labels: centre square crop, bicubic resize to 224, JPEG quality 90, then the detector's own preprocessing. Reduces file-format and aspect-ratio cues; earlier compression traces are weakened, not removed."}
+           "matched":"Every image of both labels: centre square crop, bicubic resize to 224, JPEG quality 90, then the detector's own preprocessing. Reduces file-format and aspect-ratio cues; earlier compression traces are weakened, not removed.",
+           "matched_native":"Every image of both labels: centre square crop at native resolution (no resize), JPEG quality 90, then the detector's own preprocessing. Format-only control; ImageNet real crops can stay larger than 256 px generated images."}
+TRANSFORMS={"as_distributed":lambda image: ImageOps.exif_transpose(image).convert("RGB"),
+            "matched":matched_format,"matched_native":matched_native}
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
@@ -40,12 +45,11 @@ def main():
     with zipfile.ZipFile(ROOT/"data/downloads/universalfakedetect_diffusion.zip") as archive:
         for start in range(0,len(records),args.batch_size):
             batch=records[start:start+args.batch_size]
-            inputs=[]
+            images=[]
             for row in batch:
                 with Image.open(io.BytesIO(archive.read(row["path"]))) as image:
-                    inputs.append(detector.tensor(matched_format(image) if args.protocol=="matched" else image))
-            with torch.inference_mode():
-                scores=detector.score_tensor(torch.cat(inputs)).cpu().tolist()
+                    images.append(TRANSFORMS[args.protocol](image))
+            scores=detector.score_images(images)
             for row,score in zip(batch,scores,strict=True):
                 row["ai_score"]=score
     metrics=[]

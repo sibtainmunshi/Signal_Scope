@@ -43,3 +43,10 @@ known and before any matched score was computed. It uses the same fixed
 development images; nothing is trained or thresholded on it. Model selection
 weighs both protocols and real-image false positives. The final reserved
 GLIDE/DALLE evaluation will report both protocols once, after freeze.
+
+A third, format-only control, `matched_native`, was declared on 12 September
+before any native-resolution candidate was scored: centre square crop at native
+resolution and JPEG quality 90 for both labels, with no resize. It keeps native
+pixels for crop-based detectors but does not match scale (ImageNet real crops can
+be larger than the 256 px generated images). The resize-based `matched` protocol
+remains the stricter headline control.

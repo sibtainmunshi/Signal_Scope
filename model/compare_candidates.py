@@ -32,7 +32,10 @@ def main():
         run = folder.name
         cifake = load(run, "cifake_val", "val")
         genimage = load(run, "genimage_val")
-        external = {p: load(run, f"external_dev{s}") for p, s in (("as_distributed", ""), ("matched", "_matched"))}
+        external = {
+            p: load(run, f"external_dev{s}")
+            for p, s in (("as_distributed", ""), ("matched", "_matched"), ("matched_native", "_matched_native"))
+        }
         if not any([cifake, genimage, *external.values()]):
             continue
         hashes = {m.get("checkpoint_sha256") for m in [cifake, genimage, *external.values()] if m and m.get("checkpoint_sha256")}
@@ -55,15 +58,17 @@ def main():
             }
         rows.append(row)
     header = ("| Run | CIFAKE val AUC | GenImage val AUC | External mean AUC (as distributed) | Guided / LDM AUC | "
-              "Real FPR ImageNet / LAION @0.5 | External mean AUC (matched) | Guided / LDM AUC (matched) | Real FPR (matched) |")
-    lines = [header, "|" + "---|" * 9]
+              "Real FPR ImageNet / LAION @0.5 | External mean AUC (matched) | Guided / LDM AUC (matched) | Real FPR (matched) | "
+              "External mean AUC (matched native) |")
+    lines = [header, "|" + "---|" * 10]
     for r in rows:
-        a, m = r["as_distributed"] or {}, r["matched"] or {}
+        a, m, n = r["as_distributed"] or {}, r["matched"] or {}, r["matched_native"] or {}
         lines.append(
             f"| {r['run']}{'' if r['checkpoint_hashes_consistent'] else ' (STALE HASH)'} | {auc(r['cifake_val_auc'])} | {auc(r['genimage_val_auc'])} | "
             f"{auc(a.get('mean_auc'))} | {auc(a.get('guided_auc'))} / {auc(a.get('ldm_200_auc'))} | "
             f"{pct(a.get('guided_real_fpr'))} / {pct(a.get('ldm_200_real_fpr'))} | {auc(m.get('mean_auc'))} | "
-            f"{auc(m.get('guided_auc'))} / {auc(m.get('ldm_200_auc'))} | {pct(m.get('guided_real_fpr'))} / {pct(m.get('ldm_200_real_fpr'))} |"
+            f"{auc(m.get('guided_auc'))} / {auc(m.get('ldm_200_auc'))} | {pct(m.get('guided_real_fpr'))} / {pct(m.get('ldm_200_real_fpr'))} | "
+            f"{auc(n.get('mean_auc'))} |"
         )
     table = "\n".join(lines)
     (ROOT / "report/candidate_comparison.json").write_text(json.dumps(rows, indent=2) + "\n", encoding="utf-8")

@@ -16,7 +16,8 @@
       "guided_ai_tpr": 0.596,
       "ldm_200_ai_tpr": 0.614
     },
-    "matched": null
+    "matched": null,
+    "matched_native": null
   },
   {
     "run": "cifake_resnet18_robust_v1",
@@ -43,6 +44,15 @@
       "ldm_200_real_fpr": 0.76,
       "guided_ai_tpr": 0.83,
       "ldm_200_ai_tpr": 0.978
+    },
+    "matched_native": {
+      "mean_auc": 0.537848,
+      "guided_auc": 0.331962,
+      "ldm_200_auc": 0.743734,
+      "guided_real_fpr": 0.93,
+      "ldm_200_real_fpr": 0.758,
+      "guided_ai_tpr": 0.832,
+      "ldm_200_ai_tpr": 0.978
     }
   },
   {
@@ -62,7 +72,8 @@
       "guided_ai_tpr": 0.21,
       "ldm_200_ai_tpr": 0.272
     },
-    "matched": null
+    "matched": null,
+    "matched_native": null
   },
   {
     "run": "cifake_resnet18_v1",
@@ -89,7 +100,8 @@
       "ldm_200_real_fpr": 0.982,
       "guided_ai_tpr": 0.982,
       "ldm_200_ai_tpr": 1.0
-    }
+    },
+    "matched_native": null
   },
   {
     "run": "mixed_clip_b32_v1",
@@ -116,6 +128,124 @@
       "ldm_200_real_fpr": 0.108,
       "guided_ai_tpr": 0.036,
       "ldm_200_ai_tpr": 0.072
+    },
+    "matched_native": null
+  },
+  {
+    "run": "mixed_resnet18_native_v1",
+    "checkpoint_hashes_consistent": true,
+    "cifake_val_auc": 0.9926880741337631,
+    "cifake_val_fpr": 0.0192,
+    "genimage_val_auc": 0.9563057224775146,
+    "genimage_val_fpr": 0.04065040650406504,
+    "genimage_per_source_auc": {
+      "BigGAN": 0.9456283951527664,
+      "stable_diffusion_v_1_5": 0.9691430488009392
+    },
+    "as_distributed": {
+      "mean_auc": 0.6474120000000001,
+      "guided_auc": 0.629644,
+      "ldm_200_auc": 0.6651800000000001,
+      "guided_real_fpr": 0.034,
+      "ldm_200_real_fpr": 0.106,
+      "guided_ai_tpr": 0.088,
+      "ldm_200_ai_tpr": 0.336
+    },
+    "matched": {
+      "mean_auc": 0.6530020000000001,
+      "guided_auc": 0.61136,
+      "ldm_200_auc": 0.694644,
+      "guided_real_fpr": 0.09,
+      "ldm_200_real_fpr": 0.132,
+      "guided_ai_tpr": 0.192,
+      "ldm_200_ai_tpr": 0.372
+    },
+    "matched_native": {
+      "mean_auc": 0.64871,
+      "guided_auc": 0.594376,
+      "ldm_200_auc": 0.703044,
+      "guided_real_fpr": 0.068,
+      "ldm_200_real_fpr": 0.11,
+      "guided_ai_tpr": 0.13,
+      "ldm_200_ai_tpr": 0.376
+    }
+  },
+  {
+    "run": "mixed_resnet18_native_v1_calibrated",
+    "checkpoint_hashes_consistent": true,
+    "cifake_val_auc": 0.992688074133763,
+    "cifake_val_fpr": 0.022,
+    "genimage_val_auc": 0.9563057224775146,
+    "genimage_val_fpr": 0.04878048780487805,
+    "genimage_per_source_auc": {
+      "BigGAN": 0.9456283951527664,
+      "stable_diffusion_v_1_5": 0.9691430488009392
+    },
+    "as_distributed": {
+      "mean_auc": 0.6474120000000001,
+      "guided_auc": 0.629644,
+      "ldm_200_auc": 0.6651800000000001,
+      "guided_real_fpr": 0.04,
+      "ldm_200_real_fpr": 0.128,
+      "guided_ai_tpr": 0.108,
+      "ldm_200_ai_tpr": 0.37
+    },
+    "matched": {
+      "mean_auc": 0.6530020000000001,
+      "guided_auc": 0.61136,
+      "ldm_200_auc": 0.694644,
+      "guided_real_fpr": 0.118,
+      "ldm_200_real_fpr": 0.16,
+      "guided_ai_tpr": 0.236,
+      "ldm_200_ai_tpr": 0.412
+    },
+    "matched_native": {
+      "mean_auc": 0.64871,
+      "guided_auc": 0.594376,
+      "ldm_200_auc": 0.703044,
+      "guided_real_fpr": 0.092,
+      "ldm_200_real_fpr": 0.14,
+      "guided_ai_tpr": 0.162,
+      "ldm_200_ai_tpr": 0.428
+    }
+  },
+  {
+    "run": "mixed_resnet18_native_v1_seed2027",
+    "checkpoint_hashes_consistent": true,
+    "cifake_val_auc": 0.995150946817083,
+    "cifake_val_fpr": 0.0256,
+    "genimage_val_auc": 0.9341345587368917,
+    "genimage_val_fpr": 0.02168021680216802,
+    "genimage_per_source_auc": {
+      "BigGAN": 0.8887496005702628,
+      "stable_diffusion_v_1_5": 0.9866118843982336
+    },
+    "as_distributed": {
+      "mean_auc": 0.670428,
+      "guided_auc": 0.5952519999999999,
+      "ldm_200_auc": 0.745604,
+      "guided_real_fpr": 0.018,
+      "ldm_200_real_fpr": 0.104,
+      "guided_ai_tpr": 0.044,
+      "ldm_200_ai_tpr": 0.382
+    },
+    "matched": {
+      "mean_auc": 0.666514,
+      "guided_auc": 0.577888,
+      "ldm_200_auc": 0.7551400000000001,
+      "guided_real_fpr": 0.05,
+      "ldm_200_real_fpr": 0.102,
+      "guided_ai_tpr": 0.102,
+      "ldm_200_ai_tpr": 0.39
+    },
+    "matched_native": {
+      "mean_auc": 0.658568,
+      "guided_auc": 0.5444040000000001,
+      "ldm_200_auc": 0.772732,
+      "guided_real_fpr": 0.034,
+      "ldm_200_real_fpr": 0.118,
+      "guided_ai_tpr": 0.06,
+      "ldm_200_ai_tpr": 0.426
     }
   },
   {
@@ -146,6 +276,15 @@
       "ldm_200_real_fpr": 0.14,
       "guided_ai_tpr": 0.256,
       "ldm_200_ai_tpr": 0.286
+    },
+    "matched_native": {
+      "mean_auc": 0.5799319999999999,
+      "guided_auc": 0.554156,
+      "ldm_200_auc": 0.6057079999999999,
+      "guided_real_fpr": 0.214,
+      "ldm_200_real_fpr": 0.13,
+      "guided_ai_tpr": 0.24,
+      "ldm_200_ai_tpr": 0.272
     }
   },
   {
@@ -176,6 +315,15 @@
       "ldm_200_real_fpr": 0.15,
       "guided_ai_tpr": 0.228,
       "ldm_200_ai_tpr": 0.238
+    },
+    "matched_native": {
+      "mean_auc": 0.5531599999999999,
+      "guided_auc": 0.5487959999999998,
+      "ldm_200_auc": 0.5575239999999999,
+      "guided_real_fpr": 0.17,
+      "ldm_200_real_fpr": 0.148,
+      "guided_ai_tpr": 0.212,
+      "ldm_200_ai_tpr": 0.234
     }
   }
 ]

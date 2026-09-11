@@ -175,6 +175,68 @@ temperature, strictest per-domain validation threshold at max FPR, ECE) is writt
 and unit-tested but not yet run. The already running local app server predates
 these backend changes; restart it to see them. 16 tests pass.
 
+## In flight: native-resolution candidate (12 September)
+
+`model/train_native.py` + `signalscope/native_dataset.py` train `mixed_resnet18_native_v1`:
+random 128 px crops at native resolution (no resize); every generated GenImage
+training image, and BigGAN real photos after 128 px matching, is JPEG-compressed at
+stored resolution with quality drawn from real training JPEGs; symmetric rescale,
+blur and crop-JPEG augmentation. Inference preprocessing `native_multicrop_v1`
+averages logits of up to five native crops (`Detector.score_images`). Training
+finished (best epoch 6: GenImage val AUC 0.956, FPR 4.1%; CIFAKE val 0.993).
+A new format-only control `matched_native` (native centre crop + JPEG q90, no
+resize) was declared in docs/EXTERNAL_EVALUATION.md before any native score.
+
+Evaluation chain (log `tmp/logs/eval_native_v1.log`; rerun if interrupted):
+
+```powershell
+$ck = "model/checkpoints/mixed_resnet18_native_v1/best.pt"
+.\.venv\Scripts\python.exe model/evaluate_mixed.py --checkpoint $ck
+.\.venv\Scripts\python.exe model/evaluate_external.py --checkpoint $ck
+.\.venv\Scripts\python.exe model/evaluate_external.py --checkpoint $ck --protocol matched
+.\.venv\Scripts\python.exe model/evaluate_external.py --checkpoint $ck --protocol matched_native
+# matched_native also for cifake_resnet18_robust_v1, mixed_resnet18_v1, mixed_resnet18_v2
+.\.venv\Scripts\python.exe model/compare_candidates.py
+```
+
+Verified: `score_images` equals the old per-row path on CPU (max diff 3e-8).
+CPU versus saved GPU scores differ by up to ~1.4e-3, most likely GPU TF32 convolutions (not
+separately confirmed); no label flips in a 50-image check. The app runs on CPU.
+Multi-crop stitched Grad-CAM is now implemented (`native_attribution`,
+`_explain_multicrop` in `signalscope/evidence.py`) and tested.
+
+## Native candidate results and next steps (12 September)
+
+`mixed_resnet18_native_v1` is the leading candidate: external dev mean AUC 0.647
+as distributed, 0.653 matched, 0.649 matched_native; GenImage val 0.956; CIFAKE val
+0.993. Paired bootstrap versus release: +0.113 [0.083, 0.142] matched
+(`report/external_bootstrap.md`, `model/bootstrap_external.py`). Seed-2027 replicate
+reached 0.670 as distributed (variation ~0.02). Seed 2026 stays primary.
+
+Calibrated copy: `model/checkpoints/mixed_resnet18_native_v1_calibrated/best.pt`
+(T=1.65, threshold 0.455; see its `calibration.json` and
+`report/runs/mixed_resnet18_native_v1_calibrated/calibration.json`). ECE improved
+on CIFAKE but worsened on GenImage; report this.
+
+Steps 1-2 below are DONE: calibrated external AUC unchanged; real FPR at 0.455 is
+4.0%/12.8% as distributed and 11.8%/16.0% matched, with external AI recall 11-43%.
+Seed-2027 replicate matched 0.667 (+0.126 [0.096, 0.156] vs release). Audit results
+are in `docs/EXPLANATION_AUDIT.md`. Continue from step 3.
+
+Next, in order (one GPU job at a time):
+1. Evaluate the calibrated checkpoint: `model/evaluate_mixed.py` and
+   `model/evaluate_external.py` with all three protocols (AUC unchanged; FPR/TPR at 0.455).
+2. `model/explanation_audit.py --checkpoint <calibrated>` (writes
+   `report/explanation_audit/<version>/`; the image contact sheet stays in `tmp/`
+   because images may contain people and need review before publication).
+3. Integrate in app: `model/manifest.json` (new release v0.2.0 asset + SHA-256),
+   default checkpoint in `app/backend/main.py`, `model/predict.py`,
+   `scripts/download_model.py`/`setup.py`, README results, UI copy. Rerun
+   robustness (`model/benchmark_robustness.py` uses CIFAKE; add GenImage val) on the frozen model.
+4. Freeze; then run CIFAKE test (`model/evaluate.py --split test --final-test`) and
+   reserved GLIDE/DALLE (`evaluate_external.py --split reserved --final-test`, all protocols) once.
+5. One-page report, demo script/assets, fresh-clone CPU check, submission links.
+
 ## Known follow-up work
 
 - Fix any audit/training/evaluation failures; verify comparable fixed development metrics.

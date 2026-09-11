@@ -1,0 +1,74 @@
+{
+  "model_version": "mixed_resnet18_native_v1_calibrated",
+  "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+  "threshold": 0.4553663730621338,
+  "images": 40,
+  "strata": {
+    "genimage:BigGAN:0": 5,
+    "genimage:BigGAN:1": 5,
+    "genimage:stable_diffusion_v_1_5:0": 5,
+    "genimage:stable_diffusion_v_1_5:1": 5,
+    "external:imagenet:0": 5,
+    "external:guided:1": 5,
+    "external:laion:0": 5,
+    "external:ldm_200:1": 5
+  },
+  "correct": 27,
+  "selection": "Per stratum: first 3 correct and 2 incorrect of 40 hash-ordered development images",
+  "effect_definition": "Drop in the score of the returned class after masking a side x side window (positive = window supported the verdict)",
+  "window_side_pixels": 42,
+  "random_windows_per_image": 16,
+  "deletion": {
+    "mean": {
+      "effect_top": {
+        "n": 40,
+        "mean": 0.02659494107356295,
+        "median": 0.00515739805996418
+      },
+      "effect_random_median": {
+        "n": 40,
+        "mean": 0.0031756479816976934,
+        "median": -0.0014351301360875368
+      },
+      "fraction_top_exceeds_random_median": 0.725,
+      "median_top_percentile_among_random": 0.8125,
+      "wilcoxon_top_vs_random_p": 0.002392230499026482
+    },
+    "blur": {
+      "effect_top": {
+        "n": 40,
+        "mean": 0.03638074664631859,
+        "median": 0.004974193871021271
+      },
+      "effect_random_median": {
+        "n": 40,
+        "mean": 0.008207537606358528,
+        "median": -0.000796070322394371
+      },
+      "fraction_top_exceeds_random_median": 0.675,
+      "median_top_percentile_among_random": 0.8125,
+      "wilcoxon_top_vs_random_p": 0.01355766506276268
+    }
+  },
+  "jpeg_q70_spearman": {
+    "n": 40,
+    "mean": 0.8157110064171611,
+    "median": 0.9532813793415629
+  },
+  "jpeg_q70_top_window_iou": {
+    "n": 40,
+    "mean": 0.5627024162149669,
+    "median": 0.686043165467626
+  },
+  "randomization_spearman": {
+    "n": 10,
+    "mean": 0.3442369041058316,
+    "median": 0.5176799257411735
+  },
+  "randomization": "layer4 and classifier weights re-initialized; low correlation means maps depend on learned weights",
+  "limitations": [
+    "Masked inputs are out of distribution; score changes are diagnostics, not causal proof.",
+    "No ground-truth artifact annotations exist; this does not verify that any visible defect is present.",
+    "Small fixed sample from development data; external domains were used during model selection."
+  ]
+}

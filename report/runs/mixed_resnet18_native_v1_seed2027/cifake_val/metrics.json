@@ -1,0 +1,34 @@
+{
+  "count": 9964,
+  "real_count": 5000,
+  "ai_count": 4964,
+  "roc_auc": 0.995150946817083,
+  "macro_f1": 0.9664749371148695,
+  "accuracy": 0.9664793255720594,
+  "false_positive_rate": 0.0256,
+  "true_positive_rate": 0.9585012087026591,
+  "brier_score": 0.026528189617173882,
+  "threshold": 0.5,
+  "positive_class": "ai_generated",
+  "confusion_matrix": [
+    [
+      4872,
+      128
+    ],
+    [
+      206,
+      4758
+    ]
+  ],
+  "confusion_matrix_order": [
+    "real",
+    "ai_generated"
+  ],
+  "dataset": "cifake",
+  "split": "val",
+  "checkpoint_sha256": "75ef5fa14eab8ba18040257410ff9ac4cc0c6a986043ad314c857d8c6fefc8c2",
+  "model_version": "mixed_resnet18_native_v1_seed2027",
+  "calibrated": false,
+  "preprocessing": "native_multicrop_v1",
+  "evaluation_kind": "self_evaluated_public_development"
+}

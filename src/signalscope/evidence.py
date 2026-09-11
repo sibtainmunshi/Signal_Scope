@@ -12,6 +12,10 @@ from PIL import ExifTags, Image, ImageFilter, ImageOps
 from torch.nn import functional as F
 
 from .inference import Detector
+from .preprocessing import native_crop_boxes, native_crops, native_region
+
+# ImageNet channel means as RGB pixels: masking to these equals zero normalized input.
+MEAN_PIXEL = (124, 116, 104)
 
 
 def png_data_url(image: Image.Image) -> str:
@@ -51,9 +55,7 @@ def robustness_evidence(detector: Detector, image: Image.Image) -> dict:
     size = (max(1, image.width//2), max(1, image.height//2))
     resized = image.resize(size, Image.Resampling.LANCZOS).resize(image.size, Image.Resampling.BILINEAR)
     variants.extend([("half_resolution", resized), ("mild_blur", image.filter(ImageFilter.GaussianBlur(.7)))])
-    with torch.inference_mode():
-        tensors = torch.cat([detector.tensor(v) for _, v in variants])
-        scores = detector.score_tensor(tensors).cpu().numpy()
+    scores = np.array(detector.score_images([v for _, v in variants]))
     baseline_label = bool(scores[0] >= detector.threshold)
     rows = [{"transformation": name, "ai_score": float(score),
              "label": "ai_generated" if score >= detector.threshold else "real",
@@ -71,6 +73,8 @@ def explain_prediction(detector: Detector, image: Image.Image) -> dict:
     """Grad-CAM of the returned class, plus a bounded masking diagnostic."""
     start = time.perf_counter()
     image = ImageOps.exif_transpose(image).convert("RGB")
+    if detector.preprocessing == "native_multicrop_v1":
+        return _explain_multicrop(detector, image, start)
     tensor = detector.tensor(image)
     captured = []
 
@@ -169,5 +173,123 @@ def explain_prediction(detector: Detector, image: Image.Image) -> dict:
                                "limitation": "Masking creates altered inputs; this is not causal proof or artifact ground truth."},
         "semantic_artifact_verified": False,
         "elapsed_ms": round((time.perf_counter()-start)*1000,2),
+    }
+
+
+def _box_mean(values: np.ndarray, side: int) -> np.ndarray:
+    """Mean over every valid side x side window, using an integral image."""
+    s = np.pad(values, ((1, 0), (1, 0))).cumsum(0).cumsum(1)
+    return (s[side:, side:]-s[:-side, side:]-s[side:, :-side]+s[:-side, :-side])/side**2
+
+
+def top_window(heat: np.ndarray, covered: np.ndarray, side: int) -> tuple[int, int]:
+    """Top-left corner of the highest-mean attribution window lying fully inside analysed crops."""
+    windows = _box_mean(heat, side)
+    windows[_box_mean(covered.astype(np.float32), side) < 1-1e-6] = -1
+    y, x = np.unravel_index(int(windows.argmax()), windows.shape)
+    return int(x), int(y)
+
+
+def native_attribution(detector: Detector, image: Image.Image, model=None) -> dict:
+    """Returned-class Grad-CAM for each native crop, stitched on the analysed canvas.
+
+    `model` may substitute another network with the same architecture (randomization checks).
+    """
+    model = model or detector.model
+    size = detector.image_size
+    canvas, _ = native_crops(image, size)
+    boxes = native_crop_boxes(canvas.width, canvas.height, size)
+    tensor = detector.tensor(image)
+    captured = []
+    handle = model.layer4.register_forward_hook(lambda module, inputs, output: captured.append(output))
+    try:
+        with torch.enable_grad():
+            logits = model(tensor).flatten()/detector.temperature
+            mean_logit = logits.mean()
+            ai_score = float(torch.sigmoid(mean_logit.detach()).item())
+            target_ai = ai_score >= detector.threshold
+            gradients = torch.autograd.grad(mean_logit if target_ai else -mean_logit, captured[0])[0]
+            weights = gradients.mean(dim=(2, 3), keepdim=True)
+            cams = (weights*captured[0]).sum(dim=1, keepdim=True).relu().detach()
+            cams = F.interpolate(cams, size=(size, size), mode="bilinear", align_corners=False)[:, 0].cpu().numpy()
+    finally:
+        handle.remove()
+    heat = np.zeros((canvas.height, canvas.width), dtype=np.float32)
+    count = np.zeros_like(heat)
+    for cam, (left, top, right, bottom) in zip(cams, boxes, strict=True):
+        heat[top:bottom, left:right] += cam
+        count[top:bottom, left:right] += 1
+    covered = count > 0
+    heat[covered] /= count[covered]
+    peak = float(heat.max())
+    heat = heat/peak if peak > 1e-12 else np.zeros_like(heat)
+    return {"canvas": canvas, "boxes": boxes, "heat": heat, "covered": covered, "peak": peak,
+            "ai_score": ai_score, "target_ai": target_ai}
+
+
+def _explain_multicrop(detector: Detector, image: Image.Image, start: float) -> dict:
+    """Grad-CAM for each native-resolution crop, stitched in image coordinates."""
+    size = detector.image_size
+    attribution = native_attribution(detector, image)
+    canvas, boxes, heat, covered, peak = (attribution[k] for k in ("canvas", "boxes", "heat", "covered", "peak"))
+    ai_score, target_ai = attribution["ai_score"], attribution["target_ai"]
+    side = max(1, size//3)
+    score_after = comparison_mean = None
+    x = y = 0
+    if peak > 1e-12:
+        x, y = top_window(heat, covered, side)
+        rl, rt = min(b[0] for b in boxes), min(b[1] for b in boxes)
+        rr, rb = max(b[2] for b in boxes), max(b[3] for b in boxes)
+        probes = []
+        for left, top in [(x, y), (rl, rt), (rr-side, rt), (rl, rb-side), (rr-side, rb-side)]:
+            probe = canvas.copy()
+            probe.paste(MEAN_PIXEL, (left, top, left+side, top+side))
+            probes.append(probe)
+        measured = detector.score_images(probes)
+        score_after, comparison_mean = measured[0], float(np.mean(measured[1:]))
+    display = image.copy()
+    display.thumbnail((768, 768))
+    mask = Image.fromarray((heat*255).astype(np.uint8)).resize(display.size, Image.Resampling.BILINEAR)
+    inside = np.asarray(Image.fromarray(covered.astype(np.uint8)*255).resize(
+        display.size, Image.Resampling.NEAREST)) > 127
+    mask_array = np.asarray(mask, dtype=np.float32)/255
+    original = np.array(display, dtype=np.float32)
+    original[~inside] *= .45
+    color = np.zeros_like(original)
+    color[:, :, 0] = 255*mask_array
+    color[:, :, 1] = 150*mask_array+60*(1-mask_array)
+    color[:, :, 2] = 70*(1-mask_array)
+    alpha = (.45*mask_array)[..., None]
+    overlay = Image.fromarray(np.uint8(np.clip(original*(1-alpha)+color*alpha, 0, 255)))
+    statements = [f"The verdict averages {len(boxes)} native-resolution crop(s); the overlay combines Grad-CAM attribution for each crop."]
+    if peak <= 1e-12:
+        statements.append("No positive Grad-CAM region was identified for this verdict.")
+    else:
+        delta = 100*(score_after-ai_score)
+        if abs(delta) < .1:
+            statements.append("Masking the highlighted patch changed the AI score by less than 0.1 percentage points; this diagnostic provides little evidence of a probability-level effect.")
+        else:
+            statements.append(f"Masking the highlighted patch changed the AI score by {delta:+.1f} percentage points ({100*ai_score:.1f}% to {100*score_after:.1f}%).")
+    statements.append("This analysis has not established a specific visible defect such as malformed text or inconsistent lighting.")
+    if not covered.all():
+        statements.append("Dimmed areas lie outside the analysed crops and did not influence the score.")
+    if min(image.size) < 64:
+        statements.append("The input is too small for detailed visual-cue claims.")
+    return {
+        "method": "Grad-CAM on ResNet-18 layer4 for each native-resolution crop, stitched; model-influence visualization",
+        "target_class": "ai_generated" if target_ai else "real",
+        "overlay_data_url": png_data_url(overlay),
+        "heatmap_data_url": png_data_url(mask),
+        "region_normalized": [x/canvas.width, y/canvas.height, (x+side)/canvas.width, (y+side)/canvas.height]
+                             if peak > 1e-12 else None,
+        "analysed_region_normalized": list(native_region(image.width, image.height, size)),
+        "crops_analysed": len(boxes),
+        "statements": statements,
+        "masking_diagnostic": {"ai_score_before": ai_score, "ai_score_after_top_patch": score_after,
+                               "ai_score_after_corner_patches_mean": comparison_mean,
+                               "mask_baseline": "ImageNet channel-mean pixels in the analysed image",
+                               "limitation": "Masking creates altered inputs; this is not causal proof or artifact ground truth."},
+        "semantic_artifact_verified": False,
+        "elapsed_ms": round((time.perf_counter()-start)*1000, 2),
     }
 

@@ -7,6 +7,7 @@ validation sources. External and reserved test data are never used.
 """
 
 import argparse
+import csv
 import json
 import sys
 from pathlib import Path
@@ -14,19 +15,54 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 import numpy as np
 import torch
+from PIL import Image, ImageOps
 from torch.nn import functional as F
 from torch.utils.data import DataLoader
 
+from signalscope.dataset import CifakeDataset
 from signalscope.inference import Detector
 from signalscope.metrics import binary_metrics, expected_calibration_error, select_threshold
 from signalscope.mixed_dataset import MixedImages
 from signalscope.network import preprocess_batch
-from signalscope.paths import root_path
+from signalscope.paths import ROOT, root_path
 
 DOMAINS = ("genimage", "cifake")
 
 
+def raw_logits(detector, split):
+    """Logits from original GenImage files and stored CIFAKE pixels via Detector.image_logits."""
+    with (ROOT / "data/manifests/genimage.csv").open(newline="", encoding="utf-8") as stream:
+        rows = sorted(
+            (r for r in csv.DictReader(stream) if r["split"] == split and not r["exclusion"]),
+            key=lambda r: int(r["cache_index"]),
+        )
+
+    def genimage(row):
+        with Image.open(ROOT / row["path"]) as image:
+            return ImageOps.exif_transpose(image).convert("RGB")
+
+    cifake = CifakeDataset(ROOT / "data/processed/cifake", split)
+    sources = {
+        "genimage": ([genimage for _ in rows], rows, [int(r["label"]) for r in rows]),
+        "cifake": (
+            [lambda i: Image.fromarray(np.array(cifake.images[i]))] * len(cifake.indices),
+            [int(i) for i in cifake.indices],
+            [int(cifake.labels[i]) for i in cifake.indices],
+        ),
+    }
+    collected = {}
+    for domain, (loaders, keys, labels) in sources.items():
+        logits = []
+        for start in range(0, len(keys), 32):
+            batch = [load(key) for load, key in zip(loaders[start : start + 32], keys[start : start + 32])]
+            logits.append(detector.image_logits(batch).float().cpu())
+        collected[domain] = (torch.cat(logits), torch.tensor(labels, dtype=torch.float32))
+    return collected
+
+
 def collect_logits(detector, split):
+    if detector.preprocessing == "native_multicrop_v1":
+        return raw_logits(detector, split)
     cache = detector.config.get("genimage_cache", "data/processed/genimage_subset")
     collected = {}
     for domain in DOMAINS:

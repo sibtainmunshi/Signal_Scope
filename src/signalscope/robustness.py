@@ -12,12 +12,27 @@ def matched_format(image, size=224, quality=90):
     Reduces file-format (JPEG real vs PNG generated) and aspect-ratio differences
     between classes. It weakens, but cannot remove, traces of earlier compression.
     """
+    image = _centre_square(image).resize((size, size), Image.Resampling.BICUBIC)
+    return _jpeg(image, quality)
+
+
+def matched_native(image, quality=90):
+    """Format-only control: centre square crop at native resolution, then JPEG, for every label.
+
+    No resizing, so crop-based detectors keep native pixels. Real crops can remain
+    larger than the 256 px generated images; this does not match scale.
+    """
+    return _jpeg(_centre_square(image), quality)
+
+
+def _centre_square(image):
     image = ImageOps.exif_transpose(image).convert("RGB")
     side = min(image.size)
     left, top = (image.width - side) // 2, (image.height - side) // 2
-    image = image.crop((left, top, left + side, top + side)).resize(
-        (size, size), Image.Resampling.BICUBIC
-    )
+    return image.crop((left, top, left + side, top + side))
+
+
+def _jpeg(image, quality):
     stream = io.BytesIO()
     image.save(stream, format="JPEG", quality=quality)
     stream.seek(0)

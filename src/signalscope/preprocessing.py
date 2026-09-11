@@ -21,3 +21,39 @@ def source_region(width, height, size):
     """Normalized (left, top, right, bottom) region of the original image the model sees."""
     resized, (left, top, right, bottom) = center_crop_box(width, height, size)
     return (left / resized[0], top / resized[1], right / resized[0], bottom / resized[1])
+
+
+def native_canvas_size(width, height, size):
+    """Image size after the upscale applied only when the short side is below `size`."""
+    if min(width, height) >= size:
+        return width, height
+    scale = size / min(width, height)
+    return max(size, round(width * scale)), max(size, round(height * scale))
+
+
+def native_crop_boxes(width, height, size):
+    """Up to five native-resolution boxes: the centre and the four quadrant centres."""
+    boxes = []
+    for fx, fy in ((0.5, 0.5), (0.25, 0.25), (0.75, 0.25), (0.25, 0.75), (0.75, 0.75)):
+        left = min(max(round(fx * width - size / 2), 0), width - size)
+        top = min(max(round(fy * height - size / 2), 0), height - size)
+        box = (left, top, left + size, top + size)
+        if box not in boxes:
+            boxes.append(box)
+    return boxes
+
+
+def native_crops(image, size):
+    """Crops at native resolution; only images smaller than `size` are upscaled (bilinear)."""
+    canvas = native_canvas_size(image.width, image.height, size)
+    if canvas != image.size:
+        image = image.resize(canvas, Image.Resampling.BILINEAR)
+    return image, [image.crop(box) for box in native_crop_boxes(*canvas, size)]
+
+
+def native_region(width, height, size):
+    """Normalized bounding region covered by the native crops."""
+    canvas = native_canvas_size(width, height, size)
+    boxes = native_crop_boxes(*canvas, size)
+    return (min(b[0] for b in boxes) / canvas[0], min(b[1] for b in boxes) / canvas[1],
+            max(b[2] for b in boxes) / canvas[0], max(b[3] for b in boxes) / canvas[1])

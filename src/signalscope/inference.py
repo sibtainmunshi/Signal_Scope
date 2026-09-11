@@ -14,7 +14,7 @@ from PIL import Image, ImageOps
 
 from .network import build_model, preprocess_batch
 from .paths import root_path
-from .preprocessing import center_crop_resize, source_region
+from .preprocessing import center_crop_resize, native_crops, native_region, source_region
 
 
 @dataclass
@@ -52,7 +52,8 @@ class Detector:
         self.model.to(self.device).eval()
         self.image_size = int(payload["image_size"])
         self.preprocessing = payload.get("preprocessing", "torch_bilinear_v1")
-        if self.preprocessing not in {"torch_bilinear_v1", "pil_bilinear_v1", "pil_center_crop_v1"}:
+        if self.preprocessing not in {"torch_bilinear_v1", "pil_bilinear_v1", "pil_center_crop_v1",
+                                      "native_multicrop_v1"}:
             raise ValueError("Unsupported checkpoint preprocessing version.")
         self.threshold = float(payload.get("threshold", .5))
         self.temperature = float(payload.get("temperature", 1.))
@@ -65,7 +66,12 @@ class Detector:
             self.checkpoint_hash = hashlib.file_digest(stream, "sha256").hexdigest()
 
     def tensor(self, image: Image.Image) -> torch.Tensor:
+        """Normalized model input: one row, or one row per crop for multi-crop preprocessing."""
         image = ImageOps.exif_transpose(image).convert("RGB")
+        if self.preprocessing == "native_multicrop_v1":
+            _, crops = native_crops(image, self.image_size)
+            batch = torch.stack([torch.from_numpy(np.array(crop)).permute(2, 0, 1) for crop in crops])
+            return preprocess_batch(batch.to(self.device), self.image_size)
         if self.preprocessing == "pil_bilinear_v1":
             image = image.resize((self.image_size, self.image_size), Image.Resampling.BILINEAR)
         elif self.preprocessing == "pil_center_crop_v1":
@@ -78,17 +84,30 @@ class Detector:
         """Normalized region of the EXIF-oriented image that the model actually analyses."""
         if self.preprocessing == "pil_center_crop_v1":
             return source_region(width, height, self.image_size)
+        if self.preprocessing == "native_multicrop_v1":
+            return native_region(width, height, self.image_size)
         return (0.0, 0.0, 1.0, 1.0)
 
     def score_tensor(self, tensor: torch.Tensor) -> torch.Tensor:
+        """Per-row scores; for multi-crop models use `score_images`."""
         return torch.sigmoid(self.model(tensor).flatten()/self.temperature)
+
+    def image_logits(self, images: list[Image.Image]) -> torch.Tensor:
+        """Uncalibrated logit per image; multi-crop logits are averaged."""
+        tensors = [self.tensor(image) for image in images]
+        with torch.inference_mode():
+            logits = self.model(torch.cat(tensors)).flatten()
+        return torch.stack([chunk.mean() for chunk in logits.split([len(t) for t in tensors])])
+
+    def score_images(self, images: list[Image.Image]) -> list[float]:
+        """AI-positive score per image after the checkpoint's temperature."""
+        return torch.sigmoid(self.image_logits(images)/self.temperature).cpu().tolist()
 
     def predict(self, image: Image.Image) -> Prediction:
         if image.width * image.height > 20_000_000:
             raise ValueError("Image exceeds the supported 20 megapixel limit.")
         start = time.perf_counter()
-        with torch.inference_mode():
-            score = float(self.score_tensor(self.tensor(image)).item())
+        score = self.score_images([image])[0]
         label = "ai_generated" if score >= self.threshold else "real"
         # Confidence is the score assigned to the returned class, not accuracy.
         confidence = score if label == "ai_generated" else 1-score
