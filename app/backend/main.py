@@ -33,7 +33,8 @@ MODEL_LOCK = Lock()
 @asynccontextmanager
 async def lifespan(application):
     torch.set_num_threads(8)
-    checkpoint = os.getenv("SIGNALSCOPE_CHECKPOINT", "model/checkpoints/cifake_resnet18_robust_v1/best.pt")
+    checkpoint = os.getenv("SIGNALSCOPE_CHECKPOINT") or json.loads(
+        (ROOT / "model/manifest.json").read_text(encoding="utf-8"))["path"]
     try:
         application.state.detector = Detector(checkpoint, os.getenv("SIGNALSCOPE_DEVICE", "auto"))
         application.state.load_error = None

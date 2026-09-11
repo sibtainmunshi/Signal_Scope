@@ -1,5 +1,12 @@
-"""Audit selected training images against protected data and create grouped development splits."""
+"""Audit selected training images against protected data and create grouped development splits.
 
+Without `--tag` this reproduces the audited BigGAN/SD1.5 subset. With `--tag` it audits
+an extension acquisition (`genimage_<tag>_acquired.jsonl`) and additionally excludes
+images that exactly or perceptually match the existing GenImage subset, because each
+generator's real folder can repeat the same ImageNet photographs.
+"""
+
+import argparse
 import csv
 import hashlib
 import io
@@ -28,13 +35,23 @@ def phash(image):
 
 
 def main():
-    acquired = ROOT / "data/manifests/genimage_acquired.jsonl"
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--tag", default="")
+    args = parser.parse_args()
+    prefix = f"genimage_{args.tag}" if args.tag else "genimage"
+    acquired = ROOT / f"data/manifests/{prefix}_acquired.jsonl"
     rows = [json.loads(line) for line in acquired.read_text(encoding="utf-8").splitlines()]
     with (ROOT / "data/manifests/cifake.csv").open(encoding="utf-8", newline="") as stream:
         cifake_hashes = {r["pixel_sha256"] for r in csv.DictReader(stream)}
     with (ROOT / "data/manifests/external.csv").open(encoding="utf-8", newline="") as stream:
         external = list(csv.DictReader(stream))
     protected_exact = cifake_hashes | {r["pixel_sha256"] for r in external}
+    base_exact, base_phash = set(), np.zeros(0, dtype=np.uint64)
+    if args.tag:
+        with (ROOT / "data/manifests/genimage.csv").open(encoding="utf-8", newline="") as stream:
+            base = list(csv.DictReader(stream))
+        base_exact = {r["pixel_sha256"] for r in base}
+        base_phash = np.array([int(r["phash"]) for r in base], dtype=np.uint64)
     protected_path = ROOT / "data/processed/external_phash.npy"
     if protected_path.exists():
         protected = np.load(protected_path)
@@ -59,6 +76,10 @@ def main():
             row["exclusion"] = "exact_overlap_with_protected_cifake_or_external"
         elif int(np.bitwise_count(protected ^ np.uint64(row["phash"])).min()) <= 4:
             row["exclusion"] = "possible_external_overlap_phash_distance_le_4"
+        elif row["pixel_sha256"] in base_exact:
+            row["exclusion"] = "exact_overlap_with_existing_genimage_subset"
+        elif len(base_phash) and int(np.bitwise_count(base_phash ^ np.uint64(row["phash"])).min()) <= 4:
+            row["exclusion"] = "possible_overlap_with_existing_genimage_subset_phash_le_4"
         if (i + 1) % 1000 == 0:
             print(f"Audited {i + 1}/{len(rows)} selected images", flush=True)
     # Union exact and near duplicates inside the selected set before splitting.
@@ -112,7 +133,7 @@ def main():
             seen_pixels.add(row["pixel_sha256"])
             row["split"] = "excluded" if row["exclusion"] else split
             row["duplicate_group"] = group_key
-    output = ROOT / "data/processed/genimage_subset"
+    output = ROOT / "data/processed" / (prefix if args.tag else "genimage_subset")
     output.mkdir(parents=True, exist_ok=True)
     kept = [r for r in rows if not r["exclusion"]]
     codes = {"train": 0, "val": 1, "calibration": 2}
@@ -131,14 +152,14 @@ def main():
     del cache
     np.save(output / "labels.npy", np.array([r["label"] for r in kept], dtype=np.uint8))
     np.save(output / "splits.npy", np.array([codes[r["split"]] for r in kept], dtype=np.uint8))
-    manifest = ROOT / "data/manifests/genimage.csv"
+    manifest = ROOT / f"data/manifests/{prefix}.csv"
     fields = sorted(set().union(*(r.keys() for r in rows)))
     with manifest.open("w", newline="", encoding="utf-8") as stream:
         writer = csv.DictWriter(stream, fieldnames=fields)
         writer.writeheader()
         writer.writerows(rows)
     summary = {
-        "dataset": "GenImage class-balanced training subset",
+        "dataset": "GenImage class-balanced training subset" + (f" extension: {args.tag}" if args.tag else ""),
         "acquired_count": len(rows),
         "retained_count": len(kept),
         "counts": dict(
@@ -148,13 +169,14 @@ def main():
         "duplicate_groups": sum(len(g) > 1 for g in groups.values()),
         "manifest_sha256": hashlib.sha256(manifest.read_bytes()).hexdigest(),
         "input_cache": "EXIF transpose, RGB, PIL bilinear resize to 160x160, uint8; inference must use identical preprocessing",
-        "protected_data": "All CIFAKE exact pixels plus all external-release exact and 64-bit DCT perceptual hashes; final labels/predictions are not used",
+        "protected_data": "All CIFAKE exact pixels plus all external-release exact and 64-bit DCT perceptual hashes; final labels/predictions are not used"
+        + ("; extension also excludes exact/perceptual matches to the existing GenImage subset" if args.tag else ""),
         "split_method": "80/10/10 deterministic hash on whole exact/perceptual duplicate groups",
         "near_duplicate_limit": "Conservative pHash Hamming <=4 heuristic; not exhaustive and may exclude false matches",
         "external_training_overlap_permitted": False,
     }
     (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
-    (ROOT / "data/manifests/genimage_summary.json").write_text(
+    (ROOT / f"data/manifests/{prefix}_summary.json").write_text(
         json.dumps(summary, indent=2) + "\n", encoding="utf-8"
     )
     print(json.dumps(summary, indent=2), flush=True)

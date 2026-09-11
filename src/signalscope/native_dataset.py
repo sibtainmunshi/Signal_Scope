@@ -22,6 +22,10 @@ STD_LUMA = np.array(
     dtype=float,
 )
 BIGGAN_SIZE = 128
+# Midjourney images are 1024 px; training copies are downscaled so their short side
+# matches the 512 px scale of the other generated images instead of offering a
+# "zoomed-in, high-resolution" cue that real ImageNet photos never show.
+MIDJOURNEY_SHORT_SIDE = 512
 
 
 def jpeg_quality(image):
@@ -49,6 +53,9 @@ def load_genimage(rows, training):
             image = ImageOps.exif_transpose(raw).convert("RGB")
         if training and row["source_archive"] == "BigGAN" and row["label"] == "0":
             image = center_crop_resize(image, BIGGAN_SIZE)
+        elif training and row["source_archive"] == "Midjourney" and min(image.size) > MIDJOURNEY_SHORT_SIDE:
+            scale = MIDJOURNEY_SHORT_SIDE / min(image.size)
+            image = image.resize((round(image.width * scale), round(image.height * scale)), Image.Resampling.LANCZOS)
         images.append(image)
     return images
 

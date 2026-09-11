@@ -141,7 +141,7 @@ def main():
     output.parent.mkdir(parents=True, exist_ok=True)
     torch.save(payload, output)
     (output.parent / "calibration.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
-    report = source.parents[2] / "report/runs" / version
+    report = ROOT / "report/runs" / version
     report.mkdir(parents=True, exist_ok=True)
     (report / "calibration.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({k: metadata[k] for k in ("temperature", "threshold", "per_domain_thresholds")}, indent=2))

@@ -237,6 +237,34 @@ Next, in order (one GPU job at a time):
    reserved GLIDE/DALLE (`evaluate_external.py --split reserved --final-test`, all protocols) once.
 5. One-page report, demo script/assets, fresh-clone CPU check, submission links.
 
+## Status update (12 September, later)
+
+- Robustness done for the calibrated native model (see PROGRESS). `evaluate.py` and
+  `benchmark_robustness.py` now use `Detector.score_images` (multi-crop safe); CIFAKE
+  evaluator smoke-tested on CPU with the native model (writes to `tmp/` via `--output`).
+- App/CLI/tests read the default checkpoint from `model/manifest.json`. A v0.2.0
+  manifest for the native calibrated model is prepared at `tmp/release/manifest_v0.2.0.json`
+  with asset `tmp/release/signalscope-resnet18-native-v1-calibrated.pt`
+  (44,782,411 bytes, SHA-256 eab7d9d8...b303). `gh` is not installed: the user must
+  create GitHub release v0.2.0 and upload that asset before the manifest is switched
+  and pushed (otherwise fresh-clone setup breaks). Do not push a manifest pointing
+  at a missing asset.
+- One-page report builder: `scripts/build_report.py [--model <version>]` renders
+  `report/model_report.html/.pdf` from saved reports via
+  `app/frontend/scripts/render_report.mjs` and fails if the PDF exceeds one page.
+  Final reserved rows show "pending" until evaluated. Rebuild after freeze.
+- Demo script: `docs/DEMO_SCRIPT.md`. Reviewed demo images (animals, no people) are
+  copied locally to `tmp/demo/selected/` (GenImage validation; not in training).
+- IN FLIGHT: data-diversity experiment. Downloading GenImage VQDM (2/class) and
+  Midjourney (1/class) train images (~1.8 GB; logs `tmp/logs/download_*.log`;
+  manifests `data/manifests/genimage_{vqdm,midjourney}_*`). ADM (guided-diffusion
+  family of the external dev set) and GLIDE (reserved) are deliberately excluded.
+  Next: `python scripts/prepare_genimage.py --tag vqdm` and `--tag midjourney`
+  (audits against protected data and the existing subset), then
+  `model/train_native.py --run mixed_resnet18_native_v2 --extra-manifests data/manifests/genimage_vqdm.csv data/manifests/genimage_midjourney.csv`,
+  evaluate with all three external protocols and bootstrap. Adopt only if the
+  matched external AUC clearly improves; otherwise keep native_v1.
+
 ## Known follow-up work
 
 - Fix any audit/training/evaluation failures; verify comparable fixed development metrics.

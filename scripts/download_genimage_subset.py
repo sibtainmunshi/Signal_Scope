@@ -127,7 +127,9 @@ def choose(rows, generator, per_class, class_map):
             continue
         if "/ai/" in name:
             label = 1
-            index = int(Path(name).name.split("_")[0])
+            fields = Path(name).stem.split("_")
+            # VQDM names are VQDM_1000_200_<setting>_<class>_vqdm_<n>; others start with <class>_.
+            index = int(fields[4] if fields[0] == "VQDM" else fields[0])
         elif "/nature/" in name:
             label = 0
             index = class_map[Path(name).name.split("_")[0]]
@@ -170,7 +172,12 @@ def main():
         default=0,
         help="Acquisition smoke test only; never use as representative benchmark",
     )
+    parser.add_argument(
+        "--tag", default="", help="Write genimage_<tag>_* manifests instead of the audited defaults"
+    )
+    parser.add_argument("--plan-only", action="store_true", help="Write the selection plan and exit")
     args = parser.parse_args()
+    prefix = f"genimage_{args.tag}" if args.tag else "genimage"
     if shutil.disk_usage(ROOT).free < 5 * 2**30:
         raise SystemExit("Need at least 5 GiB free for acquisition/cache buffer.")
     raw = ROOT / "data/raw/genimage_subset"
@@ -241,10 +248,12 @@ def main():
     plan_path = (
         ROOT
         / "data/manifests"
-        / ("genimage_acquisition_smoke.json" if args.limit else "genimage_acquisition.json")
+        / (f"{prefix}_acquisition_smoke.json" if args.limit else f"{prefix}_acquisition.json")
     )
     plan_path.write_text(json.dumps(plan, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(plan, indent=2), flush=True)
+    if args.plan_only:
+        return
 
     def acquire(row):
         key = hashlib.sha256((row["source_archive"] + ":" + row["name"]).encode()).hexdigest()
@@ -288,7 +297,7 @@ def main():
     path = (
         ROOT
         / "data/manifests"
-        / ("genimage_smoke.jsonl" if args.limit else "genimage_acquired.jsonl")
+        / (f"{prefix}_smoke.jsonl" if args.limit else f"{prefix}_acquired.jsonl")
     )
     path.write_text("".join(json.dumps(r) + "\n" for r in records), encoding="utf-8")
     plan["completed"] = len(records)

@@ -30,11 +30,12 @@ def collect_predictions(detector, dataset, batch_size=128):
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=0)
     with torch.inference_mode():
         for images, labels, indices in loader:
-            if detector.preprocessing != "torch_bilinear_v1":
-                inputs = torch.cat([detector.tensor(Image.fromarray(im.permute(1, 2, 0).numpy())) for im in images])
-            else:
+            if detector.preprocessing == "torch_bilinear_v1":
                 inputs = preprocess_batch(images.to(detector.device), detector.image_size)
-            scores = detector.score_tensor(inputs).cpu().numpy()
+                scores = detector.score_tensor(inputs).cpu().numpy()
+            else:
+                # PIL and multi-crop preprocessing go through the same per-image path as the app.
+                scores = np.array(detector.score_images([Image.fromarray(im.permute(1, 2, 0).numpy()) for im in images]))
             records.extend({"index": int(i), "label": int(y), "ai_score": float(s)}
                            for i, y, s in zip(indices, labels, scores, strict=True))
     return records

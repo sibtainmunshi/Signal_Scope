@@ -51,6 +51,8 @@ def main():
     parser.add_argument("--lr", type=float, default=0.0002)
     parser.add_argument("--final-jpeg-prob", type=float, default=0.5)
     parser.add_argument("--seed", type=int, default=2026)
+    parser.add_argument("--extra-manifests", nargs="*", default=[],
+                        help="Audited GenImage extension manifests (train rows added; val reported separately)")
     args = parser.parse_args()
     output = ROOT / "model/checkpoints" / args.run
     if output.exists():
@@ -62,8 +64,13 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     with (ROOT / "data/manifests/genimage.csv").open(newline="", encoding="utf-8") as stream:
         rows = [r for r in csv.DictReader(stream) if not r["exclusion"]]
-    train_rows = [r for r in rows if r["split"] == "train"]
+    extra_rows = []
+    for manifest in args.extra_manifests:
+        with (ROOT / manifest).open(newline="", encoding="utf-8") as stream:
+            extra_rows += [r for r in csv.DictReader(stream) if not r["exclusion"]]
+    train_rows = [r for r in rows + extra_rows if r["split"] == "train"]
     val_rows = [r for r in rows if r["split"] == "val"]
+    extra_val_rows = [r for r in extra_rows if r["split"] == "val"]
     qualities = []
     for r in train_rows:
         if r["label"] == "0":
@@ -90,6 +97,11 @@ def main():
             [int(cifake_val.labels[i]) for i in cifake_val.indices],
         ),
     }
+    if extra_val_rows:
+        # Reported for monitoring only; the selection objective stays comparable across runs.
+        validation["genimage_extension"] = (
+            load_genimage(extra_val_rows, training=False), [int(r["label"]) for r in extra_val_rows]
+        )
     loader = DataLoader(
         training, batch_size=args.batch_size, shuffle=True, num_workers=0,
         generator=torch.Generator().manual_seed(args.seed), pin_memory=device.type == "cuda",
@@ -117,6 +129,10 @@ def main():
             "dataset": "CIFAKE + GenImage train-only subset",
             "genimage": json.loads((ROOT / "data/manifests/genimage_summary.json").read_text()),
             "cifake": json.loads((ROOT / "data/manifests/cifake_summary.json").read_text()),
+            "genimage_extensions": {
+                manifest: json.loads((ROOT / manifest.replace(".csv", "_summary.json")).read_text())
+                for manifest in args.extra_manifests
+            },
             "real_training_jpeg_quality_percentiles": dict(
                 zip(("p5", "p50", "p95"), np.percentile(qualities, [5, 50, 95]).tolist())
             ),
@@ -149,7 +165,7 @@ def main():
             name: binary_metrics(labels, score(model, images, device, args.crop))
             for name, (images, labels) in validation.items()
         }
-        objective = float(np.mean([m["roc_auc"] for m in measured.values()]))
+        objective = float(np.mean([measured[name]["roc_auc"] for name in ("genimage", "cifake")]))
         entry = {
             "epoch": epoch + 1,
             "training_loss": loss_sum / count,

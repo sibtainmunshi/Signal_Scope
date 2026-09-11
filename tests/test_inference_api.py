@@ -1,5 +1,6 @@
 """Integration tests use our actual trained checkpoint, never mocked scores."""
 import io
+import json
 import os
 from pathlib import Path
 
@@ -7,7 +8,7 @@ import pytest
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-CHECKPOINT = ROOT / "model/checkpoints/cifake_resnet18_robust_v1/best.pt"
+CHECKPOINT = ROOT / json.loads((ROOT / "model/manifest.json").read_text(encoding="utf-8"))["path"]
 pytestmark = pytest.mark.skipif(not CHECKPOINT.exists(), reason="Train/download the baseline checkpoint first")
 
 
