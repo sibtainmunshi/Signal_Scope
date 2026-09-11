@@ -264,6 +264,15 @@ Next, in order (one GPU job at a time):
   `model/train_native.py --run mixed_resnet18_native_v2 --extra-manifests data/manifests/genimage_vqdm.csv data/manifests/genimage_midjourney.csv`,
   evaluate with all three external protocols and bootstrap. Adopt only if the
   matched external AUC clearly improves; otherwise keep native_v1.
+- RESULT: native+VQDM (`mixed_resnet18_native_vqdm_v1`) was WORSE (external 0.609 /
+  0.575 / 0.595) and is rejected. native+VQDM+Midjourney (`mixed_resnet18_native_v2`)
+  is queued by a background waiter (log `tmp/logs/mixed_resnet18_native_v2.log`, then
+  bootstrap and comparison logs `tmp/logs/*_final_candidates.log`). If that job was
+  interrupted, rerun the commands above. Apply the pre-declared rule in PROGRESS:
+  keep native_v1 unless matched AUC beats 0.653 by >0.02 with no worse real FPR.
+  If native_v2 is not adopted, the release asset in `tmp/release/` is final.
+- Draft final README for v0.2.0 (native_v1 numbers) is at `tmp/release/README_v0.2.0.md`;
+  copy it over README.md only when the v0.2.0 release asset is live.
 - Final evaluation is scripted: `python scripts/final_evaluation.py --freeze-only`
   (only AFTER the final model's manifest/release is live; writes
   `report/final/freeze.json` — commit and push it), then
