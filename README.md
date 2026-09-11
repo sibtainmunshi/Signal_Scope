@@ -124,7 +124,7 @@ directly from ZIP. Instructions and split protections are in the scripts.
 Frontend changes: run `npm ci` then `npm run build` inside `app/frontend` and
 commit the updated small `dist` directory. Development server: `npm run dev`.
 
-Verification: `python -m pytest -q -p no:cacheprovider` (8 tests currently pass).
+Verification: `python -m pytest -q -p no:cacheprovider` (16 tests currently pass).
 Actual-model integration tests require only the downloaded checkpoint. Synthetic
 fixtures check API/CLI consistency; they are never used as accuracy evidence. The headless desktop/mobile smoke script is
 `node app/frontend/scripts/smoke.mjs` with the local server and installed Chrome.

@@ -60,3 +60,15 @@ def select_threshold(labels, scores, max_fpr: float = .05) -> float:
     best = max(eligible, key=lambda i: (tpr[i], -fpr[i], candidates[i]))
     return float(candidates[best])
 
+
+def expected_calibration_error(labels, scores, bins: int = 15) -> float:
+    """Weighted mean |accuracy - confidence| over equal-width bins of the 0.5-argmax class."""
+    labels = np.asarray(labels, dtype=np.int64)
+    scores = np.asarray(scores, dtype=np.float64)
+    predictions = scores >= .5
+    confidence = np.where(predictions, scores, 1-scores)
+    correct = predictions == labels.astype(bool)
+    index = np.clip(np.digitize(confidence, np.linspace(.5, 1, bins+1)[1:-1]), 0, bins-1)
+    return float(sum(abs(correct[index == b].mean()-confidence[index == b].mean())*(index == b).mean()
+                     for b in range(bins) if (index == b).any()))
+

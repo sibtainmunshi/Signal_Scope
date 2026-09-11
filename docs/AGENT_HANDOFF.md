@@ -1,6 +1,6 @@
 # SignalScope agent handoff
 
-Snapshot: 2026-09-11T19:39:35.473683+00:00. Read actual files/reports and running-process state first;
+Snapshot: 12 September 2026, after mixed_resnet18_v2 evaluation (see git log). Read actual files/reports and running-process state first;
 newer evidence supersedes this note. This is a continuation of an approved build,
 not a request to redesign the project from scratch.
 
@@ -26,7 +26,7 @@ not a request to redesign the project from scratch.
 Actual local folder: `C:/Users/Sibtainhaidar/OneDrive/Desktop/signal_scope`.
 It was renamed from `New folder (2)`. Do not operate in the stale directory.
 Remote: https://github.com/sibtainmunshi/Signal_Scope.git ; branch `main`.
-Latest prior pushed commit is `ef4e6b5`; run `git status` / `git log` for updates.
+Run `git status` / `git log` for the latest pushed commit.
 Existing Git credential manager authentication worked; never print credentials.
 Preserve all uncommitted work and existing checkpoints. No destructive resets.
 Only one assistant should edit this working tree at a time. Before launching a
@@ -108,11 +108,11 @@ from BigGAN's full 1000 categories. Never renumber the subset classes.
 excluded, leaving **7,803 images: 6,239 train, 783 validation, 781 calibration**.
 The exact/perceptual checks, source/label counts and 160px PIL-bilinear cache are
 recorded in `data/manifests/genimage_summary.json` and `data/processed/genimage_subset`.
-No mixed-data model training has started at this snapshot. Do not redownload or
-rerun preparation unnecessarily. Check for newer jobs/reports before starting.
+Mixed-data training has now run (results in the section below). Do not redownload
+or rerun preparation unnecessarily. Check for newer jobs/reports before starting.
 The pHash<=4 check is conservative and not exhaustive; do not overstate it.
 
-Prepared next scripts (not yet validated by actual mixed-data runs at snapshot):
+Original planned commands (all ran successfully on 12 September):
 
 ```powershell
 .\.venv\Scripts\python.exe scripts/prepare_genimage.py
@@ -135,6 +135,45 @@ CNN while preserving the released checkpoint's default torch preprocessing.
 Current app remains on the old robust model until new results justify switching.
 If CLIP wins, its runtime/backbone, attribution and artifact download are NOT yet
 integrated; account for larger weights and CPU behavior before choosing it.
+
+## Mixed-data results and current decision (12 September)
+
+Data audit: GenImage real = non-square JPEG (quality ~96); generated = square PNG
+(BigGAN 128 px, SD1.5 512 px). The external release has the same real-JPEG vs
+generated-PNG split. `--protocol matched` (docs/EXTERNAL_EVALUATION.md) gives both
+labels an identical centre crop, 224 px resize and JPEG q90. Always report both
+protocols and real-image FPR.
+
+| Candidate | GenImage val AUC | CIFAKE val AUC | External mean AUC, as distributed | External mean AUC, matched |
+|---|---|---|---|---|
+| cifake_resnet18_robust_v1 (released) | - | 0.996 | 0.553 | 0.540 |
+| mixed_resnet18_v1 (160 px squash, JPEG always) | 0.945 | 0.995 | 0.627 | 0.574 |
+| mixed_clip_b32_v1 (frozen CLIP + our head) | 0.985 | 0.975 | 0.708 | 0.542 |
+| mixed_resnet18_v2 (centre crop, format-balanced) | 0.904 | 0.995 | 0.550 | 0.549 |
+
+`model/compare_candidates.py` regenerates `report/candidate_comparison.md` from
+saved reports. Format cues inflate as-distributed gains; once removed, resize-based
+160 px training transfers near chance. No candidate yet justifies replacing the
+release. Next planned experiment: native-resolution crops (no resize) with format
+balancing, judged by both protocols. Several candidates have now been compared on
+the same development data; state this selection count when reporting.
+
+v2 commands:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/prepare_genimage_v2.py
+.\.venv\Scripts\python.exe model/train_mixed.py --run mixed_resnet18_v2 --genimage-cache data/processed/genimage_subset_v2 --preprocessing pil_center_crop_v1 --final-jpeg-prob 0.5
+.\.venv\Scripts\python.exe model/evaluate_mixed.py --checkpoint model/checkpoints/mixed_resnet18_v2/best.pt
+.\.venv\Scripts\python.exe model/evaluate_external.py --checkpoint model/checkpoints/mixed_resnet18_v2/best.pt --protocol matched
+.\.venv\Scripts\python.exe model/compare_candidates.py
+```
+
+New tested code: `signalscope/preprocessing.py` (`pil_center_crop_v1`), Detector
+`input_region`, Grad-CAM overlay that dims unanalysed borders, and hash-checked,
+config-derived `/api/model` plus UI text. `model/calibrate_mixed.py` (domain-balanced
+temperature, strictest per-domain validation threshold at max FPR, ECE) is written
+and unit-tested but not yet run. The already running local app server predates
+these backend changes; restart it to see them. 16 tests pass.
 
 ## Known follow-up work
 

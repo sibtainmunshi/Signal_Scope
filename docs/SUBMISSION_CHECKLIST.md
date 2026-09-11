@@ -7,12 +7,12 @@ This file records acceptance evidence, not an estimated selection score.
 
 | Requirement | Current status | Evidence / remaining acceptance work |
 |---|---|---|
-| Real/AI label and continuous confidence; new image inference | Implemented, quality gap remains | App/CLI share trained ResNet-18 inference. CIFAKE validation 97.09%; external development AUC 0.5534 is inadequate. |
+| Real/AI label and continuous confidence; new image inference | Implemented, quality gap remains | App/CLI share trained ResNet-18 inference. CIFAKE validation 97.09%; external development AUC 0.5534 is inadequate. Three mixed-data candidates measured; best format-matched external AUC 0.574, so none yet justifies replacement. |
 | Own documented training with permitted pretrained backbone | Implemented | Baseline and robust 20k-image runs; configs/history under report/runs. Frozen CLIP head experiment also recorded. |
 | Honest train/validation/calibration/test separation | Implemented for acquired data | CIFAKE grouped pixel-hash splits; 378 training/test overlaps excluded. External final generator roles declared before predictions. |
-| Diverse higher-resolution training data | Acquired and audited; candidate training next | GenImage BigGAN/SD1.5 source-train subset: 7,808 downloaded, five protected overlaps excluded, 7,803 retained. Released model still uses CIFAKE only. External evaluation data remain evaluation-only. |
+| Diverse higher-resolution training data | Acquired, audited, used in three candidates | GenImage BigGAN/SD1.5 source-train subset: 7,808 downloaded, five protected overlaps excluded, 7,803 retained. Audit found real JPEG vs generated square PNG shortcut; v2 cache balances it. Released model still uses CIFAKE only. External evaluation data remain evaluation-only. |
 | Overall and unseen-generator AUC, macro-F1, confusion matrix, accuracy, FPR | Development metrics implemented; final evaluation pending | CIFAKE validation and guided/LDM external development recorded. Freeze model/threshold before CIFAKE test and reserved GLIDE/DALLE evaluation. Never claim organizer hidden results. |
-| Calibrated confidence and documented operating point | Pending final model selection | Calibration script exists but current release is uncalibrated at threshold 0.5. Fit calibration on its designated partition only. |
+| Calibrated confidence and documented operating point | Pending final model selection | Current release is uncalibrated at threshold 0.5. `model/calibrate_mixed.py` (domain-balanced temperature on calibration splits, strictest per-domain validation threshold at max FPR, ECE) is written and unit-tested but not yet run on a selected model. |
 | A: Faithful explanation and localization | Partial | Returned-class Grad-CAM and masking diagnostic work. Fixed 30?50-image audit, matched masking baselines, attribution sensitivity checks and human-readable explanation review remain. No unverified semantic defect claims. |
 | C: Robustness benchmark | Implemented for development model | Paired JPEG/resize/blur metrics and plots; rerun for final selected model. |
 | F: Usable interface | Implemented locally | Upload, actual CPU inference, overlay, stability, EXIF, JSON export; desktop/mobile browser checks passed. Current prerelease passed fresh-clone CPU setup and real upload checks; repeat for final release. |
@@ -30,17 +30,26 @@ This file records acceptance evidence, not an estimated selection score.
 
 ## Current model decision
 
-The frozen CLIP ViT-B/32 + our logistic head reached CIFAKE validation AUC
-0.9843 (93.78% accuracy) but external development mean AUC only 0.5372. It is
-not selected for the app. A 32px resolution probe reached mean external AUC
-0.5968, still insufficient. Preserve these negative results. The next step is
-independent diverse training data and a fixed external development comparison;
-reserved final generator data remain untouched.
+Keep the released detector for now. External development mean ROC-AUC, as
+distributed / format-matched (see `report/candidate_comparison.md`):
+
+| Candidate | As distributed | Format-matched |
+|---|---:|---:|
+| cifake_resnet18_robust_v1 (released) | 0.553 | 0.540 |
+| cifake_clip_b32_v1 | 0.537 | not run |
+| mixed_resnet18_v1 | 0.627 | 0.574 |
+| mixed_clip_b32_v1 | 0.708 | 0.542 |
+| mixed_resnet18_v2 (format-balanced) | 0.550 | 0.549 |
+
+As-distributed gains largely come from real-JPEG versus generated-PNG cues.
+With those cues removed, resize-based training transfers near chance. Preserve
+these negative results. The 32px probe (0.5968) remains a diagnostic only.
+Reserved final generator data and the CIFAKE test remain untouched.
 
 ## Next execution order
 
-1. Acquire/audit a bounded higher-resolution training subset from traceable sources.
-2. Compare training changes on the fixed development data; prioritize false positives and external AUC.
+1. Done: acquire/audit GenImage subset; three mixed candidates plus format-matched protocol measured.
+2. Next: native-resolution crop candidate (no resizing, format-balanced); compare on both external protocols and real-image FPR. Stop exploratory training by 14 September noon.
 3. Select the model, fit calibration/threshold on proper partitions, freeze, and evaluate reserved tests.
 4. Complete explanation audit and final robustness/defence evidence.
 5. Verify a clean clone, write the one-page report, record the demo, and check submission links.

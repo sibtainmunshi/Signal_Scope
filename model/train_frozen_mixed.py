@@ -2,8 +2,10 @@
 
 import csv
 import hashlib
+import io
 import json
 import sys
+import zipfile
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -18,6 +20,7 @@ from torch.utils.data import DataLoader, Dataset
 from signalscope.dataset import CifakeDataset
 from signalscope.metrics import binary_metrics
 from signalscope.paths import ROOT
+from signalscope.robustness import matched_format
 
 
 class Samples(Dataset):
@@ -49,6 +52,34 @@ class Samples(Dataset):
                 image = ImageOps.exif_transpose(raw).convert("RGB")
             label = int(row["label"])
         return self.preprocess(image), label
+
+
+def external_features(model, preprocess, device, rows, protocol):
+    """CLIP features for fixed external development images; evaluation only."""
+    name = "external_dev.npz" if protocol == "as_distributed" else f"external_dev_{protocol}.npz"
+    cache = ROOT / "data/processed/clip_b32" / name
+    paths = [r["path"] for r in rows]
+    if cache.exists():
+        saved = np.load(cache)
+        if saved["paths"].tolist() != paths:
+            raise ValueError("External feature cache identity mismatch")
+        return saved["features"]
+    vectors = []
+    with zipfile.ZipFile(ROOT / "data/downloads/universalfakedetect_diffusion.zip") as archive:
+        for start in range(0, len(rows), 64):
+            tensors = []
+            for row in rows[start : start + 64]:
+                with Image.open(io.BytesIO(archive.read(row["path"]))) as image:
+                    tensors.append(
+                        preprocess(matched_format(image) if protocol == "matched" else image)
+                    )
+            with torch.inference_mode():
+                vector = model.encode_image(torch.stack(tensors).to(device)).float()
+                vector = vector / vector.norm(dim=-1, keepdim=True).clamp_min(1e-12)
+            vectors.append(vector.cpu().numpy())
+    features = np.concatenate(vectors)
+    np.savez(cache, features=features, paths=np.array(paths))
+    return features
 
 
 def main():
@@ -138,6 +169,8 @@ def main():
     config["head_sha256"] = hashlib.sha256((output / "head.pt").read_bytes()).hexdigest()
     report = ROOT / "report/runs" / run
     report.mkdir(parents=True, exist_ok=True)
+    predictions = ROOT / "report/predictions"
+    predictions.mkdir(parents=True, exist_ok=True)
     (report / "config.json").write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
     (report / "selection.json").write_text(
         json.dumps(candidates, indent=2) + "\n", encoding="utf-8"
@@ -146,39 +179,52 @@ def main():
         destination = report / (domain + "_val")
         destination.mkdir(exist_ok=True)
         (destination / "metrics.json").write_text(
-            json.dumps(m | {"dataset": domain, "split": "val"}, indent=2) + "\n", encoding="utf-8"
+            json.dumps(m | {"dataset": domain, "split": "val", "model_version": run}, indent=2) + "\n",
+            encoding="utf-8",
         )
-    external = np.load(ROOT / "data/processed/clip_b32/external_dev.npz")
+        x, y = features[(domain, "val")]
+        with (predictions / f"{run}_{domain}_val.csv").open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.writer(stream)
+            writer.writerow(["position", "label", "ai_score"])
+            writer.writerows(zip(range(len(y)), y.tolist(), classifier.predict_proba(x)[:, 1].tolist()))
     with (ROOT / "data/manifests/external.csv").open(newline="", encoding="utf-8") as stream:
         rows = [r for r in csv.DictReader(stream) if r["role"] == "dev" and not r["exclusion"]]
-    if external["paths"].tolist() != [r["path"] for r in rows]:
-        raise ValueError("External feature cache identity mismatch")
-    scores = classifier.predict_proba(external["features"])[:, 1]
-    results = []
-    for generator, real in [("guided", "imagenet"), ("ldm_200", "laion")]:
-        indices = [i for i, r in enumerate(rows) if r["domain"] in {generator, real}]
-        m = binary_metrics([int(rows[i]["label"]) for i in indices], scores[indices], 0.5)
-        results.append({"generator": generator, "real_source": real, **m})
-        print(json.dumps(results[-1]), flush=True)
-    external_report = {
-        "split": "dev",
-        "evaluation_kind": "external_development",
-        "model_version": run,
-        "unique_images_evaluated": len(rows),
-        "macro_generator_roc_auc": float(np.mean([m["roc_auc"] for m in results])),
-        "per_generator": results,
-        "organizer_hidden_result": None,
-        "limitation": "No external gradient updates. LDM is related to the SD training family. Reserved GLIDE/DALLE are not evaluated. CLIP pretraining overlap is unknown.",
-    }
-    (report / "external_dev").mkdir(exist_ok=True)
-    (report / "external_dev/metrics.json").write_text(
-        json.dumps(external_report, indent=2) + "\n", encoding="utf-8"
-    )
-    print(
-        "Mixed frozen-feature external development AUC:",
-        external_report["macro_generator_roc_auc"],
-        flush=True,
-    )
+    for protocol in ("as_distributed", "matched"):
+        scores = classifier.predict_proba(external_features(model, preprocess, device, rows, protocol))[:, 1]
+        results = []
+        for generator, real in [("guided", "imagenet"), ("ldm_200", "laion")]:
+            indices = [i for i, r in enumerate(rows) if r["domain"] in {generator, real}]
+            m = binary_metrics([int(rows[i]["label"]) for i in indices], scores[indices], 0.5)
+            results.append({"generator": generator, "real_source": real, **m})
+            print(protocol, json.dumps(results[-1]), flush=True)
+        external_report = {
+            "split": "dev",
+            "evaluation_kind": "external_development",
+            "protocol": protocol,
+            "model_version": run,
+            "head_sha256": config["head_sha256"],
+            "unique_images_evaluated": len(rows),
+            "macro_generator_roc_auc": float(np.mean([m["roc_auc"] for m in results])),
+            "per_generator": results,
+            "organizer_hidden_result": None,
+            "limitation": "No external gradient updates. LDM is related to the SD training family. Reserved GLIDE/DALLE are not evaluated. CLIP pretraining overlap is unknown.",
+        }
+        folder = "external_dev" if protocol == "as_distributed" else "external_dev_" + protocol
+        (report / folder).mkdir(exist_ok=True)
+        (report / folder / "metrics.json").write_text(
+            json.dumps(external_report, indent=2) + "\n", encoding="utf-8"
+        )
+        with (predictions / f"{run}_{folder}.csv").open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.writer(stream)
+            writer.writerow(["path", "domain", "label", "ai_score"])
+            writer.writerows(
+                (r["path"], r["domain"], r["label"], float(s)) for r, s in zip(rows, scores, strict=True)
+            )
+        print(
+            f"Mixed frozen-feature external development AUC ({protocol}):",
+            external_report["macro_generator_roc_auc"],
+            flush=True,
+        )
 
 
 if __name__ == "__main__":

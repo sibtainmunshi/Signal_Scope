@@ -1,0 +1,30 @@
+{
+  "count": 783,
+  "real_count": 369,
+  "ai_count": 414,
+  "roc_auc": 0.9846039040100547,
+  "macro_f1": 0.941039156626506,
+  "accuracy": 0.9412515964240102,
+  "false_positive_rate": 0.06504065040650407,
+  "true_positive_rate": 0.9468599033816425,
+  "brier_score": 0.04634539446060993,
+  "threshold": 0.5,
+  "positive_class": "ai_generated",
+  "confusion_matrix": [
+    [
+      345,
+      24
+    ],
+    [
+      22,
+      392
+    ]
+  ],
+  "confusion_matrix_order": [
+    "real",
+    "ai_generated"
+  ],
+  "dataset": "genimage",
+  "split": "val",
+  "model_version": "mixed_clip_b32_v1"
+}

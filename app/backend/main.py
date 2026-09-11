@@ -57,25 +57,47 @@ def health():
             "message": "Local detector ready" if detector else "No trained checkpoint is available. Follow the README to train/download weights."}
 
 
+def measured(detector, *names):
+    """First saved report for exactly this checkpoint; reports for other hashes are ignored."""
+    for name in names:
+        path = ROOT / "report/runs" / detector.model_version / name / "metrics.json"
+        if path.exists():
+            report = json.loads(path.read_text(encoding="utf-8"))
+            if report.get("checkpoint_sha256") == detector.checkpoint_hash:
+                return report
+    return None
+
+
+def training_description(detector) -> dict:
+    summary = detector.config.get("data_summary") or {}
+    if "genimage" not in summary:
+        return {"dataset": "CIFAKE", "training_source": "CIFAKE · Stable Diffusion 1.4 + CIFAR-10",
+                "source_resolution": "32 × 32",
+                "transparency_note": "This initial model is trained on small CIFAKE images. External development checks show substantial domain-shift errors. Results should support review, not replace it."}
+    genimage_train = sum(n for key, n in summary["genimage"]["counts"].items() if key.startswith("train:"))
+    cifake_train = int(detector.config.get("cifake_limit", 0))
+    return {"dataset": summary.get("dataset", "CIFAKE + GenImage subset"),
+            "training_source": f"CIFAKE ({cifake_train:,}) + GenImage BigGAN/SD1.5 subset ({genimage_train:,})",
+            "source_resolution": "32 px CIFAKE; 128–512 px GenImage",
+            "transparency_note": "Trained on CIFAKE plus a GenImage BigGAN/SD1.5 subset. Checks on other generators still show substantial errors. Results should support review, not replace it."}
+
+
 @app.get("/api/model")
 def model_report():
     detector = getattr(app.state, "detector", None)
     if detector is None:
         return {"ready": False, "metrics": None}
-    report_path = ROOT / "report/runs" / detector.model_version / "val/metrics.json"
-    external_path = ROOT / "report/runs" / detector.model_version / "external_dev/metrics.json"
-    external = json.loads(external_path.read_text(encoding="utf-8")) if external_path.exists() else None
-    if external and external.get("checkpoint_sha256") != detector.checkpoint_hash:
-        external = None
-    metrics = json.loads(report_path.read_text()) if report_path.exists() else None
-    if metrics and metrics.get("checkpoint_sha256") != detector.checkpoint_hash:
-        metrics = None
+    validation = {"genimage": measured(detector, "genimage_val"), "cifake": measured(detector, "cifake_val", "val")}
+    external = measured(detector, "external_dev")
     return {"ready": True, "model_version": detector.model_version,
             "checkpoint_sha256": detector.checkpoint_hash, "architecture": "ResNet-18",
-            "image_size": detector.image_size, "dataset": "CIFAKE", "source_resolution": "32 × 32",
+            "image_size": detector.image_size, "preprocessing": detector.preprocessing,
+            **training_description(detector),
             "threshold": detector.threshold, "calibrated": detector.calibrated,
-            "metrics": metrics, "organizer_baseline": None, "organizer_hidden_result": None,
+            "metrics": validation["genimage"] or validation["cifake"], "validation": validation,
+            "organizer_baseline": None, "organizer_hidden_result": None,
             "external_development": external,
+            "external_development_matched": measured(detector, "external_dev_matched"),
             "unseen_generator_status": "External development measured; reserved final generators not evaluated" if external else "Not evaluated yet", "data_summary": detector.config.get("data_summary")}
 
 

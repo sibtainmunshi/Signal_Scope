@@ -30,7 +30,7 @@ def collect_predictions(detector, dataset, batch_size=128):
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=0)
     with torch.inference_mode():
         for images, labels, indices in loader:
-            if detector.preprocessing == "pil_bilinear_v1":
+            if detector.preprocessing != "torch_bilinear_v1":
                 inputs = torch.cat([detector.tensor(Image.fromarray(im.permute(1, 2, 0).numpy())) for im in images])
             else:
                 inputs = preprocess_batch(images.to(detector.device), detector.image_size)

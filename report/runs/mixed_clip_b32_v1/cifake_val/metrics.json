@@ -1,0 +1,30 @@
+{
+  "count": 4000,
+  "real_count": 2000,
+  "ai_count": 2000,
+  "roc_auc": 0.9749051249999999,
+  "macro_f1": 0.9164999164999166,
+  "accuracy": 0.9165,
+  "false_positive_rate": 0.0825,
+  "true_positive_rate": 0.9155,
+  "brier_score": 0.06377307671972472,
+  "threshold": 0.5,
+  "positive_class": "ai_generated",
+  "confusion_matrix": [
+    [
+      1835,
+      165
+    ],
+    [
+      169,
+      1831
+    ]
+  ],
+  "confusion_matrix_order": [
+    "real",
+    "ai_generated"
+  ],
+  "dataset": "cifake",
+  "split": "val",
+  "model_version": "mixed_clip_b32_v1"
+}

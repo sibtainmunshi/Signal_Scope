@@ -1,0 +1,71 @@
+{
+  "split": "dev",
+  "evaluation_kind": "external_development",
+  "protocol": "matched",
+  "model_version": "mixed_clip_b32_v1",
+  "head_sha256": "9b180754f846a360cf81ab15ab1c2cb9d84e8eec1e49f2529002feddfe9b94c7",
+  "unique_images_evaluated": 2000,
+  "macro_generator_roc_auc": 0.542464,
+  "per_generator": [
+    {
+      "generator": "guided",
+      "real_source": "imagenet",
+      "count": 1000,
+      "real_count": 500,
+      "ai_count": 500,
+      "roc_auc": 0.622844,
+      "macro_f1": 0.36955562085825877,
+      "accuracy": 0.513,
+      "false_positive_rate": 0.01,
+      "true_positive_rate": 0.036,
+      "brier_score": 0.45886109413021187,
+      "threshold": 0.5,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          495,
+          5
+        ],
+        [
+          482,
+          18
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    },
+    {
+      "generator": "ldm_200",
+      "real_source": "laion",
+      "count": 1000,
+      "real_count": 500,
+      "ai_count": 500,
+      "roc_auc": 0.462084,
+      "macro_f1": 0.377329005890131,
+      "accuracy": 0.482,
+      "false_positive_rate": 0.108,
+      "true_positive_rate": 0.072,
+      "brier_score": 0.466917031264858,
+      "threshold": 0.5,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          446,
+          54
+        ],
+        [
+          464,
+          36
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    }
+  ],
+  "organizer_hidden_result": null,
+  "limitation": "No external gradient updates. LDM is related to the SD training family. Reserved GLIDE/DALLE are not evaluated. CLIP pretraining overlap is unknown."
+}

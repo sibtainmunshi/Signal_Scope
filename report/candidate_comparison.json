@@ -1,0 +1,181 @@
+[
+  {
+    "run": "cifake_clip_b32_v1",
+    "checkpoint_hashes_consistent": true,
+    "cifake_val_auc": 0.9843439161966157,
+    "cifake_val_fpr": 0.0616,
+    "genimage_val_auc": null,
+    "genimage_val_fpr": null,
+    "genimage_per_source_auc": null,
+    "as_distributed": {
+      "mean_auc": 0.5371539999999999,
+      "guided_auc": 0.46121999999999996,
+      "ldm_200_auc": 0.6130879999999999,
+      "guided_real_fpr": 0.63,
+      "ldm_200_real_fpr": 0.47,
+      "guided_ai_tpr": 0.596,
+      "ldm_200_ai_tpr": 0.614
+    },
+    "matched": null
+  },
+  {
+    "run": "cifake_resnet18_robust_v1",
+    "checkpoint_hashes_consistent": true,
+    "cifake_val_auc": 0.9960941377921031,
+    "cifake_val_fpr": 0.04,
+    "genimage_val_auc": null,
+    "genimage_val_fpr": null,
+    "genimage_per_source_auc": null,
+    "as_distributed": {
+      "mean_auc": 0.553416,
+      "guided_auc": 0.36134200000000005,
+      "ldm_200_auc": 0.74549,
+      "guided_real_fpr": 0.922,
+      "ldm_200_real_fpr": 0.764,
+      "guided_ai_tpr": 0.84,
+      "ldm_200_ai_tpr": 0.978
+    },
+    "matched": {
+      "mean_auc": 0.5405,
+      "guided_auc": 0.335676,
+      "ldm_200_auc": 0.7453240000000001,
+      "guided_real_fpr": 0.93,
+      "ldm_200_real_fpr": 0.76,
+      "guided_ai_tpr": 0.83,
+      "ldm_200_ai_tpr": 0.978
+    }
+  },
+  {
+    "run": "cifake_resnet18_robust_v1_native32_probe",
+    "checkpoint_hashes_consistent": true,
+    "cifake_val_auc": null,
+    "cifake_val_fpr": null,
+    "genimage_val_auc": null,
+    "genimage_val_fpr": null,
+    "genimage_per_source_auc": null,
+    "as_distributed": {
+      "mean_auc": 0.5967819999999999,
+      "guided_auc": 0.46757999999999994,
+      "ldm_200_auc": 0.725984,
+      "guided_real_fpr": 0.258,
+      "ldm_200_real_fpr": 0.058,
+      "guided_ai_tpr": 0.21,
+      "ldm_200_ai_tpr": 0.272
+    },
+    "matched": null
+  },
+  {
+    "run": "cifake_resnet18_v1",
+    "checkpoint_hashes_consistent": true,
+    "cifake_val_auc": 0.9976734488315874,
+    "cifake_val_fpr": 0.0208,
+    "genimage_val_auc": null,
+    "genimage_val_fpr": null,
+    "genimage_per_source_auc": null,
+    "as_distributed": {
+      "mean_auc": 0.487801,
+      "guided_auc": 0.37432199999999993,
+      "ldm_200_auc": 0.60128,
+      "guided_real_fpr": 0.998,
+      "ldm_200_real_fpr": 0.982,
+      "guided_ai_tpr": 0.984,
+      "ldm_200_ai_tpr": 1.0
+    },
+    "matched": {
+      "mean_auc": 0.478823,
+      "guided_auc": 0.35680599999999996,
+      "ldm_200_auc": 0.60084,
+      "guided_real_fpr": 0.996,
+      "ldm_200_real_fpr": 0.982,
+      "guided_ai_tpr": 0.982,
+      "ldm_200_ai_tpr": 1.0
+    }
+  },
+  {
+    "run": "mixed_clip_b32_v1",
+    "checkpoint_hashes_consistent": true,
+    "cifake_val_auc": 0.9749051249999999,
+    "cifake_val_fpr": 0.0825,
+    "genimage_val_auc": 0.9846039040100547,
+    "genimage_val_fpr": 0.06504065040650407,
+    "genimage_per_source_auc": {},
+    "as_distributed": {
+      "mean_auc": 0.7078120000000001,
+      "guided_auc": 0.7476480000000001,
+      "ldm_200_auc": 0.667976,
+      "guided_real_fpr": 0.058,
+      "ldm_200_real_fpr": 0.262,
+      "guided_ai_tpr": 0.364,
+      "ldm_200_ai_tpr": 0.446
+    },
+    "matched": {
+      "mean_auc": 0.542464,
+      "guided_auc": 0.622844,
+      "ldm_200_auc": 0.462084,
+      "guided_real_fpr": 0.01,
+      "ldm_200_real_fpr": 0.108,
+      "guided_ai_tpr": 0.036,
+      "ldm_200_ai_tpr": 0.072
+    }
+  },
+  {
+    "run": "mixed_resnet18_v1",
+    "checkpoint_hashes_consistent": true,
+    "cifake_val_auc": 0.9953008863819501,
+    "cifake_val_fpr": 0.0304,
+    "genimage_val_auc": 0.9452790542398177,
+    "genimage_val_fpr": 0.0921409214092141,
+    "genimage_per_source_auc": {
+      "BigGAN": 0.9180984686478382,
+      "stable_diffusion_v_1_5": 0.966012633461904
+    },
+    "as_distributed": {
+      "mean_auc": 0.627386,
+      "guided_auc": 0.6517919999999999,
+      "ldm_200_auc": 0.60298,
+      "guided_real_fpr": 0.084,
+      "ldm_200_real_fpr": 0.124,
+      "guided_ai_tpr": 0.22,
+      "ldm_200_ai_tpr": 0.248
+    },
+    "matched": {
+      "mean_auc": 0.5736,
+      "guided_auc": 0.5408759999999999,
+      "ldm_200_auc": 0.6063240000000001,
+      "guided_real_fpr": 0.24,
+      "ldm_200_real_fpr": 0.14,
+      "guided_ai_tpr": 0.256,
+      "ldm_200_ai_tpr": 0.286
+    }
+  },
+  {
+    "run": "mixed_resnet18_v2",
+    "checkpoint_hashes_consistent": true,
+    "cifake_val_auc": 0.9949080580177277,
+    "cifake_val_fpr": 0.0326,
+    "genimage_val_auc": 0.9041278818585288,
+    "genimage_val_fpr": 0.18157181571815717,
+    "genimage_per_source_auc": {
+      "BigGAN": 0.8532556596121229,
+      "stable_diffusion_v_1_5": 0.9480686455363632
+    },
+    "as_distributed": {
+      "mean_auc": 0.5503119999999999,
+      "guided_auc": 0.5424559999999999,
+      "ldm_200_auc": 0.558168,
+      "guided_real_fpr": 0.168,
+      "ldm_200_real_fpr": 0.152,
+      "guided_ai_tpr": 0.206,
+      "ldm_200_ai_tpr": 0.226
+    },
+    "matched": {
+      "mean_auc": 0.548782,
+      "guided_auc": 0.5389200000000001,
+      "ldm_200_auc": 0.5586439999999999,
+      "guided_real_fpr": 0.204,
+      "ldm_200_real_fpr": 0.15,
+      "guided_ai_tpr": 0.228,
+      "ldm_200_ai_tpr": 0.238
+    }
+  }
+]

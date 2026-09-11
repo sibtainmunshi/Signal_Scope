@@ -14,6 +14,7 @@ from PIL import Image, ImageOps
 
 from .network import build_model, preprocess_batch
 from .paths import root_path
+from .preprocessing import center_crop_resize, source_region
 
 
 @dataclass
@@ -51,7 +52,7 @@ class Detector:
         self.model.to(self.device).eval()
         self.image_size = int(payload["image_size"])
         self.preprocessing = payload.get("preprocessing", "torch_bilinear_v1")
-        if self.preprocessing not in {"torch_bilinear_v1", "pil_bilinear_v1"}:
+        if self.preprocessing not in {"torch_bilinear_v1", "pil_bilinear_v1", "pil_center_crop_v1"}:
             raise ValueError("Unsupported checkpoint preprocessing version.")
         self.threshold = float(payload.get("threshold", .5))
         self.temperature = float(payload.get("temperature", 1.))
@@ -67,9 +68,17 @@ class Detector:
         image = ImageOps.exif_transpose(image).convert("RGB")
         if self.preprocessing == "pil_bilinear_v1":
             image = image.resize((self.image_size, self.image_size), Image.Resampling.BILINEAR)
+        elif self.preprocessing == "pil_center_crop_v1":
+            image = center_crop_resize(image, self.image_size)
         array = np.array(image)
         tensor = torch.from_numpy(array).permute(2, 0, 1).unsqueeze(0).to(self.device)
         return preprocess_batch(tensor, self.image_size)
+
+    def input_region(self, width: int, height: int) -> tuple[float, float, float, float]:
+        """Normalized region of the EXIF-oriented image that the model actually analyses."""
+        if self.preprocessing == "pil_center_crop_v1":
+            return source_region(width, height, self.image_size)
+        return (0.0, 0.0, 1.0, 1.0)
 
     def score_tensor(self, tensor: torch.Tensor) -> torch.Tensor:
         return torch.sigmoid(self.model(tensor).flatten()/self.temperature)
@@ -83,7 +92,10 @@ class Detector:
         label = "ai_generated" if score >= self.threshold else "real"
         # Confidence is the score assigned to the returned class, not accuracy.
         confidence = score if label == "ai_generated" else 1-score
-        limitations = ["Initial model trained on CIFAKE (32x32 source images).",
+        dataset = self.config.get("data_summary", {}).get("dataset", "CIFAKE")
+        trained_on = ("Initial model trained on CIFAKE (32x32 source images)." if dataset == "CIFAKE"
+                      else f"Trained on {dataset}; unseen generators and processing pipelines can still fail.")
+        limitations = [trained_on,
                        "External development checks show substantial domain-shift errors; broad unseen-generator reliability is not established.",
                        "A visual score does not verify the truth of a depicted event."]
         if not self.calibrated:

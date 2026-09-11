@@ -1,0 +1,17 @@
+{
+  "run": "mixed_clip_b32_v1",
+  "architecture": "frozen CLIP ViT-B/32 + our logistic-regression head",
+  "preprocessing": "Compose(\n    Resize(size=224, interpolation=bicubic, max_size=None, antialias=True)\n    CenterCrop(size=(224, 224))\n    <function _convert_image_to_rgb at 0x000001843553DEE0>\n    ToTensor()\n    Normalize(mean=(0.48145466, 0.4578275, 0.40821073), std=(0.26862954, 0.26130258, 0.27577711))\n)",
+  "embedding_l2_normalized": true,
+  "C": 10.0,
+  "threshold": 0.5,
+  "calibrated": false,
+  "created_utc": "2026-09-11T20:07:05.863931+00:00",
+  "train_count": 14239,
+  "source_class_weighting": "Equal total loss weight for each source-domain/label combination",
+  "model_selection": "Mean CIFAKE/GenImage validation AUC; external data evaluation-only",
+  "clip_code_commit": "d05afc436d78f1c48dc0dbf8e5980a9d471f35f6",
+  "genimage_manifest_sha256": "6cc079dccf326403e4507c039420874eba091cf984266bd2fd0e3b476a91e636",
+  "license_note": "GenImage-derived noncommercial research candidate; not integrated into released app",
+  "head_sha256": "9b180754f846a360cf81ab15ab1c2cb9d84e8eec1e49f2529002feddfe9b94c7"
+}

@@ -114,11 +114,23 @@ def explain_prediction(detector: Detector, image: Image.Image) -> dict:
             measured = detector.score_tensor(probes).cpu().numpy()
         score_after = float(measured[0])
         comparison_mean = float(np.mean(measured[1:]))
+    region = detector.input_region(image.width, image.height)
+    cropped = tuple(region) != (0.0, 0.0, 1.0, 1.0)
     display = image.copy()
     display.thumbnail((768,768))
-    mask = Image.fromarray((values*255).astype(np.uint8)).resize(display.size, Image.Resampling.BILINEAR)
+    left, top = round(region[0]*display.width), round(region[1]*display.height)
+    right, bottom = round(region[2]*display.width), round(region[3]*display.height)
+    heat = Image.fromarray((values*255).astype(np.uint8)).resize(
+        (max(1, right-left), max(1, bottom-top)), Image.Resampling.BILINEAR)
+    mask = Image.new("L", display.size, 0)
+    mask.paste(heat, (left, top))
     mask_array = np.asarray(mask, dtype=np.float32)/255
-    original = np.asarray(display, dtype=np.float32)
+    original = np.array(display, dtype=np.float32)
+    if cropped:
+        # Dim borders outside the analysed square so the overlay does not imply they were inspected.
+        inside = np.zeros(mask_array.shape, dtype=bool)
+        inside[top:bottom, left:right] = True
+        original[~inside] *= .45
     color = np.zeros_like(original)
     color[:,:,0] = 255*mask_array
     color[:,:,1] = 150*mask_array+60*(1-mask_array)
@@ -136,14 +148,20 @@ def explain_prediction(detector: Detector, image: Image.Image) -> dict:
         else:
             statements.append(f"Masking the highlighted patch changed the AI score by {delta:+.1f} percentage points ({100*ai_score:.1f}% to {100*score_after:.1f}%).")
     statements.append("This analysis has not established a specific visible defect such as malformed text or inconsistent lighting.")
+    if cropped:
+        statements.append("The detector analyses only the central square region; dimmed borders were not analysed.")
     if min(image.size) < 64:
         statements.append("The input is too small for detailed visual-cue claims.")
+    span_x, span_y = region[2]-region[0], region[3]-region[1]
     return {
         "method": "Grad-CAM on ResNet-18 layer4; model-influence visualization",
         "target_class": "ai_generated" if target_ai else "real",
         "overlay_data_url": png_data_url(overlay),
         "heatmap_data_url": png_data_url(mask),
-        "region_normalized": [x/width,y/height,(x+side)/width,(y+side)/height] if peak > 1e-12 else None,
+        "region_normalized": [region[0]+x/width*span_x, region[1]+y/height*span_y,
+                              region[0]+(x+side)/width*span_x, region[1]+(y+side)/height*span_y]
+                             if peak > 1e-12 else None,
+        "analysed_region_normalized": list(region),
         "statements": statements,
         "masking_diagnostic": {"ai_score_before": ai_score, "ai_score_after_top_patch": score_after,
                                "ai_score_after_corner_patches_mean": comparison_mean,

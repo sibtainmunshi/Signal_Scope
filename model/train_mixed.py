@@ -16,7 +16,7 @@ from train import evaluate
 
 from signalscope.mixed_dataset import MixedImages
 from signalscope.network import build_model, preprocess_batch
-from signalscope.paths import ROOT
+from signalscope.paths import ROOT, root_path
 
 
 def main():
@@ -26,6 +26,11 @@ def main():
     parser.add_argument("--cifake-limit", type=int, default=8000)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--lr", type=float, default=0.0002)
+    parser.add_argument("--genimage-cache", default="data/processed/genimage_subset")
+    parser.add_argument(
+        "--preprocessing", choices=["pil_bilinear_v1", "pil_center_crop_v1"], default="pil_bilinear_v1"
+    )
+    parser.add_argument("--final-jpeg-prob", type=float, default=1.0)
     args = parser.parse_args()
     output = ROOT / "model/checkpoints" / args.run
     if output.exists():
@@ -37,8 +42,14 @@ def main():
     np.random.seed(2026)
     torch.manual_seed(2026)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    training = MixedImages("train", args.cifake_limit, True)
-    gen_val = MixedImages("val", domain="genimage")
+    cache_summary = json.loads((root_path(args.genimage_cache) / "summary.json").read_text())
+    if cache_summary.get("preprocessing", "pil_bilinear_v1") != args.preprocessing:
+        raise ValueError("GenImage cache preprocessing does not match --preprocessing")
+    training = MixedImages(
+        "train", args.cifake_limit, True,
+        genimage_root=args.genimage_cache, final_jpeg_prob=args.final_jpeg_prob,
+    )
+    gen_val = MixedImages("val", domain="genimage", genimage_root=args.genimage_cache)
     cifake_val = MixedImages("val", cifake_limit=4000, domain="cifake")
     loader = DataLoader(
         training,
@@ -63,16 +74,18 @@ def main():
         "run": args.run,
         "architecture": "resnet18",
         "image_size": 160,
-        "preprocessing": "pil_bilinear_v1",
+        "preprocessing": args.preprocessing,
         "seed": 2026,
         "created_utc": datetime.now(UTC).isoformat(),
         "train_count": len(training),
         "validation_selection": "Mean ROC-AUC over GenImage subset val and fixed 4000-image CIFAKE val; external data never used for gradients",
-        "augmentations": "Symmetric flip, random down/upscale, mild blur, JPEG quality50-95 on every training image after resize",
+        "augmentations": "Symmetric flip, random down/upscale, mild blur, JPEG quality 50-95 after resize "
+        f"with probability {args.final_jpeg_prob:g}",
         "pretrained_source": "torchvision ResNet18 IMAGENET1K_V1",
         "data_summary": {
             "dataset": "CIFAKE + GenImage train-only subset",
             "genimage": json.loads((ROOT / "data/manifests/genimage_summary.json").read_text()),
+            "genimage_cache": cache_summary,
             "cifake": json.loads((ROOT / "data/manifests/cifake_summary.json").read_text()),
         },
     }
@@ -121,7 +134,7 @@ def main():
             "state_dict": {k: v.detach().cpu() for k, v in model.state_dict().items()},
             "architecture": "resnet18",
             "image_size": 160,
-            "preprocessing": "pil_bilinear_v1",
+            "preprocessing": args.preprocessing,
             "threshold": 0.5,
             "temperature": 1.0,
             "calibrated": False,
