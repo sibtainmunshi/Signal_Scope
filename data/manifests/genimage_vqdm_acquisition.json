@@ -1,0 +1,33 @@
+{
+  "sources": [
+    {
+      "repository": "jzousz/GenImage",
+      "revision": "71c983e6262684bc2c6b6af99582e8f568c259a5",
+      "generator": "VQDM",
+      "central_directory_sha256": "2080b78a78cf58ea2bc0a2badfb51444fd6e89d967e22b56d2ec1fb2b49dde52",
+      "counts": {
+        "train/ai": 162000,
+        "train/nature": 162000,
+        "val/ai": 6000,
+        "val/nature": 6000
+      }
+    }
+  ],
+  "selected": 3988,
+  "per_class_per_label_per_generator": 2,
+  "seed_key": "signalscope-genimage-2026",
+  "source_partition": "train only",
+  "excluded_person_categories": [
+    981,
+    982,
+    983
+  ],
+  "original_license": "CC BY-NC-SA 4.0 plus GenImage noncommercial terms",
+  "source_credit": "GenImage, Zhu et al., NeurIPS 2023. Accessed through explicitly identified third-party mirror.",
+  "scope_limit": "Category filtering is not exhaustive person/face detection. No identity analysis; demo images receive separate review.",
+  "expected_encoded_bytes": 447032241,
+  "external_benchmark_used_for_training": false,
+  "completed": 3988,
+  "downloaded_image_bytes": 447032241,
+  "manifest_sha256": "4fe8c3ef7cc223b5edc71872550efc1777232d325cad3cdd25ec8f548b67d4f3"
+}

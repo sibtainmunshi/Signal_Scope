@@ -1,0 +1,23 @@
+{
+  "dataset": "GenImage class-balanced training subset extension: vqdm",
+  "acquired_count": 3988,
+  "retained_count": 3986,
+  "counts": {
+    "val:0:VQDM": 230,
+    "calibration:0:VQDM": 210,
+    "train:0:VQDM": 1552,
+    "calibration:1:VQDM": 206,
+    "train:1:VQDM": 1577,
+    "val:1:VQDM": 211
+  },
+  "exclusions": {
+    "exact_overlap_with_protected_cifake_or_external": 2
+  },
+  "duplicate_groups": 0,
+  "manifest_sha256": "66bb0cba36b1e5d7b8892ac75e112127372ae2344b32f8a39e10590117f1b433",
+  "input_cache": "EXIF transpose, RGB, PIL bilinear resize to 160x160, uint8; inference must use identical preprocessing",
+  "protected_data": "All CIFAKE exact pixels plus all external-release exact and 64-bit DCT perceptual hashes; final labels/predictions are not used; extension also excludes exact/perceptual matches to the existing GenImage subset",
+  "split_method": "80/10/10 deterministic hash on whole exact/perceptual duplicate groups",
+  "near_duplicate_limit": "Conservative pHash Hamming <=4 heuristic; not exhaustive and may exclude false matches",
+  "external_training_overlap_permitted": false
+}
