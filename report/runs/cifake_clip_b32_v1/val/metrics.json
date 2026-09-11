@@ -1,0 +1,30 @@
+{
+  "count": 9964,
+  "real_count": 5000,
+  "ai_count": 4964,
+  "roc_auc": 0.9843439161966157,
+  "macro_f1": 0.9377749907695124,
+  "accuracy": 0.9377759935768768,
+  "false_positive_rate": 0.0616,
+  "true_positive_rate": 0.9371474617244158,
+  "brier_score": 0.047183578054259864,
+  "threshold": 0.5,
+  "positive_class": "ai_generated",
+  "confusion_matrix": [
+    [
+      4692,
+      308
+    ],
+    [
+      312,
+      4652
+    ]
+  ],
+  "confusion_matrix_order": [
+    "real",
+    "ai_generated"
+  ],
+  "dataset": "CIFAKE",
+  "split": "val",
+  "model_version": "cifake_clip_b32_v1"
+}

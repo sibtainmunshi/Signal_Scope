@@ -1,0 +1,18 @@
+{
+  "run": "cifake_clip_b32_v1",
+  "architecture": "frozen CLIP ViT-B/32 + our logistic-regression head",
+  "backbone_source": "https://github.com/openai/CLIP",
+  "clip_code_commit": "d05afc436d78f1c48dc0dbf8e5980a9d471f35f6",
+  "preprocessing": "Compose(\n    Resize(size=224, interpolation=bicubic, max_size=None, antialias=True)\n    CenterCrop(size=(224, 224))\n    <function _convert_image_to_rgb at 0x00000228CA711EE0>\n    ToTensor()\n    Normalize(mean=(0.48145466, 0.4578275, 0.40821073), std=(0.26862954, 0.26130258, 0.27577711))\n)",
+  "embedding_l2_normalized": true,
+  "C": 10.0,
+  "train_count": 20000,
+  "validation_count": 9964,
+  "seed": 2026,
+  "head_selection": "highest CIFAKE validation ROC-AUC among C=0.1,1,10",
+  "training_data": "CIFAKE grouped training partition only; no external labels used for fitting",
+  "created_utc": "2026-09-11T18:38:40.921060+00:00",
+  "threshold": 0.5,
+  "calibrated": false,
+  "head_sha256": "10e9a9960bb5c71615437ea16a9273cded84cd07f3668ab1981628b94a04aecf"
+}

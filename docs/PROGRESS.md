@@ -14,3 +14,11 @@
 - Initial commit pushed to the user's public repository. Working-app release packaging underway.
 
 Next: test the preprocessing mismatch, run the frozen-feature candidate, and address external performance. Final test data remain unscored. Calibration, explanation audit, final report/video and fresh-clone verification are outstanding.
+
+## 12 September 2026
+
+- Verified public v0.1.0 prerelease asset is uploaded (44,778,635 bytes).
+- Resumed after the prior automatic approval usage-limit interruption.
+- Frozen CLIP ViT-B/32 experiment completed: 93.78% CIFAKE validation accuracy, external development mean AUC 0.5372. Not selected.
+- Added requirement-by-requirement submission checklist, including explicit incomplete explanation audit, diverse training data, final evaluation, report/video and clean-clone verification.
+- Next model step: independent diverse higher-resolution training data, keeping the external benchmark evaluation-only.

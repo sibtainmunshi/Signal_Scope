@@ -1,0 +1,6 @@
+# Optional frozen-feature experiment, separate from evaluator runtime.
+ftfy==6.3.1
+regex==2026.9.10
+tqdm==4.70.1
+git+https://github.com/openai/CLIP.git@d05afc436d78f1c48dc0dbf8e5980a9d471f35f6
+-e .[train]

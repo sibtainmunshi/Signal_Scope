@@ -1,0 +1,70 @@
+{
+  "source": "UniversalFakeDetect CVPR 2023 diffusion release",
+  "split": "dev",
+  "evaluation_kind": "external_development",
+  "model_version": "cifake_clip_b32_v1",
+  "unique_images_evaluated": 2000,
+  "macro_generator_roc_auc": 0.5371539999999999,
+  "per_generator": [
+    {
+      "generator": "guided",
+      "real_source": "imagenet",
+      "count": 1000,
+      "real_count": 500,
+      "ai_count": 500,
+      "roc_auc": 0.46121999999999996,
+      "macro_f1": 0.47631304122338136,
+      "accuracy": 0.483,
+      "false_positive_rate": 0.63,
+      "true_positive_rate": 0.596,
+      "brier_score": 0.43594384270645375,
+      "threshold": 0.5,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          185,
+          315
+        ],
+        [
+          202,
+          298
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    },
+    {
+      "generator": "ldm_200",
+      "real_source": "laion",
+      "count": 1000,
+      "real_count": 500,
+      "ai_count": 500,
+      "roc_auc": 0.6130879999999999,
+      "macro_f1": 0.571243673840655,
+      "accuracy": 0.572,
+      "false_positive_rate": 0.47,
+      "true_positive_rate": 0.614,
+      "brier_score": 0.33880911633360167,
+      "threshold": 0.5,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          265,
+          235
+        ],
+        [
+          193,
+          307
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    }
+  ],
+  "organizer_hidden_result": null,
+  "limitation": "External development is not a blind final test; CLIP pretraining overlap is unknown. Experimental head is not integrated into the released app."
+}
