@@ -1,0 +1,21 @@
+{
+  "dataset": "GenImage class-balanced training subset extension: midjourney",
+  "acquired_count": 1994,
+  "retained_count": 1994,
+  "counts": {
+    "train:0:Midjourney": 804,
+    "calibration:0:Midjourney": 99,
+    "val:0:Midjourney": 94,
+    "train:1:Midjourney": 775,
+    "calibration:1:Midjourney": 110,
+    "val:1:Midjourney": 112
+  },
+  "exclusions": {},
+  "duplicate_groups": 1,
+  "manifest_sha256": "3414cfc2c36c7433f893670d3e747a103a0b9305cd8903f014283ccb44118d4d",
+  "input_cache": "EXIF transpose, RGB, PIL bilinear resize to 160x160, uint8; inference must use identical preprocessing",
+  "protected_data": "All CIFAKE exact pixels plus all external-release exact and 64-bit DCT perceptual hashes; final labels/predictions are not used; extension also excludes exact/perceptual matches to the existing GenImage subset",
+  "split_method": "80/10/10 deterministic hash on whole exact/perceptual duplicate groups",
+  "near_duplicate_limit": "Conservative pHash Hamming <=4 heuristic; not exhaustive and may exclude false matches",
+  "external_training_overlap_permitted": false
+}
