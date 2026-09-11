@@ -30,8 +30,10 @@ This file records acceptance evidence, not an estimated selection score.
 
 ## Current model decision
 
-Leading candidate: `mixed_resnet18_native_v1` (native-resolution crops,
-format-balanced). It is not yet integrated as the app default or released.
+Selected model (decided 12 September by the pre-declared rule):
+`mixed_resnet18_native_v1_calibrated` (native-resolution crops, format-balanced,
+threshold 0.455). Release v0.2.0 asset upload by the user is pending; the
+manifest switch is pushed only after the asset is live.
 External development mean ROC-AUC, as distributed / format-matched (see
 `report/candidate_comparison.md` and `report/external_bootstrap.md`):
 
@@ -43,7 +45,9 @@ External development mean ROC-AUC, as distributed / format-matched (see
 | mixed_clip_b32_v1 | 0.708 | 0.542 |
 | mixed_resnet18_v2 (format-balanced) | 0.550 | 0.549 |
 | **mixed_resnet18_native_v1** | **0.647** | **0.653** |
-| native seed-2027 replicate | 0.670 | see comparison table |
+| native seed-2027 replicate | 0.670 | 0.666 |
+| native + VQDM (rejected) | 0.609 | 0.575 |
+| native + VQDM + Midjourney (rejected) | 0.659 | 0.639 |
 
 The native candidate's gain over the release is +0.113 [0.083, 0.142] matched
 (paired bootstrap). Absolute AUC ~0.65 is still modest; say so plainly.

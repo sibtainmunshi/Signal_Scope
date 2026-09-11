@@ -271,6 +271,12 @@ Next, in order (one GPU job at a time):
   interrupted, rerun the commands above. Apply the pre-declared rule in PROGRESS:
   keep native_v1 unless matched AUC beats 0.653 by >0.02 with no worse real FPR.
   If native_v2 is not adopted, the release asset in `tmp/release/` is final.
+- FINAL MODEL DECIDED: native_v2 (VQDM+Midjourney) also failed the rule (matched
+  0.639; LDM real FPR 38-45%). `mixed_resnet18_native_v1_calibrated` is final (v0.2.0).
+  No more exploratory training. Remaining order: freeze + final evaluation with the
+  manifest switched LOCALLY (commit only report/final/freeze.json before scoring),
+  user uploads the release asset, then push manifest + README, rebuild the report,
+  fresh-clone CPU check, demo recording.
 - Draft final README for v0.2.0 (native_v1 numbers) is at `tmp/release/README_v0.2.0.md`;
   copy it over README.md only when the v0.2.0 release asset is live.
 - Final evaluation is scripted: `python scripts/final_evaluation.py --freeze-only`
