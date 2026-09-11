@@ -264,6 +264,12 @@ Next, in order (one GPU job at a time):
   `model/train_native.py --run mixed_resnet18_native_v2 --extra-manifests data/manifests/genimage_vqdm.csv data/manifests/genimage_midjourney.csv`,
   evaluate with all three external protocols and bootstrap. Adopt only if the
   matched external AUC clearly improves; otherwise keep native_v1.
+- Final evaluation is scripted: `python scripts/final_evaluation.py --freeze-only`
+  (only AFTER the final model's manifest/release is live; writes
+  `report/final/freeze.json` — commit and push it), then
+  `python scripts/final_evaluation.py --run` (CIFAKE test + reserved GLIDE/DALLE, all
+  protocols, once; refuses another checkpoint). Do NOT run it against the old
+  v0.1.0 manifest. Then `python scripts/build_report.py` for the final PDF.
 
 ## Known follow-up work
 
