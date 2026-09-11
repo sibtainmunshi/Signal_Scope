@@ -1,0 +1,90 @@
+{
+  "count": 783,
+  "real_count": 369,
+  "ai_count": 414,
+  "roc_auc": 0.9362358116334786,
+  "macro_f1": 0.8615701938187532,
+  "accuracy": 0.8620689655172413,
+  "false_positive_rate": 0.14905149051490515,
+  "true_positive_rate": 0.8719806763285024,
+  "brier_score": 0.10143919464922406,
+  "threshold": 0.5,
+  "positive_class": "ai_generated",
+  "confusion_matrix": [
+    [
+      314,
+      55
+    ],
+    [
+      53,
+      361
+    ]
+  ],
+  "confusion_matrix_order": [
+    "real",
+    "ai_generated"
+  ],
+  "dataset": "genimage",
+  "split": "val",
+  "checkpoint_sha256": "4051a199defd8a77e3f4783b6d19bec98974925b9b7f23f3e90ed9df3e17424b",
+  "model_version": "mixed_resnet18_native_vqdm_v1",
+  "calibrated": false,
+  "preprocessing": "native_multicrop_v1",
+  "evaluation_kind": "self_evaluated_public_development",
+  "per_source": {
+    "BigGAN": {
+      "count": 404,
+      "real_count": 191,
+      "ai_count": 213,
+      "roc_auc": 0.9169186146547699,
+      "macro_f1": 0.8414870398979867,
+      "accuracy": 0.8415841584158416,
+      "false_positive_rate": 0.13612565445026178,
+      "true_positive_rate": 0.8215962441314554,
+      "brier_score": 0.1170756609980103,
+      "threshold": 0.5,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          165,
+          26
+        ],
+        [
+          38,
+          175
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    },
+    "stable_diffusion_v_1_5": {
+      "count": 379,
+      "real_count": 178,
+      "ai_count": 201,
+      "roc_auc": 0.9596679523729666,
+      "macro_f1": 0.8827878992352677,
+      "accuracy": 0.8839050131926122,
+      "false_positive_rate": 0.16292134831460675,
+      "true_positive_rate": 0.9253731343283582,
+      "brier_score": 0.084771299121758,
+      "threshold": 0.5,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          149,
+          29
+        ],
+        [
+          15,
+          186
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    }
+  }
+}
