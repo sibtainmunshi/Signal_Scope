@@ -50,6 +50,9 @@ class Detector:
         self.model.load_state_dict(payload["state_dict"], strict=True)
         self.model.to(self.device).eval()
         self.image_size = int(payload["image_size"])
+        self.preprocessing = payload.get("preprocessing", "torch_bilinear_v1")
+        if self.preprocessing not in {"torch_bilinear_v1", "pil_bilinear_v1"}:
+            raise ValueError("Unsupported checkpoint preprocessing version.")
         self.threshold = float(payload.get("threshold", .5))
         self.temperature = float(payload.get("temperature", 1.))
         if self.temperature <= 0 or not 0 <= self.threshold <= 1:
@@ -62,6 +65,8 @@ class Detector:
 
     def tensor(self, image: Image.Image) -> torch.Tensor:
         image = ImageOps.exif_transpose(image).convert("RGB")
+        if self.preprocessing == "pil_bilinear_v1":
+            image = image.resize((self.image_size, self.image_size), Image.Resampling.BILINEAR)
         array = np.array(image)
         tensor = torch.from_numpy(array).permute(2, 0, 1).unsqueeze(0).to(self.device)
         return preprocess_batch(tensor, self.image_size)

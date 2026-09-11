@@ -23,3 +23,5 @@ node_modules/
 
 pytest-cache-files-*/
 *.tsbuildinfo
+
+/data/manifests/*.jsonl

@@ -29,8 +29,10 @@ needed to use the app. First setup requires internet; inference then runs locall
 
 **Download size:** repository code/UI is small and weights are ~44.8 MB. A fresh
 computer also downloads several hundred MB of Python/CPU dependencies. Our local
-training data and CUDA environment are not evaluator downloads. Installation time
-depends on connection speed; a sub-ten-minute cold setup is not yet independently measured.
+training data and CUDA environment are not evaluator downloads. A fresh public clone with a separate CPU-only environment completed setup in
+**257.2 seconds** on our Windows laptop, including verified model download. Actual
+upload, explanation, stability and prebuilt-UI checks passed. This is one measured
+run, not a setup-time guarantee; see [reproduction record](report/reproducibility/v0.1.0_windows_cpu.json).
 
 For an already prepared project environment: `python scripts/setup.py --skip-install`.
 
@@ -131,7 +133,8 @@ fixtures check API/CLI consistency; they are never used as accuracy evidence. Th
 
 Improve external generalization; select and calibrate the final detector; run
 reserved evaluations; complete the explanation audit, one-page report, 3?5 minute
-demo video, and clean-clone reproduction. This development release is not yet the
+demo video, and repeat clean-clone reproduction for the final release. The current development
+release has passed a separate-environment CPU setup check, but is not yet the
 submission-ready package.
 
 ## Originality and acknowledgements

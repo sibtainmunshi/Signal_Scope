@@ -1,0 +1,24 @@
+{
+  "source": "fresh public Git clone",
+  "release": "v0.1.0",
+  "elapsed_seconds": 257.2,
+  "setup_exit_code": 0,
+  "shared_training_environment": false,
+  "training_data_downloaded": false,
+  "checkout_commit": "ef4e6b55da1e705444201546d1a29d45d53e19b0",
+  "health": {
+    "ready": true,
+    "version": "0.1.0",
+    "device": "cpu",
+    "model_version": "cifake_resnet18_robust_v1",
+    "message": "Local detector ready"
+  },
+  "checkpoint_sha256": "fb4d5420f3c49aaa6e651e735ba03d78d9151480819a6f744bc65f0319812127",
+  "api_upload": true,
+  "explanation": true,
+  "robustness_variants": 6,
+  "prebuilt_frontend_served": true,
+  "fixture": "Generated geometric image; used for transport/inference smoke only, not accuracy",
+  "test_inference_ms": 12.48,
+  "limitation": "Same physical Windows laptop, independent virtual environment; cold setup duration depends on network and hardware."
+}

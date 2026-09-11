@@ -10,6 +10,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 import matplotlib
+from PIL import Image
 
 from signalscope.dataset import CifakeDataset
 from signalscope.inference import Detector
@@ -29,7 +30,10 @@ def collect_predictions(detector, dataset, batch_size=128):
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=0)
     with torch.inference_mode():
         for images, labels, indices in loader:
-            inputs = preprocess_batch(images.to(detector.device), detector.image_size)
+            if detector.preprocessing == "pil_bilinear_v1":
+                inputs = torch.cat([detector.tensor(Image.fromarray(im.permute(1, 2, 0).numpy())) for im in images])
+            else:
+                inputs = preprocess_batch(images.to(detector.device), detector.image_size)
             scores = detector.score_tensor(inputs).cpu().numpy()
             records.extend({"index": int(i), "label": int(y), "ai_score": float(s)}
                            for i, y, s in zip(indices, labels, scores, strict=True))
@@ -80,7 +84,7 @@ def main():
                 color="white" if value > cm.max()/2 else "#142334", fontsize=16)
     ax.set(xticks=[0,1], yticks=[0,1], xticklabels=["Real", "AI-generated"],
            yticklabels=["Real", "AI-generated"], xlabel="Predicted", ylabel="Actual",
-           title=f"CIFAKE {args.split} Â· threshold {detector.threshold:.3f}")
+           title=f"CIFAKE {args.split} Ã‚Â· threshold {detector.threshold:.3f}")
     fig.savefig(output / "confusion_matrix.png", dpi=170)
     plt.close(fig)
     print(json.dumps(report, indent=2), flush=True)
