@@ -55,6 +55,28 @@ hash comparison (distance <=4). Selected-set duplicate groups are split together
 80/10/10 into train/validation/calibration. The perceptual check is a heuristic,
 not exhaustive proof of non-overlap; false matches may be excluded conservatively.
 
+### Generator-diversity extension (12 September 2026)
+
+Same pinned mirror, revision and license terms; original train folders only.
+`scripts/download_genimage_subset.py --tag vqdm --generators VQDM --per-class 2`
+and `--tag midjourney --generators Midjourney --per-class 1` write separate
+`data/manifests/genimage_<tag>_*` files, so the audited base subset is untouched.
+VQDM file names are `VQDM_1000_200_<setting>_<class>_vqdm_<n>`; the class field is
+parsed explicitly. Person-centred classes 981-983 remain excluded.
+
+Deliberately not used: ADM, because the external development "guided" domain is
+ADM guided diffusion; GLIDE, because it is reserved for final evaluation; SD1.4
+and Wukong, because they add little beyond the Stable Diffusion family.
+
+`scripts/prepare_genimage.py --tag <tag>` repeats the protected-data audit and also
+excludes exact or pHash<=4 matches to the existing GenImage subset (each
+generator's real folder can repeat ImageNet photos). VQDM: 3,988 acquired
+(447,032,241 bytes), 2 protected exact overlaps excluded, 3,986 retained
+(3,129 train, 441 validation, 416 calibration). Midjourney counts are in
+`data/manifests/genimage_midjourney_summary.json`. For training only, Midjourney's
+1024 px images are downscaled (Lanczos) to a 512 px short side, matching the scale
+of the other generated images rather than offering a resolution cue.
+
 GenImage/BigGAN and SD1.5 remain distinct from the reserved GLIDE/DALLE generators.
 External benchmark images remain evaluation-only. LDM development is related
 to Stable Diffusion's model family; it must not be described as a wholly unrelated
