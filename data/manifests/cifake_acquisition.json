@@ -1,0 +1,13 @@
+{
+  "dataset": "CIFAKE",
+  "source_url": "https://www.kaggle.com/datasets/birdy654/cifake-real-and-ai-generated-synthetic-images",
+  "acquired_utc": "2026-09-11T09:59:45.139464+00:00",
+  "archive_sha256": "1839206c1462371f5c885eda1660b448ea7abf52ee81fcc71e5e4651a4a11389",
+  "archive_bytes": 109625224,
+  "archive_entries": 120000,
+  "extracted_bytes": 110717853,
+  "license_declared_by_publisher": "MIT",
+  "real_source": "CIFAR-10",
+  "synthetic_generator": "Stable Diffusion 1.4",
+  "official_hackathon_dataset": false
+}
