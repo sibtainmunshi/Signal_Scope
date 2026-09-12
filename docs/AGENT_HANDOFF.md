@@ -271,6 +271,13 @@ Next, in order (one GPU job at a time):
   interrupted, rerun the commands above. Apply the pre-declared rule in PROGRESS:
   keep native_v1 unless matched AUC beats 0.653 by >0.02 with no worse real FPR.
   If native_v2 is not adopted, the release asset in `tmp/release/` is final.
+- DONE: freeze (`report/final/freeze.json`, commit cda2234) and the one-time final
+  evaluation (`report/final/summary.json`): CIFAKE test AUC 0.9926; reserved unseen
+  0.565 / 0.643 / 0.640; baseline v0.1.0 reserved 0.548 / 0.546. Do not rerun.
+  REMAINING: user uploads the release asset; then push `model/manifest.json`
+  (currently switched locally only) and the README from `tmp/release/README_v0.2.0.md`,
+  verify the public download, fresh-clone CPU check, record the demo video, and get
+  two people to fill `report/explanation_audit/.../review_template.csv`.
 - FINAL MODEL DECIDED: native_v2 (VQDM+Midjourney) also failed the rule (matched
   0.639; LDM real FPR 38-45%). `mixed_resnet18_native_v1_calibrated` is final (v0.2.0).
   No more exploratory training. Remaining order: freeze + final evaluation with the

@@ -1,0 +1,52 @@
+<!doctype html><html><head><meta charset="utf-8"><title>SignalScope model report</title><style>
+@page { size: A4; margin: 8mm 9mm; }
+body { font: 7.6pt/1.3 "Segoe UI", Arial, sans-serif; color: #17202a; margin: 0; }
+h1 { font-size: 13pt; margin: 0; } h2 { font-size: 8.6pt; margin: 5px 0 2px; color: #0f4c5c; border-bottom: 1px solid #c9d6dc; }
+.sub { color: #4a5a66; margin: 1px 0 4px; } .grid { display: grid; grid-template-columns: 1fr 1.18fr; gap: 9px; }
+table { border-collapse: collapse; width: 100%; } td, th { border-bottom: 1px solid #e3e9ec; padding: 1.5px 3px; text-align: left; vertical-align: top; }
+th { background: #eef4f6; font-weight: 600; } ul { margin: 1px 0; padding-left: 13px; } li { margin: 0.5px 0; }
+.note { background: #fff6e0; border-left: 3px solid #d39b2a; padding: 3px 5px; margin: 3px 0; } .mono { font-family: Consolas, monospace; font-size: 6.8pt; }
+</style></head><body>
+<h1>SignalScope &mdash; one-page model report</h1>
+<div class="sub">SIH 2026 internal, Problem Statement 2 &middot; model <b>mixed_resnet18_native_v1_calibrated</b> &middot; SHA-256 <span class="mono">eab7d9d82c8250bd&hellip;</span>
+&middot; 2026-09-12 &middot; github.com/sibtainmunshi/Signal_Scope</div>
+<div class="note"><b>Self-evaluated public-data results.</b> Organizers supplied no dataset, baseline or hidden-test scores; those fields are <b>not supplied</b>, not estimated.</div>
+<div class="grid"><div>
+<h2>Task and scope</h2>
+Binary real vs AI-generated image classification with a continuous AI-positive score; general objects, scenes and products only. Built: core detector, A (model-linked explanation + audit), C (robustness), D (EXIF only; C2PA not checked), F (local web app/CLI), G (bounded post-processing attack analysis).
+<h2>Data and splits</h2>
+<table><tr><th>Source</th><th>Use</th><th>Real / AI</th></tr>
+<tr><td>CIFAKE (CIFAR-10 vs SD1.4, 32 px)</td><td>train 8,000 of 79,689</td><td>4,000 / 4,000</td></tr>
+<tr><td>CIFAKE grouped val / calibration</td><td>selection / calibration</td><td>5000 / 4964 val</td></tr>
+<tr><td>GenImage BigGAN + SD1.5 (train folders)</td><td>train 6,239</td><td>3,133 / 3,106</td></tr>
+<tr><td>GenImage val / calibration</td><td>selection / calibration</td><td>369 / 414; 397 / 384</td></tr>
+
+<tr><td>UniversalFakeDetect dev</td><td>evaluation only</td><td>guided vs ImageNet, LDM vs LAION, 500+500 each</td></tr>
+<tr><td>Reserved final</td><td>scored once after freeze</td><td>GLIDE x3, DALLE vs LAION; CIFAKE author test 20k</td></tr></table>
+Exact and perceptual-hash overlap exclusions against all protected data; grouped splits. Audit found real JPEG vs generated square PNG in both GenImage and the external set, so training balances JPEG and every external result is also reported <b>format-matched</b> (identical crop, resize and JPEG for both labels).
+<h2>Model and training</h2>
+<ul><li>ImageNet-pretrained ResNet-18, fine-tuned end to end (AdamW 2e-4, cosine, 10 epochs, batch 64, AMP); epoch chosen by mean GenImage/CIFAKE val AUC.</li>
+<li>Native-resolution random 128 px crops (no resizing); every generated training image JPEG-compressed with qualities drawn from the real photos; symmetric rescale, blur, flip and crop-JPEG augmentation.</li>
+<li>Inference: mean logit of up to five native 128 px crops; CPU ~15&ndash;50 ms per image on our laptop.</li>
+<li>Temperature 1.65 fit on calibration splits; threshold 0.455 = strictest validation threshold with real FPR &le; 5.0% per domain. ECE CIFAKE 0.027&rarr;0.009, GenImage 0.047&rarr;0.061 (worse).</li></ul>
+<h2>Explanation (Module A)</h2>
+Returned-class Grad-CAM per crop, stitched, plus a masking diagnostic. 40 fixed dev images (27 correct): masking the top Grad-CAM window lowered the verdict score more than random windows in 72.5% (mean fill, p=0.002) and 67.5% (blur); effects are small. JPEG map stability median rho 0.95; weight-randomization rho 0.52 (maps only partly weight-dependent). No named artifact (text, lighting, anatomy) is claimed.
+</div><div>
+<h2>Results at the frozen operating point (threshold 0.455)</h2>
+<table><tr><th>Evaluation</th><th>ROC-AUC [95% CI]</th><th>Macro-F1</th><th>Accuracy</th><th>Real FPR</th><th>AI TPR</th></tr><tr><td>CIFAKE validation (in-domain)</td><td><b>0.993</b></td><td>0.951</td><td>95.2%</td><td>2.2%</td><td>92.5%</td></tr><tr><td>GenImage BigGAN/SD1.5 validation</td><td><b>0.956</b></td><td>0.898</td><td>89.8%</td><td>4.9%</td><td>85.0%</td></tr><tr><td>External dev, unseen generators</td><td><b>0.647</b> [0.624, 0.670]</td><td>0.513</td><td>57.8%</td><td>8.4%</td><td>23.9%</td></tr><tr><td>External dev, format-matched</td><td><b>0.653</b> [0.628, 0.677]</td><td>0.558</td><td>59.2%</td><td>13.9%</td><td>32.4%</td></tr><tr><td>Reserved GLIDE/DALLE (final)</td><td><b>0.565</b></td><td>0.400</td><td>42.1%</td><td>10.4%</td><td>18.3%</td></tr><tr><td>Reserved, format-matched (final)</td><td><b>0.643</b></td><td>0.472</td><td>47.9%</td><td>14.6%</td><td>29.2%</td></tr><tr><td>CIFAKE author test 20k (final)</td><td><b>0.993</b></td><td>0.951</td><td>95.1%</td><td>1.9%</td><td>92.2%</td></tr></table>
+External per-generator AUC (as distributed; then matched): guided 0.630; ldm_200 0.665; guided 0.611; ldm_200 0.695. External F1, accuracy and rates are means over generator pairs.
+<h2>GenImage validation confusion matrix</h2>
+<table style="width:60%"><tr><th></th><th>Pred. real</th><th>Pred. AI</th></tr><tr><th>Real</th><td>351</td><td>18</td></tr><tr><th>AI</th><td>62</td><td>352</td></tr></table>
+<h2>Baseline comparison (unseen-generator mean AUC, as distributed / matched)</h2>
+<table><tr><td>Organizer baseline</td><td>not supplied</td></tr><tr><td>Our CIFAKE-only ResNet-18 (v0.1.0)</td><td>dev 0.553 / 0.540; reserved 0.548 / 0.546; dev real FPR 84.3%</td></tr>
+<tr><td>Selected model</td><td>dev 0.647 / 0.653; reserved 0.565 / 0.643; dev real FPR 8.4%</td></tr></table>
+Seven candidates were compared on the same development data (including a frozen CLIP head whose 0.708 as-distributed AUC fell to 0.542 when format-matched); reserved data were never used for selection.
+<h2>Robustness (Module C/G)</h2>GenImage val AUC original 0.956; JPEG q70 0.953; q30 0.906; half resolution 0.896; blur 0.937. Six-transformation search flipped 19.8% of initially correct predictions; on 32 px CIFAKE, half resolution drops AUC to 0.726 (flip rate 42.6%).
+<h2>Limitations and failure cases</h2>
+<ul><li>Unseen-generator AUC is modest. On the reserved unseen set the mean AUC is 0.565 / 0.643 (as distributed / format-matched); GLIDE is weakest. At the conservative threshold most unseen AI images are missed.</li>
+<li>Pristine PNG outputs are harder than JPEG-compressed ones: training JPEG-balances generated images, so the model does not reward "no JPEG" as evidence of AI.</li>
+<li>Calibration is domain-specific: confidence and FPR need not transfer to new generators or pipelines.</li>
+<li>Resizing, blur and strong JPEG raise real-image false positives; tiny upscaled images are fragile.</li>
+<li>Grad-CAM shows model influence, not verified visual defects; audit sample is small and unannotated.</li>
+<li>GenImage-derived weights are for noncommercial research use (CC BY-NC-SA 4.0).</li></ul>
+</div></div></body></html>

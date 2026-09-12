@@ -61,6 +61,8 @@ def main():
     cifake_test = matching(load("report/runs", model, "test/metrics.json"), sha)
     baseline_external = {p: load("report/runs", args.baseline, f"external_dev{s}/metrics.json")
                          for p, s in (("as_distributed", ""), ("matched", "_matched"))}
+    baseline_reserved = {p: load("report/runs", args.baseline, f"external_reserved{s}/metrics.json")
+                         for p, s in (("as_distributed", ""), ("matched", "_matched"))}
     bootstrap = load("report/external_bootstrap.json") or {"protocols": {}}
     robust = matching(load("report/runs", model, "robustness_genimage/metrics.json"), sha)
     robust_cifake = matching(load("report/runs", model, "robustness/metrics.json"), sha)
@@ -107,14 +109,16 @@ def main():
         f"{g['generator']} {g['roc_auc']:.3f}" for p in ("as_distributed", "matched") if external[p] for g in external[p]["per_generator"]
     )
     cm = genimage_val["confusion_matrix"]
-    baseline_row = (
-        f"{num(baseline_external['as_distributed'] and baseline_external['as_distributed']['macro_generator_roc_auc'])} / "
-        f"{num(baseline_external['matched'] and baseline_external['matched']['macro_generator_roc_auc'])}, "
-        f"real FPR {pct(mean_fpr(baseline_external['as_distributed']))}"
-    )
-    selected_row = (
-        f"{num(external['as_distributed'] and external['as_distributed']['macro_generator_roc_auc'])} / "
-        f"{num(external['matched'] and external['matched']['macro_generator_roc_auc'])}, real FPR {pct(mean_fpr(external['as_distributed']))}"
+    def auc_pair(reports):
+        return " / ".join(num(reports[p] and reports[p]["macro_generator_roc_auc"]) for p in ("as_distributed", "matched"))
+
+    baseline_row = (f"dev {auc_pair(baseline_external)}; reserved {auc_pair(baseline_reserved)}; "
+                    f"dev real FPR {pct(mean_fpr(baseline_external['as_distributed']))}")
+    selected_row = (f"dev {auc_pair(external)}; reserved {auc_pair(reserved)}; "
+                    f"dev real FPR {pct(mean_fpr(external['as_distributed']))}")
+    reserved_line = (
+        f"On the reserved unseen set the mean AUC is {auc_pair(reserved)} (as distributed / format-matched)"
+        if reserved["as_distributed"] else "Reserved unseen-generator results are pending"
     )
     robust_line = "pending"
     if robust:
@@ -186,13 +190,14 @@ Returned-class Grad-CAM per crop, stitched, plus a masking diagnostic. {audit_li
 External per-generator AUC (as distributed; then matched): {escape(per_generator)}. External F1, accuracy and rates are means over generator pairs.
 <h2>GenImage validation confusion matrix</h2>
 <table style="width:60%"><tr><th></th><th>Pred. real</th><th>Pred. AI</th></tr><tr><th>Real</th><td>{cm[0][0]}</td><td>{cm[0][1]}</td></tr><tr><th>AI</th><td>{cm[1][0]}</td><td>{cm[1][1]}</td></tr></table>
-<h2>Baseline comparison (external dev mean AUC as distributed / matched)</h2>
+<h2>Baseline comparison (unseen-generator mean AUC, as distributed / matched)</h2>
 <table><tr><td>Organizer baseline</td><td>not supplied</td></tr><tr><td>Our CIFAKE-only ResNet-18 (v0.1.0)</td><td>{baseline_row}</td></tr>
 <tr><td>Selected model</td><td>{selected_row}</td></tr></table>
 Seven candidates were compared on the same development data (including a frozen CLIP head whose 0.708 as-distributed AUC fell to 0.542 when format-matched); reserved data were never used for selection.
 <h2>Robustness (Module C/G)</h2>{robust_line}.
 <h2>Limitations and failure cases</h2>
-<ul><li>Unseen-generator AUC is modest (~0.65); guided diffusion vs ImageNet is weakest. At the conservative threshold many external AI images are missed.</li>
+<ul><li>Unseen-generator AUC is modest. {reserved_line}; GLIDE is weakest. At the conservative threshold most unseen AI images are missed.</li>
+<li>Pristine PNG outputs are harder than JPEG-compressed ones: training JPEG-balances generated images, so the model does not reward "no JPEG" as evidence of AI.</li>
 <li>Calibration is domain-specific: confidence and FPR need not transfer to new generators or pipelines.</li>
 <li>Resizing, blur and strong JPEG raise real-image false positives; tiny upscaled images are fragile.</li>
 <li>Grad-CAM shows model influence, not verified visual defects; audit sample is small and unannotated.</li>
