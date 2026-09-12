@@ -1,0 +1,21 @@
+{
+  "created_utc": "2026-09-12T10:04:39.502306+00:00",
+  "run": "mixed_resnet18_native_cifake1k_v1",
+  "hypothesis": "The 32px CIFAKE domain dominates the current training mixture. Reduce its contribution while keeping GenImage and approximately the same optimizer-update budget.",
+  "baseline_training": {
+    "cifake": 8000,
+    "genimage": 6239,
+    "epochs": 10,
+    "updates": 2230
+  },
+  "candidate_training": {
+    "cifake": 1000,
+    "genimage": 6239,
+    "epochs": 20,
+    "updates": 2280
+  },
+  "fixed": "Same source splits, architecture, native crop geometry, JPEG balancing, optimizer, learning rate and seed 2026. Best epoch uses the existing GenImage/CIFAKE validation objective.",
+  "advance_gate": "External development mean AUC improves >=0.02 on BOTH as-distributed and format-matched protocols; CIFAKE val AUC >=0.97, GenImage val AUC >=0.90. No deployment before calibration/FPR checks, matching explanations and new independent evaluation design.",
+  "test_policy": "Do not score or tune against any reserved/test split. Keep v0.2.0 weights and final reports unchanged.",
+  "limitations": "One seed, reused model-selection development data; similar rather than identical update counts and more validation looks. Not an isolated causal proof."
+}

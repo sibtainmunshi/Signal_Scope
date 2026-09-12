@@ -31,7 +31,7 @@ def main():
         labels = np.array([int(reference[p]["label"]) for p in paths])
         scores = {run: np.array([float(data[run][p]["ai_score"]) for p in paths]) for run in runs}
         masks = {g: np.array([reference[p]["domain"] in {g, real} for p in paths]) for g, real in (("guided", "imagenet"), ("ldm_200", "laion"))}
-        def measure(values):
+        def measure(values, labels=labels, masks=masks):
             groups = {g: binary_metrics(labels[mask], values[mask], .5) for g, mask in masks.items()}
             return {"mean_auc": float(np.mean([r["roc_auc"] for r in groups.values()])), "per_generator": groups}
         baseline = measure(scores[protocol["baseline"]])

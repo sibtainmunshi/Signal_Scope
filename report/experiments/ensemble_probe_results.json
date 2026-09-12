@@ -1,0 +1,545 @@
+{
+  "protocol_sha256": "d46d39d5381e16541d07cba4f7f3c76f55104dc5fa7bf50831acc98785dfb535",
+  "protocol": {
+    "created_utc": "2026-09-12T10:00:40.198773+00:00",
+    "purpose": "Original plan E4: test whether existing candidates have complementary development errors before any further training or release change.",
+    "allowed_input": "Only already saved external_dev and external_dev_matched predictions; no reserved/test scores. These development images have been reused for model selection.",
+    "baseline": "mixed_resnet18_native_v1",
+    "fixed_blends": [
+      [
+        "mixed_resnet18_native_v1",
+        "mixed_resnet18_native_v1_seed2027"
+      ],
+      [
+        "mixed_resnet18_native_v1",
+        "mixed_resnet18_native_v2"
+      ],
+      [
+        "mixed_resnet18_native_v1",
+        "mixed_clip_b32_v1"
+      ]
+    ],
+    "combination": "Equal-weight mean of logits reconstructed from scores clipped to [1e-6,1-1e-6]; no blend-weight search. Both input checkpoints uncalibrated at temperature 1.",
+    "advance_gate": "At least +0.02 mean AUC over the baseline on BOTH as-distributed and matched development protocols; no domain real FPR increase greater than 0.02 at the diagnostic threshold 0.5. A pass only advances to calibration, attribution and a new independent evaluation design; it does not replace the released model.",
+    "frozen_release_unchanged": "v0.2.0; original final evaluation is not rerun or relabeled as blind evidence for a new candidate."
+  },
+  "results": {
+    "as_distributed": {
+      "baseline": {
+        "mean_auc": 0.6474120000000001,
+        "per_generator": {
+          "guided": {
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.629644,
+            "macro_f1": 0.41408112932455815,
+            "accuracy": 0.527,
+            "false_positive_rate": 0.034,
+            "true_positive_rate": 0.088,
+            "brier_score": 0.41094845914375233,
+            "threshold": 0.5,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                483,
+                17
+              ],
+              [
+                456,
+                44
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          },
+          "ldm_200": {
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.6651800000000001,
+            "macro_f1": 0.5825014991991619,
+            "accuracy": 0.615,
+            "false_positive_rate": 0.106,
+            "true_positive_rate": 0.336,
+            "brier_score": 0.29897600712623673,
+            "threshold": 0.5,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                447,
+                53
+              ],
+              [
+                332,
+                168
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          }
+        }
+      },
+      "blends": {
+        "mixed_resnet18_native_v1 + mixed_resnet18_native_v1_seed2027": {
+          "mean_auc": 0.669932,
+          "per_generator": {
+            "guided": {
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.6228,
+              "macro_f1": 0.3848404741716129,
+              "accuracy": 0.519,
+              "false_positive_rate": 0.014,
+              "true_positive_rate": 0.052,
+              "brier_score": 0.4290091663265469,
+              "threshold": 0.5,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  493,
+                  7
+                ],
+                [
+                  474,
+                  26
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            },
+            "ldm_200": {
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.717064,
+              "macro_f1": 0.5953636506030386,
+              "accuracy": 0.628,
+              "false_positive_rate": 0.088,
+              "true_positive_rate": 0.344,
+              "brier_score": 0.2898520196972307,
+              "threshold": 0.5,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  456,
+                  44
+                ],
+                [
+                  328,
+                  172
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            }
+          },
+          "auc_gain": 0.022519999999999873,
+          "fpr_increase_by_domain": {
+            "guided": -0.020000000000000004,
+            "ldm_200": -0.018000000000000002
+          },
+          "passes_protocol_gate": true
+        },
+        "mixed_resnet18_native_v1 + mixed_resnet18_native_v2": {
+          "mean_auc": 0.663988,
+          "per_generator": {
+            "guided": {
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.698224,
+              "macro_f1": 0.4752131271173109,
+              "accuracy": 0.563,
+              "false_positive_rate": 0.028,
+              "true_positive_rate": 0.154,
+              "brier_score": 0.364871722717421,
+              "threshold": 0.5,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  486,
+                  14
+                ],
+                [
+                  423,
+                  77
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            },
+            "ldm_200": {
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.629752,
+              "macro_f1": 0.6184932040853452,
+              "accuracy": 0.633,
+              "false_positive_rate": 0.172,
+              "true_positive_rate": 0.438,
+              "brier_score": 0.2827453992173726,
+              "threshold": 0.5,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  414,
+                  86
+                ],
+                [
+                  281,
+                  219
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            }
+          },
+          "auc_gain": 0.016575999999999924,
+          "fpr_increase_by_domain": {
+            "guided": -0.006000000000000002,
+            "ldm_200": 0.06599999999999999
+          },
+          "passes_protocol_gate": false
+        },
+        "mixed_resnet18_native_v1 + mixed_clip_b32_v1": {
+          "mean_auc": 0.7263980000000001,
+          "per_generator": {
+            "guided": {
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.7490760000000001,
+              "macro_f1": 0.4978132704341458,
+              "accuracy": 0.581,
+              "false_positive_rate": 0.012,
+              "true_positive_rate": 0.174,
+              "brier_score": 0.3509825886938042,
+              "threshold": 0.5,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  494,
+                  6
+                ],
+                [
+                  413,
+                  87
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            },
+            "ldm_200": {
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.70372,
+              "macro_f1": 0.6031979464691569,
+              "accuracy": 0.629,
+              "false_positive_rate": 0.116,
+              "true_positive_rate": 0.374,
+              "brier_score": 0.28290646846767803,
+              "threshold": 0.5,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  442,
+                  58
+                ],
+                [
+                  313,
+                  187
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            }
+          },
+          "auc_gain": 0.078986,
+          "fpr_increase_by_domain": {
+            "guided": -0.022000000000000002,
+            "ldm_200": 0.010000000000000009
+          },
+          "passes_protocol_gate": true
+        }
+      }
+    },
+    "matched": {
+      "baseline": {
+        "mean_auc": 0.6530020000000001,
+        "per_generator": {
+          "guided": {
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.61136,
+            "macro_f1": 0.48457099431880146,
+            "accuracy": 0.551,
+            "false_positive_rate": 0.09,
+            "true_positive_rate": 0.192,
+            "brier_score": 0.3591698531295255,
+            "threshold": 0.5,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                455,
+                45
+              ],
+              [
+                404,
+                96
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          },
+          "ldm_200": {
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.694644,
+            "macro_f1": 0.5950968357883252,
+            "accuracy": 0.62,
+            "false_positive_rate": 0.132,
+            "true_positive_rate": 0.372,
+            "brier_score": 0.27879347868322907,
+            "threshold": 0.5,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                434,
+                66
+              ],
+              [
+                314,
+                186
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          }
+        }
+      },
+      "blends": {
+        "mixed_resnet18_native_v1 + mixed_resnet18_native_v1_seed2027": {
+          "mean_auc": 0.671214,
+          "per_generator": {
+            "guided": {
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.602936,
+              "macro_f1": 0.44590019768851014,
+              "accuracy": 0.535,
+              "false_positive_rate": 0.064,
+              "true_positive_rate": 0.134,
+              "brier_score": 0.37969340077163416,
+              "threshold": 0.5,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  468,
+                  32
+                ],
+                [
+                  433,
+                  67
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            },
+            "ldm_200": {
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.739492,
+              "macro_f1": 0.6177529656266764,
+              "accuracy": 0.643,
+              "false_positive_rate": 0.1,
+              "true_positive_rate": 0.386,
+              "brier_score": 0.26569720342322145,
+              "threshold": 0.5,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  450,
+                  50
+                ],
+                [
+                  307,
+                  193
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            }
+          },
+          "auc_gain": 0.018211999999999895,
+          "fpr_increase_by_domain": {
+            "guided": -0.025999999999999995,
+            "ldm_200": -0.032
+          },
+          "passes_protocol_gate": false
+        },
+        "mixed_resnet18_native_v1 + mixed_resnet18_native_v2": {
+          "mean_auc": 0.659594,
+          "per_generator": {
+            "guided": {
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.652664,
+              "macro_f1": 0.5402298850574713,
+              "accuracy": 0.575,
+              "false_positive_rate": 0.15,
+              "true_positive_rate": 0.3,
+              "brier_score": 0.30520215214392055,
+              "threshold": 0.5,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  425,
+                  75
+                ],
+                [
+                  350,
+                  150
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            },
+            "ldm_200": {
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.6665239999999999,
+              "macro_f1": 0.6263912345479181,
+              "accuracy": 0.633,
+              "false_positive_rate": 0.234,
+              "true_positive_rate": 0.5,
+              "brier_score": 0.2624279287990883,
+              "threshold": 0.5,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  383,
+                  117
+                ],
+                [
+                  250,
+                  250
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            }
+          },
+          "auc_gain": 0.006591999999999931,
+          "fpr_increase_by_domain": {
+            "guided": 0.06,
+            "ldm_200": 0.10200000000000001
+          },
+          "passes_protocol_gate": false
+        },
+        "mixed_resnet18_native_v1 + mixed_clip_b32_v1": {
+          "mean_auc": 0.609256,
+          "per_generator": {
+            "guided": {
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.6459239999999999,
+              "macro_f1": 0.36955562085825877,
+              "accuracy": 0.513,
+              "false_positive_rate": 0.01,
+              "true_positive_rate": 0.036,
+              "brier_score": 0.4369684396720417,
+              "threshold": 0.5,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  495,
+                  5
+                ],
+                [
+                  482,
+                  18
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            },
+            "ldm_200": {
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.572588,
+              "macro_f1": 0.4327809182673509,
+              "accuracy": 0.53,
+              "false_positive_rate": 0.056,
+              "true_positive_rate": 0.116,
+              "brier_score": 0.39516172198235266,
+              "threshold": 0.5,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  472,
+                  28
+                ],
+                [
+                  442,
+                  58
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            }
+          },
+          "auc_gain": -0.04374600000000006,
+          "fpr_increase_by_domain": {
+            "guided": -0.08,
+            "ldm_200": -0.07600000000000001
+          },
+          "passes_protocol_gate": false
+        }
+      }
+    }
+  },
+  "advanced": []
+}
