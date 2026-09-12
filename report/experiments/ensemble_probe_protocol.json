@@ -1,0 +1,23 @@
+{
+  "created_utc": "2026-09-12T10:00:40.198773+00:00",
+  "purpose": "Original plan E4: test whether existing candidates have complementary development errors before any further training or release change.",
+  "allowed_input": "Only already saved external_dev and external_dev_matched predictions; no reserved/test scores. These development images have been reused for model selection.",
+  "baseline": "mixed_resnet18_native_v1",
+  "fixed_blends": [
+    [
+      "mixed_resnet18_native_v1",
+      "mixed_resnet18_native_v1_seed2027"
+    ],
+    [
+      "mixed_resnet18_native_v1",
+      "mixed_resnet18_native_v2"
+    ],
+    [
+      "mixed_resnet18_native_v1",
+      "mixed_clip_b32_v1"
+    ]
+  ],
+  "combination": "Equal-weight mean of logits reconstructed from scores clipped to [1e-6,1-1e-6]; no blend-weight search. Both input checkpoints uncalibrated at temperature 1.",
+  "advance_gate": "At least +0.02 mean AUC over the baseline on BOTH as-distributed and matched development protocols; no domain real FPR increase greater than 0.02 at the diagnostic threshold 0.5. A pass only advances to calibration, attribution and a new independent evaluation design; it does not replace the released model.",
+  "frozen_release_unchanged": "v0.2.0; original final evaluation is not rerun or relabeled as blind evidence for a new candidate."
+}
