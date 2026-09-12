@@ -1,0 +1,276 @@
+{
+  "freeze": {
+    "release": "v0.2.0",
+    "model_version": "mixed_resnet18_native_v1_calibrated",
+    "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+    "threshold": 0.4553663730621338,
+    "calibrated": true,
+    "preprocessing": "native_multicrop_v1",
+    "git_commit_at_freeze": "f4ef1f507b0fb9a2b84a2cd2f2bde086244d0946",
+    "frozen_utc": "2026-09-11T21:33:36.575459+00:00",
+    "planned_evaluations": [
+      "CIFAKE author test (20,000)",
+      "UniversalFakeDetect reserved GLIDE x3 + DALLE vs reserved LAION (as_distributed)",
+      "UniversalFakeDetect reserved GLIDE x3 + DALLE vs reserved LAION (matched)",
+      "UniversalFakeDetect reserved GLIDE x3 + DALLE vs reserved LAION (matched_native)"
+    ],
+    "policy": "Model, preprocessing and threshold are fixed before any reserved label is scored; results are reported once, whatever they are."
+  },
+  "completed_utc": "2026-09-11T21:35:26.398037+00:00",
+  "cifake_test": {
+    "count": 20000,
+    "roc_auc": 0.99257688,
+    "macro_f1": 0.9512073941746118,
+    "accuracy": 0.95125,
+    "false_positive_rate": 0.0192,
+    "true_positive_rate": 0.9217,
+    "confusion_matrix": [
+      [
+        9808,
+        192
+      ],
+      [
+        783,
+        9217
+      ]
+    ],
+    "threshold": 0.4553663730621338
+  },
+  "reserved_external": {
+    "as_distributed": {
+      "macro_generator_roc_auc": 0.5651065000000001,
+      "unique_images_evaluated": 4500,
+      "per_generator": [
+        {
+          "generator": "glide_100_27",
+          "roc_auc": 0.52291,
+          "macro_f1": 0.35906824284269623,
+          "accuracy": 0.3873333333333333,
+          "false_positive_rate": 0.104,
+          "true_positive_rate": 0.133,
+          "confusion_matrix": [
+            [
+              448,
+              52
+            ],
+            [
+              867,
+              133
+            ]
+          ]
+        },
+        {
+          "generator": "glide_50_27",
+          "roc_auc": 0.5433700000000001,
+          "macro_f1": 0.3851367707576858,
+          "accuracy": 0.4073333333333333,
+          "false_positive_rate": 0.104,
+          "true_positive_rate": 0.163,
+          "confusion_matrix": [
+            [
+              448,
+              52
+            ],
+            [
+              837,
+              163
+            ]
+          ]
+        },
+        {
+          "generator": "glide_100_10",
+          "roc_auc": 0.54838,
+          "macro_f1": 0.37222222222222223,
+          "accuracy": 0.3973333333333333,
+          "false_positive_rate": 0.104,
+          "true_positive_rate": 0.148,
+          "confusion_matrix": [
+            [
+              448,
+              52
+            ],
+            [
+              852,
+              148
+            ]
+          ]
+        },
+        {
+          "generator": "dalle",
+          "roc_auc": 0.645766,
+          "macro_f1": 0.4848048912066175,
+          "accuracy": 0.49066666666666664,
+          "false_positive_rate": 0.104,
+          "true_positive_rate": 0.288,
+          "confusion_matrix": [
+            [
+              448,
+              52
+            ],
+            [
+              712,
+              288
+            ]
+          ]
+        }
+      ]
+    },
+    "matched": {
+      "macro_generator_roc_auc": 0.6430119999999999,
+      "unique_images_evaluated": 4500,
+      "per_generator": [
+        {
+          "generator": "glide_100_27",
+          "roc_auc": 0.592564,
+          "macro_f1": 0.41713342090312355,
+          "accuracy": 0.42866666666666664,
+          "false_positive_rate": 0.146,
+          "true_positive_rate": 0.216,
+          "confusion_matrix": [
+            [
+              427,
+              73
+            ],
+            [
+              784,
+              216
+            ]
+          ]
+        },
+        {
+          "generator": "glide_50_27",
+          "roc_auc": 0.610862,
+          "macro_f1": 0.44435030896466193,
+          "accuracy": 0.452,
+          "false_positive_rate": 0.146,
+          "true_positive_rate": 0.251,
+          "confusion_matrix": [
+            [
+              427,
+              73
+            ],
+            [
+              749,
+              251
+            ]
+          ]
+        },
+        {
+          "generator": "glide_100_10",
+          "roc_auc": 0.6031119999999999,
+          "macro_f1": 0.42029340085929784,
+          "accuracy": 0.43133333333333335,
+          "false_positive_rate": 0.146,
+          "true_positive_rate": 0.22,
+          "confusion_matrix": [
+            [
+              427,
+              73
+            ],
+            [
+              780,
+              220
+            ]
+          ]
+        },
+        {
+          "generator": "dalle",
+          "roc_auc": 0.7655099999999999,
+          "macro_f1": 0.6048211815846671,
+          "accuracy": 0.6053333333333333,
+          "false_positive_rate": 0.146,
+          "true_positive_rate": 0.481,
+          "confusion_matrix": [
+            [
+              427,
+              73
+            ],
+            [
+              519,
+              481
+            ]
+          ]
+        }
+      ]
+    },
+    "matched_native": {
+      "macro_generator_roc_auc": 0.6402025,
+      "unique_images_evaluated": 4500,
+      "per_generator": [
+        {
+          "generator": "glide_100_27",
+          "roc_auc": 0.597338,
+          "macro_f1": 0.420066783504365,
+          "accuracy": 0.43466666666666665,
+          "false_positive_rate": 0.11,
+          "true_positive_rate": 0.207,
+          "confusion_matrix": [
+            [
+              445,
+              55
+            ],
+            [
+              793,
+              207
+            ]
+          ]
+        },
+        {
+          "generator": "glide_50_27",
+          "roc_auc": 0.6194000000000001,
+          "macro_f1": 0.4281206324248777,
+          "accuracy": 0.44133333333333336,
+          "false_positive_rate": 0.11,
+          "true_positive_rate": 0.217,
+          "confusion_matrix": [
+            [
+              445,
+              55
+            ],
+            [
+              783,
+              217
+            ]
+          ]
+        },
+        {
+          "generator": "glide_100_10",
+          "roc_auc": 0.6076239999999999,
+          "macro_f1": 0.42651677210868877,
+          "accuracy": 0.44,
+          "false_positive_rate": 0.11,
+          "true_positive_rate": 0.215,
+          "confusion_matrix": [
+            [
+              445,
+              55
+            ],
+            [
+              785,
+              215
+            ]
+          ]
+        },
+        {
+          "generator": "dalle",
+          "roc_auc": 0.736448,
+          "macro_f1": 0.5697657613589622,
+          "accuracy": 0.57,
+          "false_positive_rate": 0.11,
+          "true_positive_rate": 0.41,
+          "confusion_matrix": [
+            [
+              445,
+              55
+            ],
+            [
+              590,
+              410
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "organizer_hidden_result": null
+}

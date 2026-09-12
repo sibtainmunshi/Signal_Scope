@@ -1,0 +1,137 @@
+{
+  "source": "UniversalFakeDetect CVPR 2023 diffusion release",
+  "split": "reserved",
+  "evaluation_kind": "frozen_model_public_reserved_generators",
+  "protocol": "matched_native",
+  "protocol_description": "Every image of both labels: centre square crop at native resolution (no resize), JPEG quality 90, then the detector's own preprocessing. Format-only control; ImageNet real crops can stay larger than 256 px generated images.",
+  "model_version": "mixed_resnet18_native_v1_calibrated",
+  "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+  "preprocessing": "Same full-image preprocessing as app/CLI; no external-domain adaptation.",
+  "threshold": 0.4553663730621338,
+  "unique_images_evaluated": 4500,
+  "macro_generator_roc_auc": 0.6402025,
+  "per_generator": [
+    {
+      "generator": "glide_100_27",
+      "real_source": "laion",
+      "count": 1500,
+      "real_count": 500,
+      "ai_count": 1000,
+      "roc_auc": 0.597338,
+      "macro_f1": 0.420066783504365,
+      "accuracy": 0.43466666666666665,
+      "false_positive_rate": 0.11,
+      "true_positive_rate": 0.207,
+      "brier_score": 0.3977431491326467,
+      "threshold": 0.4553663730621338,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          445,
+          55
+        ],
+        [
+          793,
+          207
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    },
+    {
+      "generator": "glide_50_27",
+      "real_source": "laion",
+      "count": 1500,
+      "real_count": 500,
+      "ai_count": 1000,
+      "roc_auc": 0.6194000000000001,
+      "macro_f1": 0.4281206324248777,
+      "accuracy": 0.44133333333333336,
+      "false_positive_rate": 0.11,
+      "true_positive_rate": 0.217,
+      "brier_score": 0.38392636356308496,
+      "threshold": 0.4553663730621338,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          445,
+          55
+        ],
+        [
+          783,
+          217
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    },
+    {
+      "generator": "glide_100_10",
+      "real_source": "laion",
+      "count": 1500,
+      "real_count": 500,
+      "ai_count": 1000,
+      "roc_auc": 0.6076239999999999,
+      "macro_f1": 0.42651677210868877,
+      "accuracy": 0.44,
+      "false_positive_rate": 0.11,
+      "true_positive_rate": 0.215,
+      "brier_score": 0.39358897402576176,
+      "threshold": 0.4553663730621338,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          445,
+          55
+        ],
+        [
+          785,
+          215
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    },
+    {
+      "generator": "dalle",
+      "real_source": "laion",
+      "count": 1500,
+      "real_count": 500,
+      "ai_count": 1000,
+      "roc_auc": 0.736448,
+      "macro_f1": 0.5697657613589622,
+      "accuracy": 0.57,
+      "false_positive_rate": 0.11,
+      "true_positive_rate": 0.41,
+      "brier_score": 0.3002572363262831,
+      "threshold": 0.4553663730621338,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          445,
+          55
+        ],
+        [
+          590,
+          410
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    }
+  ],
+  "organizer_hidden_result": null,
+  "limitations": [
+    "Domains are unseen in our task training, not necessarily absent from backbone pretraining.",
+    "Development domains may guide model selection and are not a blind final test.",
+    "Shared LAION real images are reused for per-generator comparisons; no inflated pooled sample count is reported."
+  ]
+}
