@@ -1,5 +1,10 @@
 # SignalScope handoff - 12 September 2026
 
+**13 September active continuation:** Read [CLAUDE_NEXT.md](CLAUDE_NEXT.md) first.
+User authorized urgent L/14 experiment plus batch/upload/screenshot work, and asks
+for Claude Code to take over if Codex quota ends. Training log is
+`tmp/clip_l14_training.log`; check job before starting another GPU process.
+
 This replaces accumulated stale handoff entries. Read README.md and
 SUBMISSION_CHECKLIST.md for current evidence and outstanding deliverables.
 

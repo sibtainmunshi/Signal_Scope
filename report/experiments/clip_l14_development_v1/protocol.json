@@ -1,0 +1,49 @@
+{
+  "identity": {
+    "backbone": "ViT-L/14",
+    "backbone_sha256": "b8cca3fd41ae0c99ba7e8951adf17d267cdb84cd88be6f7c2e0eca1737a03836",
+    "genimage_manifest_sha256": "6cc079dccf326403e4507c039420874eba091cf984266bd2fd0e3b476a91e636",
+    "cifake_manifest_sha256": "b1bddb1d857b3d6926a9a39796d437256fc02536ff2af772e47adae88f686f3d",
+    "external_manifest_sha256": "8149884f168b1db3093fd8632516539f085dfef0c1d458b191eef9b88c1e2335",
+    "normalization": "L2 on FP32 embeddings",
+    "feature_dimension": 768,
+    "preprocessing_version": "official_clip224_exif_rgb_v1",
+    "matched_version": "center_square_224_bicubic_jpeg90"
+  },
+  "candidates": [
+    {
+      "run": "mixed_clip_l14_standard_v1",
+      "views": [
+        "as_distributed"
+      ],
+      "genimage_weight": 0.5
+    },
+    {
+      "run": "mixed_clip_l14_balanced_v1",
+      "views": [
+        "as_distributed",
+        "matched"
+      ],
+      "genimage_weight": 0.9
+    }
+  ],
+  "regularization": [
+    0.1,
+    1.0,
+    10.0
+  ],
+  "selection": "C maximizing equal mean AUC over 2 domains x 2 validation formats; first C wins ties",
+  "temperature": "all internal calibration rows, original format, equal source-domain BCE",
+  "threshold": "strictest domain original-validation threshold satisfying FPR <= 5%",
+  "external": "existing guided/ImageNet and LDM/LAION dev only; no fitting or thresholding",
+  "gate": {
+    "minimum_mean_auc_gain_each_protocol": 0.03,
+    "maximum_generator_auc_loss": 0.02,
+    "minimum_mean_macro_f1_gain_each_protocol": 0.03,
+    "maximum_generator_fpr_increase": 0.05
+  },
+  "passing_choice": "highest minimum of as-distributed and matched mean AUC",
+  "protected": "No reserved/test or user-image inputs; no old artifacts modified",
+  "limits": "Reused dev is not blind evidence; balanced variant changes both views and domain weight, not a causal ablation",
+  "created_utc": "2026-09-12T22:36:09.692982+00:00"
+}

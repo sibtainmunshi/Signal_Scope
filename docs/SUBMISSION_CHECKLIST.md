@@ -1,5 +1,12 @@
 # Submission acceptance checklist
 
+13 September continuation in progress: `docs/CLAUDE_NEXT.md` has the running L/14
+experiment and remaining verification. Batch CLI, phone upload support and
+simulated screenshot processing are implemented; 34 tests and frontend build pass.
+24MP CPU upload with explanation+robustness passed in 6.52s. Supplemental synthetic
+screenshot benchmark completed on 783 GenImage validation images (AUC .8935);
+real device capture remains untested. L/14 candidate still running.
+
 Updated 12 September 2026. Deadline: 15 September, 17:00 IST; target 14:00 IST.
 Mapped against all nine pages of the supplied SignalScope problem statement.
 No estimated selection score or organizer test result is claimed.

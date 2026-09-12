@@ -150,6 +150,12 @@ images and do not include uncertainty from candidate selection or new generator 
 flipped 19.8% of initially correct predictions. On tiny 32 px CIFAKE images, half
 resolution drops AUC to 0.726: resizing is the main weakness.
 
+13 September supplemental check: a **simulated screenshot** (display resizing,
+simple window border, PNG encoding) yields AUC **0.893**, accuracy **78.2%**, real
+FPR **5.4%** on the same 783 GenImage validation images. This controlled simulation
+does not establish performance on actual device captures or photographed screens.
+[Protocol and measured supplement](report/experiments/screenshot_robustness_v1/metrics.json).
+
 **Calibration:** temperature scaling on held-out calibration splits reduced CIFAKE
 ECE from 0.027 to 0.009 but raised GenImage ECE from 0.047 to 0.061. Confidence is
 not guaranteed to be calibrated on new sources.

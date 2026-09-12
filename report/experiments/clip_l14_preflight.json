@@ -1,0 +1,36 @@
+{
+  "backbone": "ViT-L/14",
+  "device": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "load_seconds": 82.65478310000003,
+  "preprocessing": "Compose(\n    Resize(size=224, interpolation=bicubic, max_size=None, antialias=True)\n    CenterCrop(size=(224, 224))\n    <function _convert_image_to_rgb at 0x000001F77920DD00>\n    ToTensor()\n    Normalize(mean=(0.48145466, 0.4578275, 0.40821073), std=(0.26862954, 0.26130258, 0.27577711))\n)",
+  "weight_sha256": "b8cca3fd41ae0c99ba7e8951adf17d267cdb84cd88be6f7c2e0eca1737a03836",
+  "batches": [
+    {
+      "batch_size": 4,
+      "seconds_per_image": 0.011958883333344753,
+      "peak_vram_bytes": 990465536,
+      "features": [
+        4,
+        768
+      ]
+    },
+    {
+      "batch_size": 8,
+      "seconds_per_image": 0.01017710416667228,
+      "peak_vram_bytes": 1028374016,
+      "features": [
+        8,
+        768
+      ]
+    },
+    {
+      "batch_size": 16,
+      "seconds_per_image": 0.010846895833334239,
+      "peak_vram_bytes": 1103031808,
+      "features": [
+        16,
+        768
+      ]
+    }
+  ]
+}

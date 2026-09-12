@@ -94,3 +94,15 @@ User has a bounded parallel Claude Code UI/API review; do not edit its report.
   explanation, transformations and responsive report. Full independent regression and settled-state contrast checks also pass.
   Integration records and updated handoff accompany this revision. Human
   explanation review remains.
+# 13 September urgent continuation
+
+Official CLIP L/14 backbone downloaded and GPU preflight verified (~10ms/image
+encoder-only batch 8). Bounded two-candidate own-head experiment running;
+see `docs/CLAUDE_NEXT.md` for command, cache identity, protocol, checks and pending work.
+Batch CLI, 25MiB/40MP phone upload handling and simulated-screenshot robustness
+implemented; 34 tests and frontend production build pass. Non-flat 24MP CPU upload
+with explanation and robustness passed in 6.52s; saved reproducibility record.
+Development screenshot benchmark completed: unchanged release GenImage validation
+simulation AUC .893497 vs original .956325, accuracy .781609, FPR .054201 (783 images).
+Synthetic screenshot only; archived old reports preserved. Interface fixes committed
+locally as 4798f4c. No new CLIP accuracy or replacement claimed.
