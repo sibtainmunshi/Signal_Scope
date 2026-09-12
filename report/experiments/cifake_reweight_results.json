@@ -1,0 +1,489 @@
+{
+  "completed_utc": "2026-09-12T10:18:33.411140+00:00",
+  "protocol": {
+    "created_utc": "2026-09-12T10:04:39.502306+00:00",
+    "run": "mixed_resnet18_native_cifake1k_v1",
+    "hypothesis": "The 32px CIFAKE domain dominates the current training mixture. Reduce its contribution while keeping GenImage and approximately the same optimizer-update budget.",
+    "baseline_training": {
+      "cifake": 8000,
+      "genimage": 6239,
+      "epochs": 10,
+      "updates": 2230
+    },
+    "candidate_training": {
+      "cifake": 1000,
+      "genimage": 6239,
+      "epochs": 20,
+      "updates": 2280
+    },
+    "fixed": "Same source splits, architecture, native crop geometry, JPEG balancing, optimizer, learning rate and seed 2026. Best epoch uses the existing GenImage/CIFAKE validation objective.",
+    "advance_gate": "External development mean AUC improves >=0.02 on BOTH as-distributed and format-matched protocols; CIFAKE val AUC >=0.97, GenImage val AUC >=0.90. No deployment before calibration/FPR checks, matching explanations and new independent evaluation design.",
+    "test_policy": "Do not score or tune against any reserved/test split. Keep v0.2.0 weights and final reports unchanged.",
+    "limitations": "One seed, reused model-selection development data; similar rather than identical update counts and more validation looks. Not an isolated causal proof."
+  },
+  "protocol_sha256": "0a2a9addbb9b4759dfefc3a1e489652f05bfd1c6303e102649fb605cb2ec8d52",
+  "checkpoint_sha256": "a30eb85c630b83d22e2112d09e6c65cf0992d5f3ca08b1d46a65ee3765fc12ff",
+  "validation_auc": {
+    "cifake": 0.9740783440773569,
+    "genimage": 0.9532160297448387
+  },
+  "development": {
+    "as_distributed": {
+      "gain_mean_auc": 0.03446999999999989,
+      "released": {
+        "source": "UniversalFakeDetect CVPR 2023 diffusion release",
+        "split": "dev",
+        "evaluation_kind": "external_development",
+        "protocol": "as_distributed",
+        "protocol_description": "Files scored as distributed. Real images are JPEG (ImageNet mostly non-square); generated images are square PNG, so format and aspect-ratio cues remain available.",
+        "model_version": "mixed_resnet18_native_v1_calibrated",
+        "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+        "preprocessing": "Same full-image preprocessing as app/CLI; no external-domain adaptation.",
+        "threshold": 0.4553663730621338,
+        "unique_images_evaluated": 2000,
+        "macro_generator_roc_auc": 0.6474120000000001,
+        "per_generator": [
+          {
+            "generator": "guided",
+            "real_source": "imagenet",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.629644,
+            "macro_f1": 0.43068254565535036,
+            "accuracy": 0.534,
+            "false_positive_rate": 0.04,
+            "true_positive_rate": 0.108,
+            "brier_score": 0.36948820181435743,
+            "threshold": 0.4553663730621338,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                480,
+                20
+              ],
+              [
+                446,
+                54
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          },
+          {
+            "generator": "ldm_200",
+            "real_source": "laion",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.6651800000000001,
+            "macro_f1": 0.5955171777131032,
+            "accuracy": 0.621,
+            "false_positive_rate": 0.128,
+            "true_positive_rate": 0.37,
+            "brier_score": 0.2704041872777381,
+            "threshold": 0.4553663730621338,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                436,
+                64
+              ],
+              [
+                315,
+                185
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          }
+        ],
+        "organizer_hidden_result": null,
+        "limitations": [
+          "Domains are unseen in our task training, not necessarily absent from backbone pretraining.",
+          "Development domains may guide model selection and are not a blind final test.",
+          "Shared LAION real images are reused for per-generator comparisons; no inflated pooled sample count is reported."
+        ]
+      },
+      "candidate": {
+        "source": "UniversalFakeDetect CVPR 2023 diffusion release",
+        "split": "dev",
+        "evaluation_kind": "external_development",
+        "protocol": "as_distributed",
+        "protocol_description": "Files scored as distributed. Real images are JPEG (ImageNet mostly non-square); generated images are square PNG, so format and aspect-ratio cues remain available.",
+        "model_version": "mixed_resnet18_native_cifake1k_v1_calibrated",
+        "checkpoint_sha256": "3cf40e124a60e5368c53ecefa1abdd4b9ba72f6ecd9305d13080a0043a608671",
+        "preprocessing": "Same full-image preprocessing as app/CLI; no external-domain adaptation.",
+        "threshold": 0.8013073205947876,
+        "unique_images_evaluated": 2000,
+        "macro_generator_roc_auc": 0.681882,
+        "per_generator": [
+          {
+            "generator": "guided",
+            "real_source": "imagenet",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.607796,
+            "macro_f1": 0.3610926363307865,
+            "accuracy": 0.512,
+            "false_positive_rate": 0.002,
+            "true_positive_rate": 0.026,
+            "brier_score": 0.34477212400293955,
+            "threshold": 0.8013073205947876,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                499,
+                1
+              ],
+              [
+                487,
+                13
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          },
+          {
+            "generator": "ldm_200",
+            "real_source": "laion",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.755968,
+            "macro_f1": 0.5590230664857531,
+            "accuracy": 0.61,
+            "false_positive_rate": 0.05,
+            "true_positive_rate": 0.27,
+            "brier_score": 0.21584343784109905,
+            "threshold": 0.8013073205947876,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                475,
+                25
+              ],
+              [
+                365,
+                135
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          }
+        ],
+        "organizer_hidden_result": null,
+        "limitations": [
+          "Domains are unseen in our task training, not necessarily absent from backbone pretraining.",
+          "Development domains may guide model selection and are not a blind final test.",
+          "Shared LAION real images are reused for per-generator comparisons; no inflated pooled sample count is reported."
+        ]
+      }
+    },
+    "matched": {
+      "gain_mean_auc": 0.020915999999999935,
+      "released": {
+        "source": "UniversalFakeDetect CVPR 2023 diffusion release",
+        "split": "dev",
+        "evaluation_kind": "external_development",
+        "protocol": "matched",
+        "protocol_description": "Every image of both labels: centre square crop, bicubic resize to 224, JPEG quality 90, then the detector's own preprocessing. Reduces file-format and aspect-ratio cues; earlier compression traces are weakened, not removed.",
+        "model_version": "mixed_resnet18_native_v1_calibrated",
+        "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+        "preprocessing": "Same full-image preprocessing as app/CLI; no external-domain adaptation.",
+        "threshold": 0.4553663730621338,
+        "unique_images_evaluated": 2000,
+        "macro_generator_roc_auc": 0.6530020000000001,
+        "per_generator": [
+          {
+            "generator": "guided",
+            "real_source": "imagenet",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.61136,
+            "macro_f1": 0.5076317085179715,
+            "accuracy": 0.559,
+            "false_positive_rate": 0.118,
+            "true_positive_rate": 0.236,
+            "brier_score": 0.317794843956521,
+            "threshold": 0.4553663730621338,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                441,
+                59
+              ],
+              [
+                382,
+                118
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          },
+          {
+            "generator": "ldm_200",
+            "real_source": "laion",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.694644,
+            "macro_f1": 0.6080502701728352,
+            "accuracy": 0.626,
+            "false_positive_rate": 0.16,
+            "true_positive_rate": 0.412,
+            "brier_score": 0.2516678848402254,
+            "threshold": 0.4553663730621338,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                420,
+                80
+              ],
+              [
+                294,
+                206
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          }
+        ],
+        "organizer_hidden_result": null,
+        "limitations": [
+          "Domains are unseen in our task training, not necessarily absent from backbone pretraining.",
+          "Development domains may guide model selection and are not a blind final test.",
+          "Shared LAION real images are reused for per-generator comparisons; no inflated pooled sample count is reported."
+        ]
+      },
+      "candidate": {
+        "source": "UniversalFakeDetect CVPR 2023 diffusion release",
+        "split": "dev",
+        "evaluation_kind": "external_development",
+        "protocol": "matched",
+        "protocol_description": "Every image of both labels: centre square crop, bicubic resize to 224, JPEG quality 90, then the detector's own preprocessing. Reduces file-format and aspect-ratio cues; earlier compression traces are weakened, not removed.",
+        "model_version": "mixed_resnet18_native_cifake1k_v1_calibrated",
+        "checkpoint_sha256": "3cf40e124a60e5368c53ecefa1abdd4b9ba72f6ecd9305d13080a0043a608671",
+        "preprocessing": "Same full-image preprocessing as app/CLI; no external-domain adaptation.",
+        "threshold": 0.8013073205947876,
+        "unique_images_evaluated": 2000,
+        "macro_generator_roc_auc": 0.673918,
+        "per_generator": [
+          {
+            "generator": "guided",
+            "real_source": "imagenet",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.588052,
+            "macro_f1": 0.37903105987588237,
+            "accuracy": 0.511,
+            "false_positive_rate": 0.028,
+            "true_positive_rate": 0.05,
+            "brier_score": 0.3085270484637042,
+            "threshold": 0.8013073205947876,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                486,
+                14
+              ],
+              [
+                475,
+                25
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          },
+          {
+            "generator": "ldm_200",
+            "real_source": "laion",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.759784,
+            "macro_f1": 0.5581126902820864,
+            "accuracy": 0.608,
+            "false_positive_rate": 0.056,
+            "true_positive_rate": 0.272,
+            "brier_score": 0.2082788399639808,
+            "threshold": 0.8013073205947876,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                472,
+                28
+              ],
+              [
+                364,
+                136
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          }
+        ],
+        "organizer_hidden_result": null,
+        "limitations": [
+          "Domains are unseen in our task training, not necessarily absent from backbone pretraining.",
+          "Development domains may guide model selection and are not a blind final test.",
+          "Shared LAION real images are reused for per-generator comparisons; no inflated pooled sample count is reported."
+        ]
+      }
+    }
+  },
+  "calibration": {
+    "temperature": 1.6913427114486694,
+    "threshold": 0.8013073205947876,
+    "temperature_fit_split": "calibration (GenImage and CIFAKE, equal domain weight)",
+    "threshold_fit_split": "val; strictest per-domain threshold meeting max FPR",
+    "requested_validation_max_fpr": 0.05,
+    "per_domain_thresholds": {
+      "genimage": 0.6538963913917542,
+      "cifake": 0.8013073205947876
+    },
+    "validation_before": {
+      "genimage": {
+        "count": 783,
+        "real_count": 369,
+        "ai_count": 414,
+        "roc_auc": 0.9532160297448387,
+        "macro_f1": 0.8874353076480737,
+        "accuracy": 0.8876117496807152,
+        "false_positive_rate": 0.1002710027100271,
+        "true_positive_rate": 0.8768115942028986,
+        "brier_score": 0.08530913225622042,
+        "threshold": 0.5,
+        "positive_class": "ai_generated",
+        "confusion_matrix": [
+          [
+            332,
+            37
+          ],
+          [
+            51,
+            363
+          ]
+        ],
+        "confusion_matrix_order": [
+          "real",
+          "ai_generated"
+        ],
+        "expected_calibration_error": 0.041949793645298425
+      },
+      "cifake": {
+        "count": 9964,
+        "real_count": 5000,
+        "ai_count": 4964,
+        "roc_auc": 0.9740783440773569,
+        "macro_f1": 0.9167342583216413,
+        "accuracy": 0.9168004817342432,
+        "false_positive_rate": 0.1146,
+        "true_positive_rate": 0.9484286865431104,
+        "brier_score": 0.06492128116935067,
+        "threshold": 0.5,
+        "positive_class": "ai_generated",
+        "confusion_matrix": [
+          [
+            4427,
+            573
+          ],
+          [
+            256,
+            4708
+          ]
+        ],
+        "confusion_matrix_order": [
+          "real",
+          "ai_generated"
+        ],
+        "expected_calibration_error": 0.03835081388327037
+      }
+    },
+    "validation_operating_point": {
+      "genimage": {
+        "count": 783,
+        "real_count": 369,
+        "ai_count": 414,
+        "roc_auc": 0.9532160297448384,
+        "macro_f1": 0.8175123845226938,
+        "accuracy": 0.8199233716475096,
+        "false_positive_rate": 0.008130081300813009,
+        "true_positive_rate": 0.6666666666666666,
+        "brier_score": 0.085598482595709,
+        "threshold": 0.8013073205947876,
+        "positive_class": "ai_generated",
+        "confusion_matrix": [
+          [
+            366,
+            3
+          ],
+          [
+            138,
+            276
+          ]
+        ],
+        "confusion_matrix_order": [
+          "real",
+          "ai_generated"
+        ],
+        "expected_calibration_error": 0.042256124118138
+      },
+      "cifake": {
+        "count": 9964,
+        "real_count": 5000,
+        "ai_count": 4964,
+        "roc_auc": 0.97407840451249,
+        "macro_f1": 0.9081836899074023,
+        "accuracy": 0.9083701324769169,
+        "false_positive_rate": 0.05,
+        "true_positive_rate": 0.8664383561643836,
+        "brier_score": 0.06228852329748105,
+        "threshold": 0.8013073205947876,
+        "positive_class": "ai_generated",
+        "confusion_matrix": [
+          [
+            4750,
+            250
+          ],
+          [
+            663,
+            4301
+          ]
+        ],
+        "confusion_matrix_order": [
+          "real",
+          "ai_generated"
+        ],
+        "expected_calibration_error": 0.00722500367295081
+      }
+    },
+    "generalisation_limit": "Calibrated on GenImage BigGAN/SD1.5 and CIFAKE; probabilities and the false-positive rate need not transfer to unseen generators or image pipelines.",
+    "parent_model_version": "mixed_resnet18_native_cifake1k_v1",
+    "parent_checkpoint_sha256": "a30eb85c630b83d22e2112d09e6c65cf0992d5f3ca08b1d46a65ee3765fc12ff"
+  },
+  "advance_gate_passed": true,
+  "decision": "Passed the declared ranking gate and advanced to calibration. Retained as a research candidate; not deployed after operating-point review.",
+  "reason": "Gain concentrates in LDM, related to the Stable Diffusion training family; guided AUC falls in both protocols. The same validation-only FPR calibration raises the threshold to 0.801, reducing development AI recall in both domains and GenImage validation recall from 85.0% to 66.7%. This does not fix the product's important missed-AI limitation. Lower FPR is a real tradeoff, not an across-the-board regression.",
+  "decision_limit": "Operating-point judgment after calibration, not an additional predeclared statistical rejection rule. No new blind evaluation was performed; no final-test superiority is claimed.",
+  "release": "v0.2.0 checkpoint and original final measurement files unchanged."
+}

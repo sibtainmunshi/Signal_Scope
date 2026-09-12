@@ -55,3 +55,42 @@ Next: test the preprocessing mismatch, run the frozen-feature candidate, and add
 - Model and threshold frozen publicly (`report/final/freeze.json`, commit before scoring), then the reserved evaluations ran once: CIFAKE author test (20,000) ROC-AUC 0.9926, macro-F1 0.951, accuracy 95.1%, FPR 1.9%, TPR 92.2%; reserved unseen GLIDE x3 + DALLE vs reserved LAION mean AUC 0.565 as distributed, 0.643 format-matched, 0.640 matched-native (GLIDE 0.52-0.62 weakest, DALLE 0.65-0.77), real FPR 10.4-14.6%, AI recall 13-48%. The released v0.1.0 baseline scores 0.548 / 0.546 on the same reserved set (post-freeze comparison; selection was already fixed).
 - Honest finding: as-distributed reserved AUC (0.565) is below format-matched (0.643), i.e. pristine PNG generator output is harder for this JPEG-balanced model. Recorded rather than hidden.
 - Release asset for the native calibrated checkpoint prepared locally (44,782,411 bytes, SHA-256 eab7d9d8...b303); `gh` CLI is unavailable, so the GitHub release upload needs the user. App, CLI and tests now take the default checkpoint from `model/manifest.json`.
+
+
+## 12 September - independent review and verified v0.2.0 release
+
+Reviewed Claude's d8b7558 handoff against source, checkpoint and saved scores.
+Metrics recomputed exactly; frozen weights and final measurements preserved.
+Fixed stale final-result status, unsafe extreme-aspect upscaling, and release-test
+checkpoint selection. 23 tests and Ruff pass. Updated one-page report visually
+checked. Added three actual explanation examples, including a false negative,
+and a standard-library verifier for archived final scores.
+
+Published 78f078e and v0.2.0. Model upload and unauthenticated public checksum
+verified. A fresh public clone, separate CPU venv and warm pip cache completed
+setup in 204.81 s; actual CLI/API scores, desktop/mobile UI and saved metrics all
+passed. An earlier attempt failed during a DNS outage; this is recorded explicitly.
+Video recording is being finalized; human explanation review remains pending.
+User has a bounded parallel Claude Code UI/API review; do not edit its report.
+
+
+## 12 September - complementary development and parallel QA
+
+- Published the real CPU demo (4m15s, computer narration), subtitles and one-page
+  report as v0.2.0 release assets; unauthenticated downloads match local SHA-256.
+  This is a first cut preceding later accessibility changes.
+- Three predeclared score ensembles failed the advancement rule. A single
+  CIFAKE-1k mixture experiment reached development AUC 0.682 / 0.674 and passed
+  the initial gate, but the same calibration policy reduced AI recall; retained
+  as a research candidate, without changing the frozen release or using final data.
+- Claude completed a bounded frontend review and fixes: rejected-file state,
+  keyboard tabs, contrast/type size, skip link, focused announcements, tap targets
+  and favicon. Codex handled EXIF dimensions, empty/animated files, method errors,
+  flat-input review hints and the API contract. 31 tests pass.
+- Supplemented the explanation audit with fixed-class comparisons over the same
+  40 development examples. Original batched predictions reproduce; fixed-target
+  randomization median rho 0.440. No semantic artifact correctness claim.
+- Independent latest-backend + latest-UI CPU smoke passes with actual prediction,
+  explanation, transformations and responsive report. Full independent regression and settled-state contrast checks also pass.
+  Integration records and updated handoff accompany this revision. Human
+  explanation review remains.

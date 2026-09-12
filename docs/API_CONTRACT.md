@@ -29,3 +29,19 @@ reserved results are distinct from the unavailable organizer hidden test.
 
 Native crop preprocessing also limits the upscaled canvas to 20 million pixels.
 Extremely narrow images that exceed this limit return HTTP 413 before allocation.
+
+Image dimensions in the prediction describe the EXIF-oriented image, matching
+what is displayed and scored. The visual score's preprocessing is unchanged.
+Only single-frame uploads are supported; animated PNG/WebP return HTTP 415.
+Empty files return HTTP 400 with an explicit empty-file message. GET /api/predict
+returns HTTP 405 and `Allow: POST`.
+
+Errors normally have a string `detail`; FastAPI request-validation errors (422)
+may instead contain a list of objects with `loc`, `msg` and `type`. Clients should
+handle both. EXIF fields are limited to Make, Model, Software, DateTime and
+DateTimeOriginal; GPS and serial numbers are not exposed.
+
+Nearly flat images (maximum channel standard deviation below 1 pixel level on a
+64px RGB thumbnail) retain their binary label and score but recommend review with
+a low-information limitation. This is a usability heuristic, not evidence of
+accuracy or generation, and does not change benchmark predictions or thresholds.

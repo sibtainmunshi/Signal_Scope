@@ -1,0 +1,291 @@
+{
+  "health": {
+    "ready": true,
+    "version": "0.2.0",
+    "device": "cpu",
+    "model_version": "mixed_resnet18_native_v1_calibrated",
+    "message": "Local detector ready"
+  },
+  "evidence": [
+    {
+      "filename": "real_photo.jpeg",
+      "prediction": {
+        "label": "real",
+        "ai_score": 0.005891817156225443,
+        "threshold": 0.4553663730621338,
+        "confidence": 0.9941081828437746,
+        "calibrated": true,
+        "review_recommended": false,
+        "inference_ms": 50.12,
+        "model_version": "mixed_resnet18_native_v1_calibrated",
+        "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+        "image_width": 492,
+        "image_height": 500,
+        "limitations": [
+          "Trained on CIFAKE + GenImage train-only subset; unseen generators and processing pipelines can still fail.",
+          "Public external evaluations show substantial domain-shift errors; broad unseen-generator reliability is not established.",
+          "A visual score does not verify the truth of a depicted event.",
+          "Temperature scaling was fit on development sources; confidence and false-positive rates may not transfer to other sources."
+        ]
+      },
+      "explanation": [
+        "The verdict averages 5 native-resolution crop(s); the overlay combines Grad-CAM attribution for each crop.",
+        "Masking the highlighted patch changed the AI score by less than 0.1 percentage points; this diagnostic provides little evidence of a probability-level effect.",
+        "This analysis has not established a specific visible defect such as malformed text or inconsistent lighting.",
+        "Dimmed areas lie outside the analysed crops and did not influence the score."
+      ],
+      "masking": {
+        "ai_score_before": 0.005891817156225443,
+        "ai_score_after_top_patch": 0.005908194929361343,
+        "ai_score_after_corner_patches_mean": 0.006053750985302031,
+        "mask_baseline": "ImageNet channel-mean pixels in the analysed image",
+        "limitation": "Masking creates altered inputs; this is not causal proof or artifact ground truth."
+      },
+      "robustness": {
+        "results": [
+          {
+            "transformation": "original",
+            "ai_score": 0.005891817156225443,
+            "label": "real",
+            "score_change": 0,
+            "label_changed": false
+          },
+          {
+            "transformation": "jpeg_q90",
+            "ai_score": 0.02923223376274109,
+            "label": "real",
+            "score_change": 0.023340416606515646,
+            "label_changed": false
+          },
+          {
+            "transformation": "jpeg_q70",
+            "ai_score": 0.03354231268167496,
+            "label": "real",
+            "score_change": 0.027650495525449514,
+            "label_changed": false
+          },
+          {
+            "transformation": "jpeg_q50",
+            "ai_score": 0.02344474196434021,
+            "label": "real",
+            "score_change": 0.017552924808114767,
+            "label_changed": false
+          },
+          {
+            "transformation": "half_resolution",
+            "ai_score": 0.04627782106399536,
+            "label": "real",
+            "score_change": 0.04038600390776992,
+            "label_changed": false
+          },
+          {
+            "transformation": "mild_blur",
+            "ai_score": 0.01835198886692524,
+            "label": "real",
+            "score_change": 0.012460171710699797,
+            "label_changed": false
+          }
+        ],
+        "threshold": 0.4553663730621338,
+        "max_absolute_score_change": 0.04038600390776992,
+        "label_flip_count": 0,
+        "transformations_tested": 5,
+        "note": "Stability is measured on this upload only; a stable verdict can still be wrong."
+      }
+    },
+    {
+      "filename": "generated_detected.png",
+      "prediction": {
+        "label": "ai_generated",
+        "ai_score": 0.8691685199737549,
+        "threshold": 0.4553663730621338,
+        "confidence": 0.8691685199737549,
+        "calibrated": true,
+        "review_recommended": false,
+        "inference_ms": 45.43,
+        "model_version": "mixed_resnet18_native_v1_calibrated",
+        "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+        "image_width": 512,
+        "image_height": 512,
+        "limitations": [
+          "Trained on CIFAKE + GenImage train-only subset; unseen generators and processing pipelines can still fail.",
+          "Public external evaluations show substantial domain-shift errors; broad unseen-generator reliability is not established.",
+          "A visual score does not verify the truth of a depicted event.",
+          "Temperature scaling was fit on development sources; confidence and false-positive rates may not transfer to other sources."
+        ]
+      },
+      "explanation": [
+        "The verdict averages 5 native-resolution crop(s); the overlay combines Grad-CAM attribution for each crop.",
+        "Masking the highlighted patch changed the AI score by -0.2 percentage points (86.9% to 86.7%).",
+        "This analysis has not established a specific visible defect such as malformed text or inconsistent lighting.",
+        "Dimmed areas lie outside the analysed crops and did not influence the score."
+      ],
+      "masking": {
+        "ai_score_before": 0.8691685199737549,
+        "ai_score_after_top_patch": 0.8674538135528564,
+        "ai_score_after_corner_patches_mean": 0.8692289292812347,
+        "mask_baseline": "ImageNet channel-mean pixels in the analysed image",
+        "limitation": "Masking creates altered inputs; this is not causal proof or artifact ground truth."
+      },
+      "robustness": {
+        "results": [
+          {
+            "transformation": "original",
+            "ai_score": 0.8691685199737549,
+            "label": "ai_generated",
+            "score_change": 0,
+            "label_changed": false
+          },
+          {
+            "transformation": "jpeg_q90",
+            "ai_score": 0.9292570948600769,
+            "label": "ai_generated",
+            "score_change": 0.06008857488632202,
+            "label_changed": false
+          },
+          {
+            "transformation": "jpeg_q70",
+            "ai_score": 0.9347641468048096,
+            "label": "ai_generated",
+            "score_change": 0.06559562683105469,
+            "label_changed": false
+          },
+          {
+            "transformation": "jpeg_q50",
+            "ai_score": 0.9344870448112488,
+            "label": "ai_generated",
+            "score_change": 0.0653185248374939,
+            "label_changed": false
+          },
+          {
+            "transformation": "half_resolution",
+            "ai_score": 0.9005048871040344,
+            "label": "ai_generated",
+            "score_change": 0.03133636713027954,
+            "label_changed": false
+          },
+          {
+            "transformation": "mild_blur",
+            "ai_score": 0.9223491549491882,
+            "label": "ai_generated",
+            "score_change": 0.05318063497543335,
+            "label_changed": false
+          }
+        ],
+        "threshold": 0.4553663730621338,
+        "max_absolute_score_change": 0.06559562683105469,
+        "label_flip_count": 0,
+        "transformations_tested": 5,
+        "note": "Stability is measured on this upload only; a stable verdict can still be wrong."
+      }
+    },
+    {
+      "filename": "generated_missed.png",
+      "prediction": {
+        "label": "real",
+        "ai_score": 0.016237925738096237,
+        "threshold": 0.4553663730621338,
+        "confidence": 0.9837620742619038,
+        "calibrated": true,
+        "review_recommended": false,
+        "inference_ms": 17.19,
+        "model_version": "mixed_resnet18_native_v1_calibrated",
+        "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+        "image_width": 128,
+        "image_height": 128,
+        "limitations": [
+          "Trained on CIFAKE + GenImage train-only subset; unseen generators and processing pipelines can still fail.",
+          "Public external evaluations show substantial domain-shift errors; broad unseen-generator reliability is not established.",
+          "A visual score does not verify the truth of a depicted event.",
+          "Temperature scaling was fit on development sources; confidence and false-positive rates may not transfer to other sources."
+        ]
+      },
+      "explanation": [
+        "The verdict averages 1 native-resolution crop(s); the overlay combines Grad-CAM attribution for each crop.",
+        "Masking the highlighted patch changed the AI score by -0.3 percentage points (1.6% to 1.4%).",
+        "This analysis has not established a specific visible defect such as malformed text or inconsistent lighting."
+      ],
+      "masking": {
+        "ai_score_before": 0.016237925738096237,
+        "ai_score_after_top_patch": 0.013700329698622227,
+        "ai_score_after_corner_patches_mean": 0.02587061421945691,
+        "mask_baseline": "ImageNet channel-mean pixels in the analysed image",
+        "limitation": "Masking creates altered inputs; this is not causal proof or artifact ground truth."
+      },
+      "robustness": {
+        "results": [
+          {
+            "transformation": "original",
+            "ai_score": 0.016237910836935043,
+            "label": "real",
+            "score_change": 0,
+            "label_changed": false
+          },
+          {
+            "transformation": "jpeg_q90",
+            "ai_score": 0.09646615386009216,
+            "label": "real",
+            "score_change": 0.08022824302315712,
+            "label_changed": false
+          },
+          {
+            "transformation": "jpeg_q70",
+            "ai_score": 0.11615323275327682,
+            "label": "real",
+            "score_change": 0.09991532191634178,
+            "label_changed": false
+          },
+          {
+            "transformation": "jpeg_q50",
+            "ai_score": 0.07582996785640717,
+            "label": "real",
+            "score_change": 0.05959205701947212,
+            "label_changed": false
+          },
+          {
+            "transformation": "half_resolution",
+            "ai_score": 0.3496030569076538,
+            "label": "real",
+            "score_change": 0.33336514607071877,
+            "label_changed": false
+          },
+          {
+            "transformation": "mild_blur",
+            "ai_score": 0.24385425448417664,
+            "label": "real",
+            "score_change": 0.2276163436472416,
+            "label_changed": false
+          }
+        ],
+        "threshold": 0.4553663730621338,
+        "max_absolute_score_change": 0.33336514607071877,
+        "label_flip_count": 0,
+        "transformations_tested": 5,
+        "note": "Stability is measured on this upload only; a stable verdict can still be wrong."
+      }
+    },
+    {
+      "actual_cli_output": {
+        "label": "ai_generated",
+        "ai_score": 0.8691685199737549,
+        "threshold": 0.4553663730621338,
+        "confidence": 0.8691685199737549,
+        "calibrated": true,
+        "review_recommended": false,
+        "inference_ms": 34.67,
+        "model_version": "mixed_resnet18_native_v1_calibrated",
+        "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+        "image_width": 512,
+        "image_height": 512,
+        "limitations": [
+          "Trained on CIFAKE + GenImage train-only subset; unseen generators and processing pipelines can still fail.",
+          "Public external evaluations show substantial domain-shift errors; broad unseen-generator reliability is not established.",
+          "A visual score does not verify the truth of a depicted event.",
+          "Temperature scaling was fit on development sources; confidence and false-positive rates may not transfer to other sources."
+        ]
+      }
+    }
+  ],
+  "javascript_errors": [],
+  "simulated_predictions": false
+}

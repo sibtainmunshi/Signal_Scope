@@ -42,8 +42,11 @@ try {
   await page.getByRole('button', { name: 'Analyze image', exact: true }).first().click();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({ path: path.join(out, 'mobile-result.png'), fullPage: true });
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
-  if (overflow) errors.push('Mobile horizontal overflow');
+  let overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
+  await page.getByRole('button', { name: 'Model report', exact: true }).click();
+  await page.screenshot({ path: path.join(out, 'mobile-report.png'), fullPage: true });
+  overflow ||= await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
+  if (overflow) errors.push('Mobile horizontal overflow in analysis or report');
   if (errors.length) throw new Error(errors.join('; '));
   const summary = { ok: true, browser: 'installed Chrome, headless', server_device: 'cpu',
     fixture, prediction: result.prediction,

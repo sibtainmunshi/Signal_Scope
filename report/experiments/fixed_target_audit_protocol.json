@@ -1,0 +1,11 @@
+{
+  "created_utc": "2026-09-12T10:16:00.596191+00:00",
+  "model_version": "mixed_resnet18_native_v1_calibrated",
+  "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+  "sample": "Exactly the 40 existing development audit rows; no resampling, no reserved data.",
+  "seed": 2026,
+  "randomization": "Reset layer4 and fc once, seed set immediately before reset; evaluate all 40 images.",
+  "comparisons": "Hold the original returned class fixed for JPEG q70 and randomized-model attribution. Also record recomputed-target correlations and target flips for diagnosis.",
+  "statistic": "Spearman on the same quantized 64x64 maps as the original audit; report valid and undefined counts, per-image and aggregate values.",
+  "interpretation": "Diagnostic only; no pass threshold or visible-artifact correctness claim. Preserve the original audit outputs."
+}

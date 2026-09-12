@@ -190,10 +190,11 @@ def top_window(heat: np.ndarray, covered: np.ndarray, side: int) -> tuple[int, i
     return int(x), int(y)
 
 
-def native_attribution(detector: Detector, image: Image.Image, model=None) -> dict:
+def native_attribution(detector: Detector, image: Image.Image, model=None, *, target_ai: bool | None = None) -> dict:
     """Returned-class Grad-CAM for each native crop, stitched on the analysed canvas.
 
     `model` may substitute another network with the same architecture (randomization checks).
+    `target_ai` fixes the explained class for comparisons; None uses the returned class.
     """
     model = model or detector.model
     size = detector.image_size
@@ -207,7 +208,8 @@ def native_attribution(detector: Detector, image: Image.Image, model=None) -> di
             logits = model(tensor).flatten()/detector.temperature
             mean_logit = logits.mean()
             ai_score = float(torch.sigmoid(mean_logit.detach()).item())
-            target_ai = ai_score >= detector.threshold
+            if target_ai is None:
+                target_ai = ai_score >= detector.threshold
             gradients = torch.autograd.grad(mean_logit if target_ai else -mean_logit, captured[0])[0]
             weights = gradients.mean(dim=(2, 3), keepdim=True)
             cams = (weights*captured[0]).sum(dim=1, keepdim=True).relu().detach()

@@ -1,0 +1,100 @@
+[
+  {
+    "id": 0,
+    "action": "intro",
+    "caption": "A local detector with inspectable evidence",
+    "narration": "SignalScope estimates whether an image is real or AI generated, with evidence a reviewer can inspect. This records the actual application on a local CPU. Narration uses a computer voice; predictions come from our frozen trained model.",
+    "audio_seconds": 16.221451247165533
+  },
+  {
+    "id": 1,
+    "action": "about",
+    "caption": "Core detector, explanations, robustness and honest limits",
+    "narration": "We built a binary detector, web interface, model influence maps, robustness checks and separate metadata evidence. The scope is general objects and scenes. The system does not identify people or verify real world events.",
+    "audio_seconds": 16.171655328798185
+  },
+  {
+    "id": 2,
+    "action": "real",
+    "caption": "Example 1 / Real photograph from validation",
+    "narration": "First, a real bird photograph from GenImage validation, outside classifier training. We upload it and run analysis. It returns likely real, with an AI score around zero point zero zero six. This selected example is not an accuracy estimate.",
+    "audio_seconds": 18.921315192743766
+  },
+  {
+    "id": 3,
+    "action": "generated",
+    "caption": "Example 2 / Generated image from validation",
+    "narration": "Next, a Stable Diffusion validation image. Its AI score is about zero point eight seven, above the fixed threshold of zero point four five five. The local server processes the upload in memory and does not save it.",
+    "audio_seconds": 15.281995464852608
+  },
+  {
+    "id": 4,
+    "action": "explanation",
+    "caption": "Attribution shows model influence, not a verified defect",
+    "narration": "The overlay combines Grad CAM maps from up to five native resolution crops. Dimmed areas were not analysed. This is model attribution, not verification of a specific defect in texture, lighting or anatomy.",
+    "audio_seconds": 14.701678004535147
+  },
+  {
+    "id": 5,
+    "action": "masking",
+    "caption": "A measured masking diagnostic accompanies the map",
+    "narration": "Masking the highlighted patch measures how the score changes. A separate forty image audit compares highlighted and random regions using two masking baselines. Effects were usually small. The two person usefulness review remains pending.",
+    "audio_seconds": 16.131836734693877
+  },
+  {
+    "id": 6,
+    "action": "failure",
+    "caption": "Known failure / An AI image is classified as real",
+    "narration": "This BigGAN image is generated, but the model gives it a low AI score and incorrectly calls it likely real. We include this failure deliberately. A confident score can be wrong; the output is not proof of origin.",
+    "audio_seconds": 14.946757369614513
+  },
+  {
+    "id": 7,
+    "action": "stability",
+    "caption": "The same image, five controlled transformations",
+    "narration": "The stability tab recompresses, resizes and blurs the upload, then displays actual score and label changes. These checks do not change the original prediction. A stable verdict can still be wrong.",
+    "audio_seconds": 14.026984126984127
+  },
+  {
+    "id": 8,
+    "action": "metadata",
+    "caption": "Metadata is separate evidence",
+    "narration": "EXIF fields appear when available. Missing metadata does not prove generation, and metadata never changes the visual score. C two P A credentials are not checked. We do not claim that feature.",
+    "audio_seconds": 14.571791383219955
+  },
+  {
+    "id": 9,
+    "action": "final",
+    "caption": "Frozen reserved results / AUC 0.565 and 0.643",
+    "narration": "After freezing the model and threshold, final reserved mean A U C was zero point five six five as distributed, and zero point six four three format matched. Most unseen AI images are missed. These are public results, not organizer hidden scores.",
+    "audio_seconds": 17.716643990929704
+  },
+  {
+    "id": 10,
+    "action": "method",
+    "caption": "Matched processing tests dataset shortcuts",
+    "narration": "These datasets differ in compression and geometry between real and generated images. Matching applies the same crop, resize and JPEG to both labels. It helps expose shortcuts, but cannot remove all traces or establish their individual causes.",
+    "audio_seconds": 17.24140589569161
+  },
+  {
+    "id": 11,
+    "action": "indomain",
+    "caption": "In-domain accuracy is not unseen-generator accuracy",
+    "narration": "The separate twenty thousand image CIFAKE test gives ninety five point one percent accuracy. That in domain result does not override weaker unseen results. Calibration also depends on the source. Both strengths and failures are reported.",
+    "audio_seconds": 16.241678004535146
+  },
+  {
+    "id": 12,
+    "action": "cli",
+    "caption": "Actual CLI output and reproducible setup",
+    "narration": "This is actual command line output for the generated example. Evaluators clone the repository, run setup, then run the app. The model is forty four point eight megabytes, plus Python packages. Inference needs no dataset or GPU.",
+    "audio_seconds": 18.096145124716553
+  },
+  {
+    "id": 13,
+    "action": "ending",
+    "caption": "Reproducible evidence / clear limits",
+    "narration": "The repository includes training code, data sources, frozen results, explanation samples and a one page report. An offline verifier checks statistics from archived scores. Unseen performance remains limited. Every displayed prediction was produced locally, with no simulated results.",
+    "audio_seconds": 20.59546485260771
+  }
+]

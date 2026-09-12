@@ -1,0 +1,10 @@
+{
+  "release": "v0.2.0",
+  "url": "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.2.0/signalscope-resnet18-native-v1-calibrated.pt",
+  "release_url": "https://github.com/sibtainmunshi/Signal_Scope/releases/tag/v0.2.0",
+  "verified_utc": "2026-09-12T03:41:18.046502+00:00",
+  "unauthenticated_download": true,
+  "bytes": 44782411,
+  "sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+  "matches_frozen_checkpoint": true
+}

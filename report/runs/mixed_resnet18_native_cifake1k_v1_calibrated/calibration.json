@@ -1,0 +1,130 @@
+{
+  "temperature": 1.6913427114486694,
+  "threshold": 0.8013073205947876,
+  "temperature_fit_split": "calibration (GenImage and CIFAKE, equal domain weight)",
+  "threshold_fit_split": "val; strictest per-domain threshold meeting max FPR",
+  "requested_validation_max_fpr": 0.05,
+  "per_domain_thresholds": {
+    "genimage": 0.6538963913917542,
+    "cifake": 0.8013073205947876
+  },
+  "validation_before": {
+    "genimage": {
+      "count": 783,
+      "real_count": 369,
+      "ai_count": 414,
+      "roc_auc": 0.9532160297448387,
+      "macro_f1": 0.8874353076480737,
+      "accuracy": 0.8876117496807152,
+      "false_positive_rate": 0.1002710027100271,
+      "true_positive_rate": 0.8768115942028986,
+      "brier_score": 0.08530913225622042,
+      "threshold": 0.5,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          332,
+          37
+        ],
+        [
+          51,
+          363
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ],
+      "expected_calibration_error": 0.041949793645298425
+    },
+    "cifake": {
+      "count": 9964,
+      "real_count": 5000,
+      "ai_count": 4964,
+      "roc_auc": 0.9740783440773569,
+      "macro_f1": 0.9167342583216413,
+      "accuracy": 0.9168004817342432,
+      "false_positive_rate": 0.1146,
+      "true_positive_rate": 0.9484286865431104,
+      "brier_score": 0.06492128116935067,
+      "threshold": 0.5,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          4427,
+          573
+        ],
+        [
+          256,
+          4708
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ],
+      "expected_calibration_error": 0.03835081388327037
+    }
+  },
+  "validation_operating_point": {
+    "genimage": {
+      "count": 783,
+      "real_count": 369,
+      "ai_count": 414,
+      "roc_auc": 0.9532160297448384,
+      "macro_f1": 0.8175123845226938,
+      "accuracy": 0.8199233716475096,
+      "false_positive_rate": 0.008130081300813009,
+      "true_positive_rate": 0.6666666666666666,
+      "brier_score": 0.085598482595709,
+      "threshold": 0.8013073205947876,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          366,
+          3
+        ],
+        [
+          138,
+          276
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ],
+      "expected_calibration_error": 0.042256124118138
+    },
+    "cifake": {
+      "count": 9964,
+      "real_count": 5000,
+      "ai_count": 4964,
+      "roc_auc": 0.97407840451249,
+      "macro_f1": 0.9081836899074023,
+      "accuracy": 0.9083701324769169,
+      "false_positive_rate": 0.05,
+      "true_positive_rate": 0.8664383561643836,
+      "brier_score": 0.06228852329748105,
+      "threshold": 0.8013073205947876,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          4750,
+          250
+        ],
+        [
+          663,
+          4301
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ],
+      "expected_calibration_error": 0.00722500367295081
+    }
+  },
+  "generalisation_limit": "Calibrated on GenImage BigGAN/SD1.5 and CIFAKE; probabilities and the false-positive rate need not transfer to unseen generators or image pipelines.",
+  "parent_model_version": "mixed_resnet18_native_cifake1k_v1",
+  "parent_checkpoint_sha256": "a30eb85c630b83d22e2112d09e6c65cf0992d5f3ca08b1d46a65ee3765fc12ff"
+}

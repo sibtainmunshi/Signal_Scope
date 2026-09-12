@@ -22,9 +22,16 @@ type Metrics = { roc_auc: number | null; macro_f1: number; accuracy: number; fal
 type External = { macro_generator_roc_auc: number; per_generator: { generator: string; roc_auc: number; accuracy: number; false_positive_rate: number; true_positive_rate: number }[]; unique_images_evaluated: number }
 type ModelReport = { ready: boolean; architecture?: string; model_version?: string; image_size?: number; source_resolution?: string; training_source?: string; transparency_note?: string; threshold?: number; calibrated?: boolean; metrics: Metrics | null; checkpoint_sha256?: string; unseen_generator_status?: string; external_development?: External | null; external_development_matched?: External | null; external_reserved?: External | null; external_reserved_matched?: External | null; cifake_test?: Metrics | null }
 
+type TabId = 'evidence' | 'stability' | 'metadata'
+const TABS: [TabId, string][] = [['evidence', 'Evidence'], ['stability', 'Stability'], ['metadata', 'Metadata']]
+const PANEL_ID = 'evidence-panel'
+const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+
 const percentage = (value: number) => `${(value * 100).toFixed(1)}%`
 const scorePercentage = (value: number) => value >= .999 ? '>99.9%' : value <= .001 ? '<0.1%' : percentage(value)
 const pretty = (name: string) => ({ original: 'Original image', jpeg_q90: 'JPEG · quality 90', jpeg_q70: 'JPEG · quality 70', jpeg_q50: 'JPEG · quality 50', half_resolution: '50% resolution', mild_blur: 'Mild blur' }[name] || name)
+const verdictTitle = (prediction: Prediction) => prediction.review_recommended ? 'Review recommended'
+  : prediction.label === 'ai_generated' ? 'Likely AI-generated' : 'Likely real'
 
 function ExternalResults({ title, report, matched, final = false }: { title: string; report: External; matched?: External | null; final?: boolean }) {
   return <section className="panel report-panel" style={{ marginBottom: 24 }}>
@@ -52,12 +59,14 @@ function App() {
   const [analysis, setAnalysis] = useState<Analysis | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [announcement, setAnnouncement] = useState('')
   const [dragging, setDragging] = useState(false)
   const [explain, setExplain] = useState(true)
   const [robustness, setRobustness] = useState(true)
   const [showHeatmap, setShowHeatmap] = useState(true)
-  const [tab, setTab] = useState<'evidence' | 'stability' | 'metadata'>('evidence')
+  const [tab, setTab] = useState<TabId>('evidence')
   const fileInput = useRef<HTMLInputElement>(null)
+  const tabRefs = useRef<Partial<Record<TabId, HTMLButtonElement | null>>>({})
   const controller = useRef<AbortController | null>(null)
 
   useEffect(() => {
@@ -72,17 +81,33 @@ function App() {
     return () => URL.revokeObjectURL(url)
   }, [file])
 
+  // Clearing the input lets the same path be chosen again; browsers fire no
+  // change event when the selected file is identical to the previous one.
+  function resetFileInput() {
+    if (fileInput.current) fileInput.current.value = ''
+  }
+
+  function openFilePicker() {
+    resetFileInput()
+    fileInput.current?.click()
+  }
+
   function selectFile(selected: File | undefined) {
     if (!selected || busy) return
-    setError(''); setAnalysis(null)
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(selected.type)) { setError('Choose a JPEG, PNG or WebP image.'); return }
-    if (selected.size > 10 * 1024 * 1024) { setError('Choose an image smaller than 10 MiB.'); return }
-    setFile(selected)
+    // Validate before discarding any existing result, so a rejected file never
+    // destroys the analysis the user already has on screen.
+    if (!ACCEPTED_TYPES.includes(selected.type)) { setError('Choose a JPEG, PNG or WebP image.'); resetFileInput(); return }
+    if (selected.size > 10 * 1024 * 1024) { setError('Choose an image smaller than 10 MiB.'); resetFileInput(); return }
+    setError(''); setAnnouncement(''); setAnalysis(null); setFile(selected)
+  }
+
+  function clearImage() {
+    setFile(null); setAnalysis(null); setError(''); setAnnouncement(''); resetFileInput()
   }
 
   async function runAnalysis() {
     if (!file) return
-    setBusy(true); setError(''); setAnalysis(null)
+    setBusy(true); setError(''); setAnalysis(null); setAnnouncement('Analyzing image…')
     const body = new FormData()
     body.append('image', file); body.append('explain', String(explain)); body.append('robustness', String(robustness))
     controller.current = new AbortController()
@@ -91,8 +116,10 @@ function App() {
       const data = await response.json()
       if (!response.ok) throw new Error(typeof data.detail === 'string' ? data.detail : 'Analysis could not be completed.')
       setAnalysis(data); setTab('evidence'); setShowHeatmap(true)
+      const result = data.prediction as Prediction
+      setAnnouncement(`Analysis complete. ${verdictTitle(result)}. AI-generated score ${scorePercentage(result.ai_score)}, decision threshold ${percentage(result.threshold)}.`)
     } catch (e) {
-      if (e instanceof Error && e.name !== 'AbortError') setError(e.message)
+      if (e instanceof Error && e.name !== 'AbortError') { setError(e.message); setAnnouncement('') }
     } finally { setBusy(false) }
   }
 
@@ -104,24 +131,42 @@ function App() {
     URL.revokeObjectURL(url)
   }
 
+  // Left/Right/Home/End move selection between tabs, as the ARIA tabs pattern expects.
+  function onTabKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+    const order = TABS.map(([id]) => id)
+    const current = order.indexOf(tab)
+    const next = event.key === 'ArrowRight' ? (current + 1) % order.length
+      : event.key === 'ArrowLeft' ? (current - 1 + order.length) % order.length
+      : event.key === 'Home' ? 0
+      : event.key === 'End' ? order.length - 1 : -1
+    if (next < 0) return
+    event.preventDefault()
+    setTab(order[next])
+    tabRefs.current[order[next]]?.focus()
+  }
+
   const verdict = analysis?.prediction
-  const title = verdict?.review_recommended ? 'Review recommended' : verdict?.label === 'ai_generated' ? 'Likely AI-generated' : 'Likely real'
+  const title = verdict ? verdictTitle(verdict) : ''
 
   return <div className="shell">
+    <a className="skip-link" href="#main-content">Skip to main content</a>
     <aside className="sidebar">
       <a className="brand" href="#" onClick={e => { e.preventDefault(); setPage('analyze') }} aria-label="SignalScope home"><span className="brand-icon"><ScanLine size={23} /></span><span>Signal<span className="brand-light">Scope</span><small>IMAGE INTELLIGENCE</small></span></a>
       <div className="nav-label">WORKSPACE</div>
       <nav aria-label="Main navigation">
-        <button className={page === 'analyze' ? 'nav-item active' : 'nav-item'} onClick={() => setPage('analyze')}><ScanLine size={18} /> Analyze image <ChevronRight size={15} /></button>
-        <button className={page === 'report' ? 'nav-item active' : 'nav-item'} onClick={() => setPage('report')}><FlaskConical size={18} /> Model report</button>
-        <button className={page === 'about' ? 'nav-item active' : 'nav-item'} onClick={() => setPage('about')}><CircleHelp size={18} /> How it works</button>
+        <button className={page === 'analyze' ? 'nav-item active' : 'nav-item'} aria-current={page === 'analyze' ? 'page' : undefined} onClick={() => setPage('analyze')}><ScanLine size={18} /> <span className="nav-text">Analyze image</span> <ChevronRight size={15} /></button>
+        <button className={page === 'report' ? 'nav-item active' : 'nav-item'} aria-current={page === 'report' ? 'page' : undefined} onClick={() => setPage('report')}><FlaskConical size={18} /> <span className="nav-text">Model report</span></button>
+        <button className={page === 'about' ? 'nav-item active' : 'nav-item'} aria-current={page === 'about' ? 'page' : undefined} onClick={() => setPage('about')}><CircleHelp size={18} /> <span className="nav-text">How it works</span></button>
       </nav>
       <div className="sidebar-note"><Fingerprint size={25} /><strong>Evidence before certainty.</strong><p>Inspect the signal. Understand its limits. Make an informed call.</p></div>
       <div className="sidebar-bottom"><span className={`status-dot ${health?.ready ? 'online' : ''}`} /><span>{health?.ready ? 'Local model connected' : health ? 'Model unavailable' : 'Connecting to model…'}</span><small>SIH 2026 · Development build</small></div>
     </aside>
     <div className="workspace">
       <header className="topbar"><div className="breadcrumb">Workspace <ChevronRight size={13} /><span>{page === 'analyze' ? 'Image analysis' : page === 'report' ? 'Model report' : 'How it works'}</span></div><span className="local-badge"><span className="status-dot online" /> LOCAL PROCESSING</span></header>
-      <main>
+      {/* One concise status message, so assistive technology announces the result
+          rather than re-reading the whole analysis panel on every render. */}
+      <p className="visually-hidden" role="status">{announcement}</p>
+      <main id="main-content" tabIndex={-1}>
         {page === 'analyze' && <>
           <div className="page-heading"><div><div className="eyebrow">LOOK A LITTLE CLOSER</div><h1>Every image has a signal.</h1><p>Explore whether an image is synthetic, with evidence you can inspect.</p></div><div className="heading-symbol"><ScanLine size={38} strokeWidth={1} /></div></div>
           {!health?.ready && health && <div role="status" className="notice">{health.message} Start the backend with a trained checkpoint to analyze images.</div>}
@@ -130,20 +175,20 @@ function App() {
               <div className="panel-heading"><span className="number">01</span><h2>Your image</h2><span className="panel-caption">JPEG, PNG, WEBP</span></div>
               <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp" onChange={e => selectFile(e.target.files?.[0])} className="visually-hidden" aria-label="Choose image" disabled={busy} />
               <div className={`drop-zone ${preview ? 'has-image' : ''} ${dragging ? 'dragging' : ''}`} onDragOver={e => { e.preventDefault(); setDragging(true) }} onDragLeave={() => setDragging(false)} onDrop={e => { e.preventDefault(); setDragging(false); selectFile(e.dataTransfer.files[0]) }}>
-                {preview ? <><img className="image-preview" src={analysis?.explanation && showHeatmap ? analysis.explanation.overlay_data_url : preview} alt={analysis?.explanation && showHeatmap ? 'Model influence overlay; not verified artifact segmentation' : 'Uploaded image'} /><div className="image-toolbar"><span><FileImage size={13} /> {file?.name}</span><button aria-label="Remove image" disabled={busy} onClick={() => { setFile(null); setAnalysis(null); if (fileInput.current) fileInput.current.value = '' }}><X size={16} /></button></div>{analysis?.explanation && <button className="overlay-toggle" onClick={() => setShowHeatmap(!showHeatmap)}><Layers3 size={14} />{showHeatmap ? 'View original' : 'View model influence'}</button>}</> : <button className="upload-button" onClick={() => fileInput.current?.click()}><div className="upload-icon"><ImagePlus size={30} strokeWidth={1.4} /></div><strong>Drop an image here</strong><span>or <em>browse files</em> to get started</span><small>Up to 10 MiB · Images stay local</small></button>}
+                {preview ? <><img className="image-preview" src={analysis?.explanation && showHeatmap ? analysis.explanation.overlay_data_url : preview} alt={analysis?.explanation && showHeatmap ? 'Model influence overlay; not verified artifact segmentation' : 'Uploaded image'} /><div className="image-toolbar"><span><FileImage size={13} /> {file?.name}</span><button aria-label="Remove image" disabled={busy} onClick={clearImage}><X size={16} /></button></div>{analysis?.explanation && <button className="overlay-toggle" onClick={() => setShowHeatmap(!showHeatmap)}><Layers3 size={14} />{showHeatmap ? 'View original' : 'View model influence'}</button>}</> : <button className="upload-button" onClick={openFilePicker}><div className="upload-icon"><ImagePlus size={30} strokeWidth={1.4} /></div><strong>Drop an image here</strong><span>or <em>browse files</em> to get started</span><small>Up to 10 MiB · Images stay local</small></button>}
               </div>
-              {file && <div className="file-details"><span>{(file.size / 1024).toFixed(0)} KB</span><span>{verdict ? `${verdict.image_width} × ${verdict.image_height} px` : 'Ready for analysis'}</span><button disabled={busy} onClick={() => fileInput.current?.click()}>Change image</button></div>}
+              {file && <div className="file-details"><span>{(file.size / 1024).toFixed(0)} KB</span><span>{verdict ? `${verdict.image_width} × ${verdict.image_height} px` : 'Ready for analysis'}</span><button disabled={busy} onClick={openFilePicker}>Change image</button></div>}
               <div className="analysis-options"><div className="option-heading"><SlidersHorizontal size={14} /> ANALYSIS OPTIONS</div><label><input type="checkbox" checked={explain} onChange={e => setExplain(e.target.checked)} disabled={busy} /><span>Model influence map<small>See which regions influence the result</small></span></label><label><input type="checkbox" checked={robustness} onChange={e => setRobustness(e.target.checked)} disabled={busy} /><span>Robustness check<small>Compare compression, resizing and blur</small></span></label></div>
               {error && <div className="error" role="alert">{error}</div>}
               <button className="analyze-button" disabled={!file || busy || !health?.ready} onClick={runAnalysis}>{busy ? <><LoaderCircle className="spin" size={18} /> Analyzing image…</> : <><ScanLine size={18} /> Analyze image <ArrowRight size={18} /></>}</button>
               <p className="privacy-note"><ShieldCheck size={13} /> Processed on this machine. Uploads are not saved.</p>
             </section>
-            <section className="panel results-panel" aria-live="polite">
+            <section className="panel results-panel">
               <div className="panel-heading"><span className="number">02</span><h2>Analysis</h2>{analysis && <button className="icon-button" onClick={downloadAnalysis} aria-label="Download analysis JSON"><ArrowDownToLine size={17} /></button>}</div>
               {!analysis ? <div className="empty-state"><div className={`radar ${busy ? 'scanning' : ''}`}><span /><span /><ScanLine size={35} strokeWidth={1.2} /></div><h3>{busy ? 'Reading the image’s signals' : 'A clearer picture starts here.'}</h3><p>{busy ? 'Running the detector and your selected evidence checks on the local model.' : 'Add an image to explore its visual score, model influence and stability.'}</p><div className="empty-tags"><span><Fingerprint size={12} /> Visual evidence</span><span><Activity size={12} /> Stability checks</span></div></div> : <>
                 <div className={`verdict-card ${verdict?.review_recommended ? 'uncertain' : verdict?.label === 'ai_generated' ? 'synthetic' : 'real'}`}><div className="verdict-top"><span className="eyebrow">VISUAL ASSESSMENT</span><span className="timing">{verdict!.inference_ms.toFixed(0)} ms</span></div><h3>{title}</h3><p>{verdict!.review_recommended ? 'The score is near the operating threshold. Inspect the evidence before deciding.' : 'A model assessment of visual patterns, not a verified statement of origin.'}</p><div className="score-row"><span>AI-generated score</span><strong>{scorePercentage(verdict!.ai_score)}</strong></div><div className="score-track"><span style={{ width: percentage(verdict!.ai_score) }} /><i style={{ left: percentage(verdict!.threshold) }} title={`Decision threshold ${percentage(verdict!.threshold)}`} /></div><div className="score-labels"><span>Lower AI signal</span><span>Higher AI signal</span></div><div className="calibration-note">{verdict!.calibrated ? 'Calibrated on held-out development data' : 'Uncalibrated model score'} · threshold {percentage(verdict!.threshold)}</div></div>
-                <div className="result-tabs" role="tablist" aria-label="Evidence types">{(['evidence','stability','metadata'] as const).map(t => <button key={t} role="tab" aria-selected={tab === t} className={tab === t ? 'selected' : ''} onClick={() => setTab(t)}>{t === 'evidence' ? 'Evidence' : t === 'stability' ? 'Stability' : 'Metadata'}</button>)}</div>
-                <div className="tab-content" role="tabpanel">
+                <div className="result-tabs" role="tablist" aria-label="Evidence types" onKeyDown={onTabKeyDown}>{TABS.map(([id, label]) => <button key={id} id={`tab-${id}`} ref={element => { tabRefs.current[id] = element }} role="tab" aria-selected={tab === id} aria-controls={PANEL_ID} tabIndex={tab === id ? 0 : -1} className={tab === id ? 'selected' : ''} onClick={() => setTab(id)}>{label}</button>)}</div>
+                <div className="tab-content" role="tabpanel" id={PANEL_ID} aria-labelledby={`tab-${tab}`} tabIndex={0}>
                   {tab === 'evidence' && (analysis.explanation ? <><div className="evidence-label"><Layers3 size={15} /> MODEL INFLUENCE</div>{analysis.explanation.statements.map((s,i) => <p className="evidence-statement" key={i}>{s}</p>)}<div className="subtle-note">The overlay shows model attribution. It is not a map of verified image defects.</div></> : <p className="muted">Enable the model influence map and run again to inspect this evidence.</p>)}
                   {tab === 'stability' && (analysis.robustness ? <><div className="stability-summary"><strong>{analysis.robustness.label_flip_count === 0 ? 'Verdict remained stable' : `${analysis.robustness.label_flip_count} verdict change(s)`}</strong><span>across {analysis.robustness.transformations_tested} transformations</span></div>{analysis.robustness.results.map(r => <div className="stability-row" key={r.transformation}><span>{pretty(r.transformation)}</span><div><i style={{ width: percentage(r.ai_score) }} /></div><strong>{scorePercentage(r.ai_score)}</strong>{r.label_changed ? <span className="flip-indicator">Δ</span> : <Check size={12} />}</div>)}<p className="subtle-note">{analysis.robustness.note}</p></> : <p className="muted">Enable the robustness check and run again to compare transformations.</p>)}
                   {tab === 'metadata' && <><div className="metadata-row"><span>File format</span><strong>{analysis.metadata.format}</strong></div><div className="metadata-row"><span>EXIF metadata</span><strong>{analysis.metadata.exif_present ? 'Present' : 'Not present'}</strong></div><div className="metadata-row"><span>C2PA credentials</span><strong>Not checked</strong></div>{Object.entries(analysis.metadata.fields).map(([k,v]) => <div className="metadata-row" key={k}><span>{k}</span><strong>{v}</strong></div>)}<p className="subtle-note">{analysis.metadata.note}</p><p className="subtle-note">{analysis.metadata.fusion_policy}</p></>}

@@ -1,0 +1,27 @@
+{
+  "release": "v0.2.0",
+  "verified_utc": "2026-09-12T10:02:42.822385+00:00",
+  "assets": [
+    {
+      "name": "signalscope-demo-v0.2.0.mp4",
+      "url": "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.2.0/signalscope-demo-v0.2.0.mp4",
+      "bytes": 9022730,
+      "sha256": "49e55262e9a9ea56d5c5743ba76063317c9fda02d2c782cc920765de3e3c8825",
+      "unauthenticated_download_verified": true
+    },
+    {
+      "name": "signalscope-demo-en.srt",
+      "url": "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.2.0/signalscope-demo-en.srt",
+      "bytes": 5011,
+      "sha256": "9cd310f5631a1fe4778b09627eca6fa161667a7c547d409f0fb9470588f7f221",
+      "unauthenticated_download_verified": true
+    },
+    {
+      "name": "signalscope-model-report-v0.2.0.pdf",
+      "url": "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.2.0/signalscope-model-report-v0.2.0.pdf",
+      "bytes": 67943,
+      "sha256": "3063120d5f66f5ba1270eee1a32424a531ff751e72fcba75d898ad63784430ac",
+      "unauthenticated_download_verified": true
+    }
+  ]
+}

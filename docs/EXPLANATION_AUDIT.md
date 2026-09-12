@@ -44,3 +44,32 @@ may include people and must be reviewed before any public use. The local sheet
 confirmed this risk: an external LAION real image shows an identifiable political
 candidate's poster. External LAION images are therefore never used in public
 material or the demo.
+
+## Fixed-target supplement (12 September)
+
+The original JPEG and randomized-model comparisons reselected the target class
+after the change. This mixes a change of explained class with a change of model
+or image. The original files are retained; a separate diagnostic holds the
+original returned class fixed on exactly the same 40 development examples.
+
+Protocol: `report/experiments/fixed_target_audit_protocol.json`.
+Run with `python -m model.audit_fixed_target` (refuses to overwrite its output).
+Results: `report/explanation_audit/mixed_resnet18_native_v1_calibrated_fixed_target/summary.json`.
+
+| Comparison | Fixed-target result | Diagnostic detail |
+|---|---|---|
+| JPEG q70 | Median Spearman 0.955, mean 0.896; 39 valid / 1 undefined | Two images change verdict; one fixed-class map is constant |
+| Reinitialize layer4 + classifier | Median 0.440, mean 0.338; 40 valid | Recomputing the target changes it in 23/40 images; median then becomes 0.313 |
+
+This removes the target-class confound and covers all eight strata. It still uses
+one randomization seed and partly trained lower layers; correlations include
+unanalysed borders and use quantized 64px maps. It is a model-influence diagnostic,
+not proof that the highlighted region contains a defect or that explanations are
+reliable in every case. The original 0.52 number used only ten images and should
+not be directly compared as a before/after improvement.
+
+Original saved scores reproduced at their original 40-image batch size. CUDA
+single-image attribution differs slightly because of batch-dependent rounding
+(maximum absolute probability difference 0.000697); none of these differences
+changed the original target class. The supplement records both values. Default
+app attribution is unchanged and covered by a regression test.

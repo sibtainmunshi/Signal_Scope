@@ -10,7 +10,7 @@ from pathlib import Path
 
 import numpy as np
 import torch
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageStat
 
 from .network import build_model, preprocess_batch
 from .paths import root_path
@@ -106,7 +106,13 @@ class Detector:
     def predict(self, image: Image.Image) -> Prediction:
         if image.width * image.height > 20_000_000:
             raise ValueError("Image exceeds the supported 20 megapixel limit.")
+        if getattr(image, "n_frames", 1) > 1:
+            raise ValueError("Animated images are not supported; export a single frame first.")
         start = time.perf_counter()
+        width, height = image.size
+        if image.getexif().get(274, 1) in {5, 6, 7, 8}:
+            width, height = height, width
+        low_information = max(ImageStat.Stat(image.convert("RGB").resize((64, 64))).stddev) < 1.0
         score = self.score_images([image])[0]
         label = "ai_generated" if score >= self.threshold else "real"
         # Confidence is the score assigned to the returned class, not accuracy.
@@ -121,12 +127,14 @@ class Detector:
             limitations.append("Temperature scaling was fit on development sources; confidence and false-positive rates may not transfer to other sources.")
         if not self.calibrated:
             limitations.append("Scores have not yet been probability-calibrated.")
+        if low_information:
+            limitations.append("The image has very little spatial variation; a more detailed image is needed for a useful review.")
         if min(image.size) < 64:
             limitations.append("Low-resolution input limits visible detail and explanation specificity.")
         return Prediction(label, score, self.threshold, confidence, self.calibrated,
-                          abs(score-self.threshold) < .15,
+                          abs(score-self.threshold) < .15 or low_information,
                           round((time.perf_counter()-start)*1000, 2), self.model_version,
-                          self.checkpoint_hash, image.width, image.height, limitations)
+                          self.checkpoint_hash, width, height, limitations)
 
 
 def predict_image(image_path: str | Path, checkpoint: str | Path, device: str = "auto") -> dict:

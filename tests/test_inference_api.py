@@ -97,3 +97,67 @@ def test_extreme_aspect_ratio_upload_is_rejected_before_upscale(client):
     response = client.post("/api/predict", files={"image": ("narrow.png", stream.getvalue(), "image/png")})
     assert response.status_code == 413
     assert "aspect ratio" in response.json()["detail"]
+
+
+@pytest.mark.parametrize("orientation", [5, 6, 7, 8])
+def test_exif_geometry_matches_oriented_image_and_score(client, orientation):
+    from PIL import ImageOps
+
+    from signalscope.inference import Detector
+    image = Image.open(io.BytesIO(next(sample_images())))
+    exif = image.getexif()
+    exif[274] = orientation
+    encoded = io.BytesIO()
+    image.save(encoded, format="JPEG", exif=exif)
+    with Image.open(io.BytesIO(encoded.getvalue())) as raw:
+        oriented = ImageOps.exif_transpose(raw)
+        direct = Detector(CHECKPOINT, "cpu").predict(oriented)
+    response = client.post("/api/predict", files={"image": ("oriented.jpg", encoded.getvalue(), "image/jpeg")})
+    assert response.status_code == 200
+    prediction = response.json()["prediction"]
+    assert [prediction["image_width"], prediction["image_height"]] == list(oriented.size)
+    assert prediction["ai_score"] == pytest.approx(direct.ai_score, abs=1e-6)
+
+
+def test_empty_file_and_wrong_method_have_specific_errors(client):
+    empty = client.post("/api/predict", files={"image": ("empty.png", b"", "image/png")})
+    assert empty.status_code == 400 and "empty" in empty.json()["detail"].lower()
+    wrong_method = client.get("/api/predict")
+    assert wrong_method.status_code == 405 and wrong_method.headers["allow"] == "POST"
+
+
+def test_animated_webp_is_explicitly_rejected(client):
+    stream = io.BytesIO()
+    frames = [Image.new("RGB", (40, 40), color) for color in ("red", "blue")]
+    frames[0].save(stream, format="WEBP", save_all=True, append_images=frames[1:], duration=100, loop=0)
+    response = client.post("/api/predict", files={"image": ("animated.webp", stream.getvalue(), "image/webp")})
+    assert response.status_code == 415 and "single frame" in response.json()["detail"]
+
+
+def test_flat_input_preserves_binary_score_but_recommends_review(client):
+    stream = io.BytesIO()
+    Image.new("RGB", (128, 128), (12, 85, 147)).save(stream, format="PNG")
+    response = client.post("/api/predict", files={"image": ("flat.png", stream.getvalue(), "image/png")})
+    assert response.status_code == 200
+    prediction = response.json()["prediction"]
+    assert prediction["label"] in {"real", "ai_generated"}
+    assert 0 <= prediction["ai_score"] <= 1
+    assert prediction["review_recommended"] is True
+    assert any("spatial variation" in note for note in prediction["limitations"])
+
+
+def test_fixed_target_attribution_preserves_default_and_does_not_change_score():
+    import numpy as np
+
+    from signalscope.evidence import native_attribution
+    from signalscope.inference import Detector
+
+    detector = Detector(CHECKPOINT, "cpu")
+    with Image.open(io.BytesIO(next(sample_images()))) as image:
+        default = native_attribution(detector, image)
+        fixed = native_attribution(detector, image, target_ai=default["target_ai"])
+        opposite = native_attribution(detector, image, target_ai=not default["target_ai"])
+    np.testing.assert_array_equal(default["heat"], fixed["heat"])
+    assert opposite["target_ai"] != default["target_ai"]
+    assert opposite["ai_score"] == pytest.approx(default["ai_score"], abs=1e-7)
+    assert not np.array_equal(default["heat"], opposite["heat"])

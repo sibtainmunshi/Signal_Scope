@@ -1,0 +1,79 @@
+{
+  "source": "fresh public Git clone of main",
+  "release": "v0.2.0",
+  "checked_utc": "2026-09-12T09:44:46.470379+00:00",
+  "setup_elapsed_seconds": 204.81,
+  "clone_and_setup_seconds": 207.76,
+  "setup_exit_code": 0,
+  "checkout_commit": "78f078e7780219d3b0dff7c1aedd4e2378b157f7",
+  "shared_training_environment": false,
+  "package_download_cache": "Existing pip cache reused; new independent virtual environment. Not a cold-network timing.",
+  "training_data_downloaded": false,
+  "torch": "2.10.0+cpu",
+  "health": {
+    "ready": true,
+    "version": "0.2.0",
+    "device": "cpu",
+    "model_version": "mixed_resnet18_native_v1_calibrated",
+    "message": "Local detector ready"
+  },
+  "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+  "cli_api_score_agreement": true,
+  "ui": {
+    "ok": true,
+    "browser": "installed Chrome, headless",
+    "server_device": "cpu",
+    "fixture": "report/explanation_samples/generated_detected.png (GenImage validation demonstration; not new accuracy evidence)",
+    "prediction": {
+      "label": "ai_generated",
+      "ai_score": 0.8691685199737549,
+      "threshold": 0.4553663730621338,
+      "confidence": 0.8691685199737549,
+      "calibrated": true,
+      "review_recommended": false,
+      "inference_ms": 30.21,
+      "model_version": "mixed_resnet18_native_v1_calibrated",
+      "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+      "image_width": 512,
+      "image_height": 512,
+      "limitations": [
+        "Trained on CIFAKE + GenImage train-only subset; unseen generators and processing pipelines can still fail.",
+        "Public external evaluations show substantial domain-shift errors; broad unseen-generator reliability is not established.",
+        "A visual score does not verify the truth of a depicted event.",
+        "Temperature scaling was fit on development sources; confidence and false-positive rates may not transfer to other sources."
+      ]
+    },
+    "explanation_present": true,
+    "transformations": 6,
+    "javascript_errors": [],
+    "mobile_horizontal_overflow": false
+  },
+  "archived_final_metric_verification": {
+    "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+    "verified": [
+      {
+        "evaluation": "test",
+        "saved_rows": 20000,
+        "all_metrics_match": true
+      },
+      {
+        "evaluation": "external_reserved",
+        "saved_rows": 4500,
+        "all_metrics_match": true
+      },
+      {
+        "evaluation": "external_reserved_matched",
+        "saved_rows": 4500,
+        "all_metrics_match": true
+      },
+      {
+        "evaluation": "external_reserved_matched_native",
+        "saved_rows": 4500,
+        "all_metrics_match": true
+      }
+    ],
+    "note": "Score arithmetic and integrity verified; no source images or new predictions used."
+  },
+  "limitations": "Same physical Windows laptop; warm package cache. Other hardware, platforms or network connections can take longer.",
+  "initial_attempt": "A separate first clean environment failed during pip build-dependency resolution because DNS was unavailable. After connectivity recovered, this record was produced from a new clean clone and new virtual environment."
+}

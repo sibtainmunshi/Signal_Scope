@@ -1,0 +1,79 @@
+{
+  "source": "UniversalFakeDetect CVPR 2023 diffusion release",
+  "split": "dev",
+  "evaluation_kind": "external_development",
+  "protocol": "matched",
+  "protocol_description": "Every image of both labels: centre square crop, bicubic resize to 224, JPEG quality 90, then the detector's own preprocessing. Reduces file-format and aspect-ratio cues; earlier compression traces are weakened, not removed.",
+  "model_version": "mixed_resnet18_native_cifake1k_v1_calibrated",
+  "checkpoint_sha256": "3cf40e124a60e5368c53ecefa1abdd4b9ba72f6ecd9305d13080a0043a608671",
+  "preprocessing": "Same full-image preprocessing as app/CLI; no external-domain adaptation.",
+  "threshold": 0.8013073205947876,
+  "unique_images_evaluated": 2000,
+  "macro_generator_roc_auc": 0.673918,
+  "per_generator": [
+    {
+      "generator": "guided",
+      "real_source": "imagenet",
+      "count": 1000,
+      "real_count": 500,
+      "ai_count": 500,
+      "roc_auc": 0.588052,
+      "macro_f1": 0.37903105987588237,
+      "accuracy": 0.511,
+      "false_positive_rate": 0.028,
+      "true_positive_rate": 0.05,
+      "brier_score": 0.3085270484637042,
+      "threshold": 0.8013073205947876,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          486,
+          14
+        ],
+        [
+          475,
+          25
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    },
+    {
+      "generator": "ldm_200",
+      "real_source": "laion",
+      "count": 1000,
+      "real_count": 500,
+      "ai_count": 500,
+      "roc_auc": 0.759784,
+      "macro_f1": 0.5581126902820864,
+      "accuracy": 0.608,
+      "false_positive_rate": 0.056,
+      "true_positive_rate": 0.272,
+      "brier_score": 0.2082788399639808,
+      "threshold": 0.8013073205947876,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          472,
+          28
+        ],
+        [
+          364,
+          136
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    }
+  ],
+  "organizer_hidden_result": null,
+  "limitations": [
+    "Domains are unseen in our task training, not necessarily absent from backbone pretraining.",
+    "Development domains may guide model selection and are not a blind final test.",
+    "Shared LAION real images are reused for per-generator comparisons; no inflated pooled sample count is reported."
+  ]
+}

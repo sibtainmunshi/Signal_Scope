@@ -121,6 +121,8 @@ def analyse(content: bytes, explain: bool, robustness: bool) -> dict:
         with Image.open(io.BytesIO(content)) as uploaded:
             if uploaded.format not in {"JPEG", "PNG", "WEBP"}:
                 raise HTTPException(415, "Supported image formats are JPEG, PNG and WebP.")
+            if getattr(uploaded, "n_frames", 1) > 1:
+                raise HTTPException(415, "Animated images are not supported; export a single frame first.")
             if uploaded.width*uploaded.height > 20_000_000:
                 raise HTTPException(413, "Image exceeds the 20 megapixel limit.")
             uploaded.load()
@@ -149,10 +151,15 @@ async def predict(image: Annotated[UploadFile, File()], explain: Annotated[bool,
     finally:
         await image.close()
     if not content:
-        raise HTTPException(400, "Upload an image first.")
+        raise HTTPException(400, "The image file is empty. Choose a non-empty image.")
     if len(content) > 10*1024*1024:
         raise HTTPException(413, "Image exceeds the 10 MiB upload limit.")
     return await run_in_threadpool(analyse, content, explain, robustness)
+
+
+@app.get("/api/predict", include_in_schema=False)
+def prediction_requires_post():
+    raise HTTPException(405, "Send an image using POST /api/predict.", headers={"Allow": "POST"})
 
 
 frontend = ROOT / "app/frontend/dist"

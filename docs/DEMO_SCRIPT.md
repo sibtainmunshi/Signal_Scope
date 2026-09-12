@@ -44,3 +44,27 @@ never simulate a result. All numbers below refer to the frozen v0.2.0 model. Rea
 - Watch once: check that every number spoken matches the final report.
 - Upload as unlisted (YouTube or Drive with link access), then put the link in the
   README "Demo video" line and the submission form.
+
+
+## Recorded v0.2.0 demo
+
+A 4m15s narrated actual-CPU recording is published in the [v0.2.0 release](https://github.com/sibtainmunshi/Signal_Scope/releases/tag/v0.2.0) as `signalscope-demo-v0.2.0.mp4`,
+with English SRT subtitles. The computer voice is Windows Microsoft Zira; it is
+not a team member's recorded voice. Narration text is in DEMO_NARRATION.json.
+
+The recording shows a validation real photo, a correctly detected generated image,
+a confidently missed generated image, model attribution, masking, stability,
+metadata, final and development results, actual CLI output, and setup instructions.
+An inactive pause was removed. The CLI/setup chapter was recorded again after QA
+found a command-wrapping problem. No predictions, labels or scores were fabricated.
+
+The browser recorder is `app/frontend/scripts/record_demo.mjs`. It needs the local
+server, installed Chrome/Playwright FFmpeg, and prepared WAVs in tmp/demo/audio.
+The finished release video can be used as the submission demo, or the team can
+record its own voice using the same honest figures. Do not replace the limits with
+claims of universal accuracy or a guaranteed selection.
+
+Public unauthenticated download and SHA-256 verification are recorded in
+`report/reproducibility/v0.2.0_submission_assets.json`. This recording predates
+the later frontend accessibility fixes and fixed-target explanation supplement;
+review it alongside the final build before submission. The core model is unchanged.

@@ -1,0 +1,16 @@
+{
+  "release": "v0.2.0",
+  "video_file": "signalscope-demo-v0.2.0.mp4",
+  "bytes": 9022730,
+  "sha256": "49e55262e9a9ea56d5c5743ba76063317c9fda02d2c782cc920765de3e3c8825",
+  "duration_seconds": 255.24,
+  "video": "H.264, 1600x900",
+  "audio": "AAC, Microsoft Zira computer narration",
+  "source": "Real CPU web-app recording and actual CLI command output",
+  "model_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+  "editing": "Removed a long inactive pause and rerecorded the CLI/setup chapter to correct command formatting. No prediction results altered.",
+  "full_decode_check": "passed",
+  "narration_script": "docs/DEMO_NARRATION.json",
+  "raw_prediction_evidence": "report/reproducibility/v0.2.0_demo_predictions.json",
+  "human_review_complete": false
+}

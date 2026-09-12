@@ -4,13 +4,13 @@ A locally trained real-vs-AI-generated image detector that reports an AI-positiv
 shows model-linked evidence and states its limits. SIH 2026 internal selection,
 Problem Statement 2.
 
-**Status: v0.2.0 model and evaluator build; demo recording and human explanation review pending.** All results below are self-evaluated on public
+**Status: working v0.2.0 model, public weights/report and recorded demo. QA improvements are integrated; human explanation review remains pending.** All results below are self-evaluated on public
 data. The organizers supplied no dataset, baseline or hidden test; no organizer
 score is claimed or estimated.
 
 - Explanation examples (including a failure): [reviewed samples](report/explanation_samples/README.md)
 - One-page model report: [`report/model_report.pdf`](report/model_report.pdf)
-- Demo video (3-5 min): _link added after recording_
+- Demo video: [4m15s actual CPU demonstration](https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.2.0/signalscope-demo-v0.2.0.mp4) ([English subtitles](https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.2.0/signalscope-demo-en.srt)); computer narration, includes a failure. This v0.2.0 recording predates the later accessibility fixes.
 - Model weights: [GitHub release v0.2.0](https://github.com/sibtainmunshi/Signal_Scope/releases/tag/v0.2.0) (44.8 MB, SHA-256 checked by setup)
 
 ## Modules built
@@ -43,6 +43,11 @@ checkpoint named in [`model/manifest.json`](model/manifest.json), verifying its 
 and SHA-256. The prebuilt UI is included; Node, CUDA, datasets and paid APIs are not
 needed. First setup needs internet (several hundred MB of Python packages); inference
 then runs locally on CPU (about 15-50 ms per image on our laptop).
+
+Verified from a fresh public Windows clone with an independent CPU environment:
+setup took **204.81 seconds** with a warm pip download cache, then actual CLI/API
+scores and desktop/mobile browser checks passed. [Verification record](report/reproducibility/v0.2.0_windows_cpu.json).
+A prior attempt stopped during a DNS outage; network speed affects setup time.
 
 ## Predict one image
 
@@ -124,8 +129,8 @@ flagging 92% of ImageNet and 76% of LAION real photos; on the reserved unseen se
 scores 0.548 / 0.546 against our 0.565 / 0.643. The paired-bootstrap gain of
 the selected model is +0.113 [0.083, 0.142] format-matched; a second training seed
 also improved development AUC. These intervals condition on the fixed development
-images and do not include uncertainty from candidate selection or new generator families. Seven candidates were compared on development data:
-[comparison](report/candidate_comparison.md), [uncertainty](report/external_bootstrap.md).
+images and do not include uncertainty from candidate selection or new generator families. Development candidates are documented here:
+[comparison](report/candidate_comparison.md), [uncertainty](report/external_bootstrap.md), [subsequent development probes](docs/POST_RELEASE_EXPERIMENTS.md).
 
 **Robustness (GenImage validation AUC):** original 0.956, JPEG q70 0.953, JPEG q30
 0.906, half resolution 0.896, mild blur 0.937. A bounded six-transformation search
@@ -139,7 +144,7 @@ not guaranteed to be calibrated on new sources.
 **Explanation audit** ([details](docs/EXPLANATION_AUDIT.md)): on 40 fixed images
 including failures, masking the top Grad-CAM region lowered the verdict score more
 than random regions in 72.5% of images (p = 0.002), but effects are small, and maps
-only partly depend on learned weights (randomization rho 0.52).
+only partly depend on learned weights (original 10-image randomization rho 0.52). A separate corrected check holds the explained class fixed across all 40 images: randomization median rho 0.44. Neither check establishes visible-artifact correctness.
 
 ## Limitations
 

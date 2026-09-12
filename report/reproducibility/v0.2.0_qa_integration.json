@@ -1,0 +1,457 @@
+{
+  "verified_utc": "2026-09-12T15:22:28.110771+00:00",
+  "base_commit": "53c9babee66c80b831fd6b14623881edbb878785",
+  "scope": "Latest backend plus Claude frontend fixes on independent CPU server 8004; source hashes identify the uncommitted integration snapshot.",
+  "source_sha256": {
+    "app/backend/main.py": "75eebc7d125836a5a02df08e45a12879a05dab7af991206201d1afe64ff4a624",
+    "src/signalscope/inference.py": "fda1a8cfee7c012b2fd07b2995f0439957f7ab10b9623d53380446d0844a93db",
+    "src/signalscope/evidence.py": "1d26f762769c06415b92b6f3f41f17250b5cac4f126e3bf2bba774abf2dfa923",
+    "app/frontend/src/main.tsx": "fa8fd1955382958b71cb32cccf795e97839ba9ada115de04ac69884619587c56",
+    "app/frontend/src/style.css": "f08f1357e6eca88f28320bcfc894246e33aedeedea06967e5cb2128d579606c5",
+    "app/frontend/dist/index.html": "aa0bea8a221d7ee2e1b54f99bf3a258d04bf04207fab19d06f79e89afaefd0b5",
+    "model/manifest.json": "97e99a8b9da2bbd4e0e80948dc213f5aa8317c82e7c6f85aa6a7abc4c998892b"
+  },
+  "pytest": {
+    "passed": 31,
+    "warnings": 2,
+    "warning_kind": "Starlette test-client dependency deprecations"
+  },
+  "browser_smoke": {
+    "ok": true,
+    "browser": "installed Chrome, headless",
+    "server_device": "cpu",
+    "fixture": "C:\\Users\\Sibtainhaidar\\OneDrive\\Desktop\\signal_scope/report/explanation_samples/generated_detected.png",
+    "prediction": {
+      "label": "ai_generated",
+      "ai_score": 0.8691685199737549,
+      "threshold": 0.4553663730621338,
+      "confidence": 0.8691685199737549,
+      "calibrated": true,
+      "review_recommended": false,
+      "inference_ms": 31.36,
+      "model_version": "mixed_resnet18_native_v1_calibrated",
+      "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+      "image_width": 512,
+      "image_height": 512,
+      "limitations": [
+        "Trained on CIFAKE + GenImage train-only subset; unseen generators and processing pipelines can still fail.",
+        "Public external evaluations show substantial domain-shift errors; broad unseen-generator reliability is not established.",
+        "A visual score does not verify the truth of a depicted event.",
+        "Temperature scaling was fit on development sources; confidence and false-positive rates may not transfer to other sources."
+      ]
+    },
+    "explanation_present": true,
+    "transformations": 6,
+    "javascript_errors": [],
+    "mobile_horizontal_overflow": false
+  },
+  "regression": {
+    "base": "http://127.0.0.1:8004",
+    "startedAt": "2026-09-12T15:19:07.383Z",
+    "checks": {
+      "favicon": {
+        "status": 200,
+        "contentType": "image/svg+xml",
+        "bytes": 506,
+        "linkedInHtml": true
+      },
+      "skipLinkAndAriaCurrent": {
+        "firstTabStop": {
+          "text": "Skip to main content",
+          "href": "#main-content",
+          "top": -64,
+          "visible": false
+        },
+        "afterActivate": {
+          "activeId": "main-content",
+          "hash": "#main-content"
+        },
+        "navCurrent": [
+          {
+            "text": "Analyze image",
+            "ariaCurrent": "page"
+          },
+          {
+            "text": "Model report",
+            "ariaCurrent": null
+          },
+          {
+            "text": "How it works",
+            "ariaCurrent": null
+          }
+        ]
+      },
+      "liveRegionShape": {
+        "resultsPanelAriaLive": null,
+        "statusRegions": [
+          {
+            "role": "status",
+            "live": null,
+            "cls": "visually-hidden",
+            "text": ""
+          }
+        ]
+      },
+      "uploadAndAnnounce": {
+        "status": 200,
+        "announcement": "Analysis complete. Likely real. AI-generated score 26.3%, decision threshold 45.5%.",
+        "verdict": "Likely real"
+      },
+      "tabsAccessible": {
+        "wiring": {
+          "tabs": [
+            {
+              "text": "Evidence",
+              "id": "tab-evidence",
+              "ariaSelected": "true",
+              "ariaControls": "evidence-panel",
+              "tabIndex": 0
+            },
+            {
+              "text": "Stability",
+              "id": "tab-stability",
+              "ariaSelected": "false",
+              "ariaControls": "evidence-panel",
+              "tabIndex": -1
+            },
+            {
+              "text": "Metadata",
+              "id": "tab-metadata",
+              "ariaSelected": "false",
+              "ariaControls": "evidence-panel",
+              "tabIndex": -1
+            }
+          ],
+          "panel": {
+            "id": "evidence-panel",
+            "ariaLabelledby": "tab-evidence",
+            "tabIndex": 0
+          },
+          "panelTargetExists": true
+        },
+        "keys": {
+          "ArrowRight_0": {
+            "selected": "Stability",
+            "focused": "Stability"
+          },
+          "ArrowRight_1": {
+            "selected": "Metadata",
+            "focused": "Metadata"
+          },
+          "ArrowRight_2": {
+            "selected": "Evidence",
+            "focused": "Evidence"
+          },
+          "ArrowLeft_3": {
+            "selected": "Metadata",
+            "focused": "Metadata"
+          },
+          "End_4": {
+            "selected": "Metadata",
+            "focused": "Metadata"
+          },
+          "Home_5": {
+            "selected": "Evidence",
+            "focused": "Evidence"
+          }
+        },
+        "afterTabLeavesTablist": {
+          "role": "tabpanel",
+          "id": "evidence-panel",
+          "tag": "div"
+        }
+      },
+      "rejectedReplacementPreservesResult": {
+        "before": {
+          "verdict": "Likely real",
+          "fileName": "valid_photo_exif.jpg",
+          "dims": "57 KB 640 \u00d7 480 px Change image"
+        },
+        "after": {
+          "error": "Choose a JPEG, PNG or WebP image.",
+          "verdict": "Likely real",
+          "fileName": "valid_photo_exif.jpg",
+          "dims": "57 KB 640 \u00d7 480 px Change image",
+          "emptyState": null,
+          "inputValue": ""
+        },
+        "PASS_resultPreserved": true,
+        "PASS_errorShown": true,
+        "PASS_inputCleared": true
+      },
+      "removeClearsError": {
+        "state": {
+          "error": null,
+          "hasPreview": false,
+          "hasFileDetails": false,
+          "inputValue": "",
+          "uploadButtonVisible": true,
+          "announcement": ""
+        },
+        "PASS_errorCleared": true,
+        "PASS_resetToEmpty": true
+      },
+      "defensiveInputResetOnPicker": {
+        "valueBeforeOpeningPicker": "C:\\fakepath\\valid_plain.png",
+        "valueWhenPickerOpened": "",
+        "reselected": {
+          "fileDetails": "6 KB Ready for analysis Change image",
+          "hasPreview": true
+        },
+        "PASS_inputClearedBeforePicker": true
+      },
+      "errorMessagesStillReadable": [
+        {
+          "fixture": "bmp_named.png",
+          "status": 415,
+          "displayed": "Supported image formats are JPEG, PNG and WebP.",
+          "role": "alert"
+        },
+        {
+          "fixture": "corrupt_truncated.jpg",
+          "status": 400,
+          "displayed": "The upload could not be decoded as a supported image.",
+          "role": "alert"
+        },
+        {
+          "fixture": "over_20mp.png",
+          "status": 413,
+          "displayed": "Image exceeds the 20 megapixel limit.",
+          "role": "alert"
+        },
+        {
+          "fixture": "narrow_reject.png",
+          "status": 413,
+          "displayed": "Image aspect ratio requires more than 20 megapixels after minimum-size upscaling; use a less narrow image.",
+          "role": "alert"
+        },
+        {
+          "fixture": "over_10mib.png",
+          "status": null,
+          "displayed": "Choose an image smaller than 10 MiB.",
+          "role": "alert"
+        }
+      ],
+      "jsonExportRegression": {
+        "suggestedFilename": "signalscope-analysis.json",
+        "bytes": 337879,
+        "topLevelKeys": [
+          "filename",
+          "prediction",
+          "explanation",
+          "robustness",
+          "metadata"
+        ],
+        "filenameField": "valid_photo_exif.jpg",
+        "hasOverlay": true
+      },
+      "desktopAudit": {
+        "contrastFailures": [],
+        "smallText": [],
+        "smallTargets": []
+      },
+      "modelReportRegression": {
+        "staleText": false,
+        "pendingCells": [],
+        "checkpointRendered": true,
+        "reservedAucRendered": true,
+        "matchedAucRendered": true,
+        "audit": {
+          "contrastFailures": [],
+          "smallText": [],
+          "smallTargets": []
+        }
+      },
+      "aboutPageAudit": {
+        "contrastFailures": [],
+        "smallText": [],
+        "smallTargets": []
+      },
+      "mobile390": {
+        "empty": {
+          "label": "analyze-empty",
+          "scrollWidth": 390,
+          "innerWidth": 390,
+          "overflows": false,
+          "wide": []
+        },
+        "result": {
+          "label": "analyze-result",
+          "scrollWidth": 390,
+          "innerWidth": 390,
+          "overflows": false,
+          "wide": []
+        },
+        "auditResult": {
+          "contrastFailures": [],
+          "smallText": [],
+          "smallTargets": []
+        },
+        "overflowStability": {
+          "label": "tab-Stability",
+          "scrollWidth": 390,
+          "innerWidth": 390,
+          "overflows": false,
+          "wide": []
+        },
+        "overflowMetadata": {
+          "label": "tab-Metadata",
+          "scrollWidth": 390,
+          "innerWidth": 390,
+          "overflows": false,
+          "wide": []
+        },
+        "report": {
+          "label": "model-report",
+          "scrollWidth": 390,
+          "innerWidth": 390,
+          "overflows": false,
+          "wide": []
+        },
+        "auditReport": {
+          "contrastFailures": [],
+          "smallText": [],
+          "smallTargets": []
+        },
+        "about": {
+          "label": "about",
+          "scrollWidth": 390,
+          "innerWidth": 390,
+          "overflows": false,
+          "wide": []
+        }
+      }
+    },
+    "cleanLoadConsoleErrors": [],
+    "finishedAt": "2026-09-12T15:19:19.924Z"
+  },
+  "steady_state_accessibility": {
+    "base": "http://127.0.0.1:8004",
+    "reducedMotion": true,
+    "pages": {
+      "desktop-analyze": {
+        "contrastFailures": [],
+        "smallText": [],
+        "smallTargets": []
+      },
+      "desktop-tab-stability": {
+        "contrastFailures": [],
+        "smallText": [],
+        "smallTargets": []
+      },
+      "desktop-tab-metadata": {
+        "contrastFailures": [],
+        "smallText": [],
+        "smallTargets": []
+      },
+      "desktop-report": {
+        "contrastFailures": [],
+        "smallText": [],
+        "smallTargets": []
+      },
+      "desktop-about": {
+        "contrastFailures": [],
+        "smallText": [],
+        "smallTargets": []
+      },
+      "mobile-analyze": {
+        "contrastFailures": [],
+        "smallText": [],
+        "smallTargets": []
+      },
+      "mobile-report": {
+        "contrastFailures": [],
+        "smallText": [],
+        "smallTargets": []
+      },
+      "mobile-about": {
+        "contrastFailures": [],
+        "smallText": [],
+        "smallTargets": []
+      }
+    },
+    "probes": {
+      ".analyze-button": {
+        "color": "rgb(220, 246, 229)",
+        "ownBackground": "rgb(27, 66, 57)",
+        "compositedBackground": "rgb(27,66,57)",
+        "disabled": false,
+        "ratio": 9.74,
+        "fontPx": 12
+      },
+      ".overlay-toggle": {
+        "color": "rgb(232, 249, 238)",
+        "ownBackground": "rgb(22, 36, 31)",
+        "compositedBackground": "rgb(22,36,31)",
+        "disabled": false,
+        "ratio": 14.71,
+        "fontPx": 11
+      },
+      ".image-toolbar span": {
+        "color": "rgb(63, 76, 67)",
+        "ownBackground": "rgba(255, 255, 255, 0.9)",
+        "compositedBackground": "rgb(253,254,253)",
+        "disabled": false,
+        "ratio": 8.9,
+        "fontPx": 11
+      },
+      ".image-toolbar button": {
+        "color": "rgb(55, 74, 62)",
+        "ownBackground": "rgba(255, 255, 255, 0.9)",
+        "compositedBackground": "rgb(253,254,253)",
+        "disabled": false,
+        "ratio": 9.36,
+        "fontPx": 14
+      },
+      ".error": null,
+      ".notice": null
+    },
+    "mobileProbes": {
+      ".analyze-button": {
+        "color": "rgb(220, 246, 229)",
+        "ownBackground": "rgb(27, 66, 57)",
+        "compositedBackground": "rgb(27,66,57)",
+        "disabled": false,
+        "ratio": 9.74,
+        "fontPx": 12
+      },
+      ".overlay-toggle": {
+        "color": "rgb(232, 249, 238)",
+        "ownBackground": "rgb(22, 36, 31)",
+        "compositedBackground": "rgb(22,36,31)",
+        "disabled": false,
+        "ratio": 14.71,
+        "fontPx": 11
+      },
+      ".image-toolbar span": {
+        "color": "rgb(63, 76, 67)",
+        "ownBackground": "rgba(255, 255, 255, 0.9)",
+        "compositedBackground": "rgb(253,254,253)",
+        "disabled": false,
+        "ratio": 8.9,
+        "fontPx": 11
+      },
+      ".image-toolbar button": {
+        "color": "rgb(55, 74, 62)",
+        "ownBackground": "rgba(255, 255, 255, 0.9)",
+        "compositedBackground": "rgb(253,254,253)",
+        "disabled": false,
+        "ratio": 9.36,
+        "fontPx": 14
+      },
+      ".error": null,
+      ".notice": null
+    },
+    "totals": {
+      "contrastFailures": 0,
+      "smallText": 0,
+      "smallTargets": 0
+    }
+  },
+  "limits": [
+    "Synthetic fixtures test input handling, not accuracy.",
+    "The automated contrast probe is not a complete accessibility certification.",
+    "Native operating-system same-file picker behavior was not independently reproduced; defensive input reset is verified.",
+    "Original frozen model weights and final metrics remain unchanged."
+  ]
+}

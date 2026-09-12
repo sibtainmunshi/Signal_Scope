@@ -44,23 +44,27 @@ for model-selection uncertainty or all unseen generator families.
 - API/UI now show final reserved results separately from development validation.
 - Extremely narrow inputs are rejected before excessive upscaling allocates memory.
 - Native integration tests use the release checkpoint, not an unpublished parent.
-- 23 tests and Ruff pass; real CPU upload and desktop/mobile Chrome smoke pass.
+- 31 tests pass after backend QA and fixed-target attribution fixes; real CPU upload and desktop/mobile Chrome smoke pass.
 - One-page PDF corrected for tiny-image upscaling, final confusion matrix, sample
   counts, limited causal interpretation and pending human review; visually checked.
 - Archived final score CSVs (1.6 MB) are in report/final/predictions; no image inputs.
 - Updated README and compact current checklist supersede tmp/release README draft.
 
-## Release execution
+## Release verified
 
-`gh` is absent but **not a blocker**. Existing Git credential-manager credentials
-can authenticate GitHub REST requests; never print credentials or put them in files.
-Publish the release/tag at the reviewed code commit, upload the exact checkpoint,
-verify its public unauthenticated URL, then push the manifest on main. Check for an
-existing release/asset first. User need not upload the model manually.
+The v0.2.0 tag points to public commit 78f078e; later main revisions carry the QA and documentation improvements. The exact model asset is live;
+unauthenticated download verified against the frozen SHA-256. `gh` was not needed:
+existing Git credentials authenticated the GitHub REST upload without exposing secrets.
 
-Run a fresh public clone with a new CPU virtual environment. Do not delete or use
-the GPU development environment as the evaluator environment. Record duration,
-package-cache status, checksum, actual API prediction, explanation and static UI.
+Fresh public clone `tmp/evaluator_v020_retry` uses its own CPU-only environment.
+Setup took 204.81 seconds with a warm pip package cache. Actual CLI/API scores match,
+Chrome desktop/mobile checks pass, and archived statistics verify. The earlier
+`tmp/evaluator_v020` attempt encountered a DNS outage; both environments are retained.
+Records: report/reproducibility/v0.2.0_{public_download,windows_cpu}.json.
+
+Shared QA app is on 127.0.0.1:8002, launched hidden. Do not stop it while the user's
+Claude Code reviewer is testing. Claude completed the bounded frontend fixes and left docs/CLAUDE_QA_FIXES.md.
+Their source/build changes passed Codex's independent integration checks; Codex owns publishing. Preserve both Claude reports and their tmp/claude_qa evidence.
 
 ## Outstanding human evidence
 
@@ -74,6 +78,28 @@ LAION audit image contains a political poster. These were not identity-targeting
 tasks, but do not claim the raw benchmark is person-free. Public demo material
 must use reviewed animals/objects only. Do not publish the full private audit sheet.
 
-Finish the 3-5 minute actual-inference video, publish an accessible link, and check
-all submission links. Prepared animal images in tmp/demo/selected are GenImage
+The 4m15s actual-inference video, subtitles and one-page PDF are public release
+assets; each unauthenticated download was hash-verified. The video is a v0.2.0
+first cut preceding later accessibility fixes; review/update at final submission. Prepared animal images in tmp/demo/selected are GenImage
 validation examples, not new accuracy evidence. A demonstrated failure must remain.
+
+
+## Latest development and QA
+
+- Three declared equal-weight ensembles failed the advance gate. A CIFAKE-1k
+  mixture candidate passed the ranking gate (development AUC 0.682/0.674), but
+  calibration to the same validation FPR policy reduced AI recall. It remains a
+  research candidate; no release replacement and no reserved/test evaluation.
+  See docs/POST_RELEASE_EXPERIMENTS.md for the real tradeoff and exact results.
+- Backend fixes: EXIF-oriented dimensions; specific empty-file error; animated
+  uploads rejected; GET predict is 405; nearly flat inputs recommend review
+  without altering the score. API contract updated. 31 regression tests pass.
+- Fixed-target explanation supplement removes class switching from comparisons,
+  expands randomization to all 40 old development examples, and preserves the
+  original audit. Median randomization rho 0.440; JPEG rho 0.955 (39 valid, one
+  undefined). It does not verify semantic defects. No runtime score change.
+- Browser integration uses a separate CPU server on port 8004. Servers launched
+  by tool sessions may stop when the session ends; check health rather than
+  assuming a previous PID is still alive. User can run python scripts/run.py.
+- Remaining human task: independent explanation usefulness review. Do not fill
+  it with assistant-generated judgments. No new storage request.
