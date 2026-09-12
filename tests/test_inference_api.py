@@ -59,13 +59,36 @@ def test_explanation_and_robustness_preserve_core_result(client):
     assert result["explanation"]["overlay_data_url"].startswith("data:image/png;base64,")
     original = result["robustness"]["results"][0]
     assert original["ai_score"] == pytest.approx(result["prediction"]["ai_score"], abs=1e-5)
-    assert len(result["robustness"]["results"]) == 6
+    assert len(result["robustness"]["results"]) == 7
+    assert result["robustness"]["results"][-1]["transformation"] == "simulated_screenshot"
     assert result["metadata"]["c2pa_status"] == "not_checked"
 
 
 def test_corrupt_and_oversized_uploads_return_clear_errors(client):
     assert client.post("/api/predict", files={"image": ("bad.jpg", b"not an image", "image/jpeg")}).status_code == 400
-    assert client.post("/api/predict", files={"image": ("big.jpg", b"x"*(10*1024*1024+1), "image/jpeg")}).status_code == 413
+    assert client.post("/api/predict", files={"image": ("big.jpg", b"x"*(25*1024*1024+1), "image/jpeg")}).status_code == 413
+
+
+def test_phone_size_uploads_pass_and_excessive_geometry_is_rejected(client):
+    import numpy as np
+    from signalscope.preprocessing import native_canvas_size
+
+    assert native_canvas_size(6000, 4000, 128) == (6000, 4000)
+    # A genuine encoded PNG beyond the old 10 MiB cap, not trailing junk bytes.
+    noise = np.random.default_rng(2026).integers(0, 256, (2000, 2000, 3), dtype=np.uint8)
+    stream = io.BytesIO()
+    Image.fromarray(noise).save(stream, format="PNG")
+    assert 10*1024*1024 < len(stream.getvalue()) < 25*1024*1024
+    response = client.post("/api/predict", files={"image": ("large.png", stream.getvalue(), "image/png")})
+    assert response.status_code == 200, response.text
+    for size, expected in [((6000, 4000), 200), ((8000, 5001), 413)]:
+        stream = io.BytesIO()
+        Image.new("RGB", size, (21, 57, 81)).save(stream, format="JPEG")
+        response = client.post("/api/predict", files={"image": ("phone.jpg", stream.getvalue(), "image/jpeg")})
+        assert response.status_code == expected, response.text
+        if expected == 200:
+            prediction = response.json()["prediction"]
+            assert (prediction["image_width"], prediction["image_height"]) == size
 
 
 def test_unsupported_format_is_rejected(client):

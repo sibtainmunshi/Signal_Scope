@@ -25,6 +25,7 @@ from signalscope.evidence import (
     robustness_evidence,
 )
 from signalscope.inference import Detector
+from signalscope.limits import MAX_IMAGE_PIXELS, MAX_UPLOAD_BYTES
 from signalscope.paths import ROOT
 
 MODEL_LOCK = Lock()
@@ -123,8 +124,8 @@ def analyse(content: bytes, explain: bool, robustness: bool) -> dict:
                 raise HTTPException(415, "Supported image formats are JPEG, PNG and WebP.")
             if getattr(uploaded, "n_frames", 1) > 1:
                 raise HTTPException(415, "Animated images are not supported; export a single frame first.")
-            if uploaded.width*uploaded.height > 20_000_000:
-                raise HTTPException(413, "Image exceeds the 20 megapixel limit.")
+            if uploaded.width*uploaded.height > MAX_IMAGE_PIXELS:
+                raise HTTPException(413, "Image exceeds the 40 megapixel limit.")
             uploaded.load()
             metadata = metadata_evidence(uploaded)
             image = uploaded.copy()
@@ -147,13 +148,13 @@ def analyse(content: bytes, explain: bool, robustness: bool) -> dict:
 async def predict(image: Annotated[UploadFile, File()], explain: Annotated[bool, Form()] = False,
                   robustness: Annotated[bool, Form()] = False):
     try:
-        content = await image.read(10*1024*1024+1)
+        content = await image.read(MAX_UPLOAD_BYTES+1)
     finally:
         await image.close()
     if not content:
         raise HTTPException(400, "The image file is empty. Choose a non-empty image.")
-    if len(content) > 10*1024*1024:
-        raise HTTPException(413, "Image exceeds the 10 MiB upload limit.")
+    if len(content) > MAX_UPLOAD_BYTES:
+        raise HTTPException(413, "Image exceeds the 25 MiB upload limit.")
     return await run_in_threadpool(analyse, content, explain, robustness)
 
 

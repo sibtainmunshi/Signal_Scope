@@ -8,8 +8,8 @@ missing checkpoint is reported as unavailable; no placeholder prediction occurs.
 
 `POST /api/predict`: multipart `image` field; optional `explain` and `robustness`
 boolean form fields. Returns `prediction`, optional `explanation`, optional
-`robustness`, and `metadata`. No upload is persisted by default. Initial limits:
-10 MiB encoded upload; 20 million decoded pixels; JPEG, PNG, and WebP images.
+`robustness`, and `metadata`. No upload is persisted by default. Limits:
+25 MiB encoded upload; 40 million decoded pixels; JPEG, PNG, and WebP images.
 
 Prediction fields: `label` (`real` or `ai_generated`), `ai_score` (0-1), `threshold`,
 `confidence` (score assigned to returned class, not estimated benchmark accuracy),
@@ -27,7 +27,8 @@ Metadata evidence is separate from, and never overrides, the image-only score.
 `cifake_test` when saved results match the loaded checkpoint SHA-256. These public
 reserved results are distinct from the unavailable organizer hidden test.
 
-Native crop preprocessing also limits the upscaled canvas to 20 million pixels.
+Native crop preprocessing limits a canvas requiring upscaling to 20 million pixels.
+Native images such as 6000 x 4000 phone photos retain their original resolution.
 Extremely narrow images that exceed this limit return HTTP 413 before allocation.
 
 Image dimensions in the prediction describe the EXIF-oriented image, matching
@@ -45,3 +46,15 @@ Nearly flat images (maximum channel standard deviation below 1 pixel level on a
 64px RGB thumbnail) retain their binary label and score but recommend review with
 a low-information limitation. This is a usability heuristic, not evidence of
 accuracy or generation, and does not change benchmark predictions or thresholds.
+
+Batch CLI: `python model/predict.py --images-dir photos --device cpu` recursively
+processes JPEG/PNG/WebP files in path order with one loaded detector. Alternatively,
+`--image-list inputs.txt` reads one path per line, relative to the list file.
+Both write JSONL: one record with `image` and prediction fields, or `image` and
+`error`. Bad inputs do not stop subsequent images. Exit codes: 0 all succeeded,
+1 one or more image failures, 2 invalid inputs/setup. Single-image behavior remains.
+
+Robustness includes `simulated_screenshot`: synthetic 90% display resizing capped
+at 1080px, simple window borders and PNG encoding. This is a controlled simulation,
+not a real OS/device capture or a photographed screen; its measured performance
+must not be described as universal screenshot robustness.

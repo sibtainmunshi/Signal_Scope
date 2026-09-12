@@ -14,7 +14,7 @@ from signalscope.dataset import CifakeDataset
 from signalscope.inference import Detector
 from signalscope.metrics import binary_metrics
 from signalscope.paths import ROOT
-from signalscope.robustness import TRANSFORMS, transform_image
+from signalscope.robustness import SCREENSHOT_PROTOCOL, TRANSFORMS, transform_image
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -44,8 +44,13 @@ def main():
     parser.add_argument("--dataset",choices=["cifake","genimage"],default="cifake")
     parser.add_argument("--limit",type=int,default=2000)
     parser.add_argument("--batch-size",type=int,default=32)
+    parser.add_argument("--device", default="auto")
+    parser.add_argument("--output", help="New report directory; existing results are never overwritten")
     args=parser.parse_args()
-    detector=Detector(args.checkpoint)
+    detector=Detector(args.checkpoint, args.device)
+    output = ROOT / args.output if args.output else ROOT/"report/runs"/detector.model_version/("robustness" if args.dataset=="cifake" else "robustness_genimage")
+    if (output / "metrics.json").exists():
+        raise SystemExit("Results already exist; choose a new --output directory.")
     ids,labels,original,description=load_dataset(args.dataset,args.limit)
     all_scores=[]
     rows=[]
@@ -61,15 +66,15 @@ def main():
     predictions=np.array(all_scores)>=detector.threshold
     originally_correct=predictions[0]==labels
     failures=np.any(predictions[1:]!=labels[None,:],axis=0)&originally_correct
-    defence={"threat_model":"bounded grid of six common post-processing transformations",
+    defence={"threat_model":f"bounded grid of {len(TRANSFORMS)-1} common post-processing transformations",
              "initially_correct":int(originally_correct.sum()),"successfully_flipped":int(failures.sum()),
              "attack_success_rate":float(failures.sum()/originally_correct.sum()) if originally_correct.any() else None,
              "search_budget_per_image":len(TRANSFORMS)-1,
              "limitation":"This does not establish robustness to arbitrary adversarial attacks."}
     report={"dataset":args.dataset,"split":description,"seed":2026,"model_version":detector.model_version,
             "checkpoint_sha256":detector.checkpoint_hash,"threshold":detector.threshold,
-            "preprocessing":detector.preprocessing,"paired_image_ids":ids,"transformations":rows,"active_defence":defence}
-    output=ROOT/"report/runs"/detector.model_version/("robustness" if args.dataset=="cifake" else "robustness_genimage")
+            "preprocessing":detector.preprocessing,"paired_image_ids":ids,"transformations":rows,"active_defence":defence,
+            "screenshot_protocol": SCREENSHOT_PROTOCOL}
     output.mkdir(parents=True,exist_ok=True)
     (output/"metrics.json").write_text(json.dumps(report,indent=2)+"\n",encoding="utf-8")
     fig,ax=plt.subplots(figsize=(8,4.2),layout="constrained")

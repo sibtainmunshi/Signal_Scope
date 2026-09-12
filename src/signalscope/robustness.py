@@ -3,7 +3,8 @@ import io
 
 from PIL import Image, ImageFilter, ImageOps
 
-TRANSFORMS = ("original", "jpeg_q90", "jpeg_q70", "jpeg_q50", "jpeg_q30", "half_resolution", "mild_blur")
+TRANSFORMS = ("original", "jpeg_q90", "jpeg_q70", "jpeg_q50", "jpeg_q30", "half_resolution", "mild_blur", "simulated_screenshot")
+SCREENSHOT_PROTOCOL = "Synthetic display resampling to 90% (long side capped at 1080 px), 16 px side/window border and 48 px top chrome, then lossless PNG. Not a real device capture or photographed screen."
 
 
 def matched_format(image, size=224, quality=90):
@@ -55,4 +56,15 @@ def transform_image(image, name):
         return image.resize(size, Image.Resampling.LANCZOS).resize(image.size, Image.Resampling.BILINEAR)
     if name == "mild_blur":
         return image.filter(ImageFilter.GaussianBlur(.7))
+    if name == "simulated_screenshot":
+        scale = min(.9, 1080 / max(image.size))
+        size = (max(1, round(image.width*scale)), max(1, round(image.height*scale)))
+        display = image.resize(size, Image.Resampling.BICUBIC)
+        canvas = Image.new("RGB", (display.width+32, display.height+64), (245, 245, 245))
+        canvas.paste(display, (16, 48))
+        stream = io.BytesIO()
+        canvas.save(stream, format="PNG")
+        stream.seek(0)
+        with Image.open(stream) as captured:
+            return captured.convert("RGB")
     raise ValueError(f"Unsupported transformation {name}")

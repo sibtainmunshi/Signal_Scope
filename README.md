@@ -56,6 +56,19 @@ A prior attempt stopped during a DNS outage; network speed affects setup time.
 .venv/Scripts/python model/predict.py --image path/to/image.jpg --label-only
 ```
 
+Batch prediction loads the model once and writes one JSON record per image:
+
+```shell
+.venv/Scripts/python model/predict.py --images-dir path/to/photos --device cpu > predictions.jsonl
+.venv/Scripts/python model/predict.py --image-list inputs.txt --device cpu > predictions.jsonl
+```
+
+Directory inputs are recursive and sorted. List inputs contain one path per line,
+relative to the list file. Each result retains its image path; invalid images emit
+an error record and later inputs still run (exit 1 if any image failed).
+The app accepts JPEG/PNG/WebP files up to 25 MiB and 40 megapixels, including
+ordinary 24 MP phone photos. Pathological upscaling remains bounded.
+
 (`.venv/bin/python` on Linux/macOS.) JSON gives `label` (`real` or `ai_generated`),
 `ai_score` (AI is the positive class), `threshold`, `confidence` for the returned
 class, `calibrated`, model identity and limitations. Python: `from model.predict

@@ -2,6 +2,8 @@
 
 from PIL import Image
 
+from .limits import MAX_IMAGE_PIXELS, MAX_UPSCALED_PIXELS
+
 
 def center_crop_box(width, height, size):
     """Resized dimensions for a short-side resize to `size`, and the central square box."""
@@ -27,9 +29,11 @@ def native_canvas_size(width, height, size):
     """Image size after the upscale applied only when the short side is below `size`."""
     if min(width, height, size) <= 0:
         raise ValueError("Image dimensions and crop size must be positive.")
+    if width * height > MAX_IMAGE_PIXELS:
+        raise ValueError("Image exceeds the supported 40 megapixel limit.")
     scale = max(1.0, size / min(width, height))
     canvas = max(size, round(width * scale)), max(size, round(height * scale))
-    if canvas[0] * canvas[1] > 20_000_000:
+    if canvas != (width, height) and canvas[0] * canvas[1] > MAX_UPSCALED_PIXELS:
         raise ValueError("Image aspect ratio requires more than 20 megapixels after minimum-size upscaling; use a less narrow image.")
     return canvas
 

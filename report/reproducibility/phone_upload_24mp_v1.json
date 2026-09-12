@@ -1,0 +1,13 @@
+{
+  "http_status": 200,
+  "dimensions": [
+    6000,
+    4000
+  ],
+  "explanation_and_robustness": true,
+  "elapsed_seconds": 6.520964000000049,
+  "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+  "fixture": "synthetic non-flat 24MP API/memory regression, not detection accuracy evidence",
+  "score_parity": true,
+  "robustness_rows": 7
+}

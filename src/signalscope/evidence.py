@@ -13,6 +13,7 @@ from torch.nn import functional as F
 
 from .inference import Detector
 from .preprocessing import native_crop_boxes, native_crops, native_region
+from .robustness import SCREENSHOT_PROTOCOL, transform_image
 
 # ImageNet channel means as RGB pixels: masking to these equals zero normalized input.
 MEAN_PIXEL = (124, 116, 104)
@@ -45,27 +46,20 @@ def metadata_evidence(image: Image.Image) -> dict:
 
 def robustness_evidence(detector: Detector, image: Image.Image) -> dict:
     image = ImageOps.exif_transpose(image).convert("RGB")
-    variants = [("original", image)]
-    for quality in (90, 70, 50):
-        buffer = io.BytesIO()
-        image.save(buffer, format="JPEG", quality=quality)
-        buffer.seek(0)
-        with Image.open(buffer) as encoded:
-            variants.append((f"jpeg_q{quality}", encoded.convert("RGB")))
-    size = (max(1, image.width//2), max(1, image.height//2))
-    resized = image.resize(size, Image.Resampling.LANCZOS).resize(image.size, Image.Resampling.BILINEAR)
-    variants.extend([("half_resolution", resized), ("mild_blur", image.filter(ImageFilter.GaussianBlur(.7)))])
-    scores = np.array(detector.score_images([v for _, v in variants]))
+    names = ("original", "jpeg_q90", "jpeg_q70", "jpeg_q50", "half_resolution", "mild_blur", "simulated_screenshot")
+    # Keep only one transformed phone-resolution image alive at a time.
+    scores = np.array([detector.score_images([transform_image(image, name)])[0] for name in names])
     baseline_label = bool(scores[0] >= detector.threshold)
     rows = [{"transformation": name, "ai_score": float(score),
              "label": "ai_generated" if score >= detector.threshold else "real",
              "score_change": float(score-scores[0]),
              "label_changed": bool((score >= detector.threshold) != baseline_label)}
-            for (name, _), score in zip(variants, scores, strict=True)]
+            for name, score in zip(names, scores, strict=True)]
     return {"results": rows, "threshold": detector.threshold,
             "max_absolute_score_change": float(np.max(np.abs(scores-scores[0]))),
             "label_flip_count": sum(r["label_changed"] for r in rows[1:]),
             "transformations_tested": len(rows)-1,
+            "screenshot_protocol": SCREENSHOT_PROTOCOL,
             "note": "Stability is measured on this upload only; a stable verdict can still be wrong."}
 
 
@@ -242,12 +236,11 @@ def _explain_multicrop(detector: Detector, image: Image.Image, start: float) -> 
         x, y = top_window(heat, covered, side)
         rl, rt = min(b[0] for b in boxes), min(b[1] for b in boxes)
         rr, rb = max(b[2] for b in boxes), max(b[3] for b in boxes)
-        probes = []
+        measured = []
         for left, top in [(x, y), (rl, rt), (rr-side, rt), (rl, rb-side), (rr-side, rb-side)]:
             probe = canvas.copy()
             probe.paste(MEAN_PIXEL, (left, top, left+side, top+side))
-            probes.append(probe)
-        measured = detector.score_images(probes)
+            measured.append(detector.score_images([probe])[0])
         score_after, comparison_mean = measured[0], float(np.mean(measured[1:]))
     display = image.copy()
     display.thumbnail((768, 768))

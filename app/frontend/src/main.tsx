@@ -29,7 +29,7 @@ const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 
 const percentage = (value: number) => `${(value * 100).toFixed(1)}%`
 const scorePercentage = (value: number) => value >= .999 ? '>99.9%' : value <= .001 ? '<0.1%' : percentage(value)
-const pretty = (name: string) => ({ original: 'Original image', jpeg_q90: 'JPEG · quality 90', jpeg_q70: 'JPEG · quality 70', jpeg_q50: 'JPEG · quality 50', half_resolution: '50% resolution', mild_blur: 'Mild blur' }[name] || name)
+const pretty = (name: string) => ({ original: 'Original image', jpeg_q90: 'JPEG · quality 90', jpeg_q70: 'JPEG · quality 70', jpeg_q50: 'JPEG · quality 50', half_resolution: '50% resolution', mild_blur: 'Mild blur', simulated_screenshot: 'Screenshot (sim.)' }[name] || name)
 const verdictTitle = (prediction: Prediction) => prediction.review_recommended ? 'Review recommended'
   : prediction.label === 'ai_generated' ? 'Likely AI-generated' : 'Likely real'
 
@@ -97,7 +97,7 @@ function App() {
     // Validate before discarding any existing result, so a rejected file never
     // destroys the analysis the user already has on screen.
     if (!ACCEPTED_TYPES.includes(selected.type)) { setError('Choose a JPEG, PNG or WebP image.'); resetFileInput(); return }
-    if (selected.size > 10 * 1024 * 1024) { setError('Choose an image smaller than 10 MiB.'); resetFileInput(); return }
+    if (selected.size > 25 * 1024 * 1024) { setError('Choose an image no larger than 25 MiB.'); resetFileInput(); return }
     setError(''); setAnnouncement(''); setAnalysis(null); setFile(selected)
   }
 
@@ -175,7 +175,7 @@ function App() {
               <div className="panel-heading"><span className="number">01</span><h2>Your image</h2><span className="panel-caption">JPEG, PNG, WEBP</span></div>
               <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp" onChange={e => selectFile(e.target.files?.[0])} className="visually-hidden" aria-label="Choose image" disabled={busy} />
               <div className={`drop-zone ${preview ? 'has-image' : ''} ${dragging ? 'dragging' : ''}`} onDragOver={e => { e.preventDefault(); setDragging(true) }} onDragLeave={() => setDragging(false)} onDrop={e => { e.preventDefault(); setDragging(false); selectFile(e.dataTransfer.files[0]) }}>
-                {preview ? <><img className="image-preview" src={analysis?.explanation && showHeatmap ? analysis.explanation.overlay_data_url : preview} alt={analysis?.explanation && showHeatmap ? 'Model influence overlay; not verified artifact segmentation' : 'Uploaded image'} /><div className="image-toolbar"><span><FileImage size={13} /> {file?.name}</span><button aria-label="Remove image" disabled={busy} onClick={clearImage}><X size={16} /></button></div>{analysis?.explanation && <button className="overlay-toggle" onClick={() => setShowHeatmap(!showHeatmap)}><Layers3 size={14} />{showHeatmap ? 'View original' : 'View model influence'}</button>}</> : <button className="upload-button" onClick={openFilePicker}><div className="upload-icon"><ImagePlus size={30} strokeWidth={1.4} /></div><strong>Drop an image here</strong><span>or <em>browse files</em> to get started</span><small>Up to 10 MiB · Images stay local</small></button>}
+                {preview ? <><img className="image-preview" src={analysis?.explanation && showHeatmap ? analysis.explanation.overlay_data_url : preview} alt={analysis?.explanation && showHeatmap ? 'Model influence overlay; not verified artifact segmentation' : 'Uploaded image'} /><div className="image-toolbar"><span><FileImage size={13} /> {file?.name}</span><button aria-label="Remove image" disabled={busy} onClick={clearImage}><X size={16} /></button></div>{analysis?.explanation && <button className="overlay-toggle" onClick={() => setShowHeatmap(!showHeatmap)}><Layers3 size={14} />{showHeatmap ? 'View original' : 'View model influence'}</button>}</> : <button className="upload-button" onClick={openFilePicker}><div className="upload-icon"><ImagePlus size={30} strokeWidth={1.4} /></div><strong>Drop an image here</strong><span>or <em>browse files</em> to get started</span><small>Up to 25 MiB · Images stay local</small></button>}
               </div>
               {file && <div className="file-details"><span>{(file.size / 1024).toFixed(0)} KB</span><span>{verdict ? `${verdict.image_width} × ${verdict.image_height} px` : 'Ready for analysis'}</span><button disabled={busy} onClick={openFilePicker}>Change image</button></div>}
               <div className="analysis-options"><div className="option-heading"><SlidersHorizontal size={14} /> ANALYSIS OPTIONS</div><label><input type="checkbox" checked={explain} onChange={e => setExplain(e.target.checked)} disabled={busy} /><span>Model influence map<small>See which regions influence the result</small></span></label><label><input type="checkbox" checked={robustness} onChange={e => setRobustness(e.target.checked)} disabled={busy} /><span>Robustness check<small>Compare compression, resizing and blur</small></span></label></div>

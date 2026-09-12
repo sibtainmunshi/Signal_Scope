@@ -13,6 +13,7 @@ import torch
 from PIL import Image, ImageOps, ImageStat
 
 from .network import build_model, preprocess_batch
+from .limits import MAX_IMAGE_PIXELS
 from .paths import root_path
 from .preprocessing import center_crop_resize, native_crops, native_region, source_region
 
@@ -104,8 +105,8 @@ class Detector:
         return torch.sigmoid(self.image_logits(images)/self.temperature).cpu().tolist()
 
     def predict(self, image: Image.Image) -> Prediction:
-        if image.width * image.height > 20_000_000:
-            raise ValueError("Image exceeds the supported 20 megapixel limit.")
+        if image.width * image.height > MAX_IMAGE_PIXELS:
+            raise ValueError("Image exceeds the supported 40 megapixel limit.")
         if getattr(image, "n_frames", 1) > 1:
             raise ValueError("Animated images are not supported; export a single frame first.")
         start = time.perf_counter()
