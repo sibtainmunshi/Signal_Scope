@@ -14,7 +14,7 @@ import stat
 import time
 import urllib.request
 import zipfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -80,7 +80,7 @@ def extract(archive: Path, target: Path) -> dict:
         digest = hashlib.file_digest(stream, "sha256").hexdigest()
     return {
         "dataset": "CIFAKE", "source_url": SOURCE,
-        "acquired_utc": datetime.now(timezone.utc).isoformat(),
+        "acquired_utc": datetime.now(UTC).isoformat(),
         "archive_sha256": digest, "archive_bytes": archive.stat().st_size,
         "archive_entries": len(files), "extracted_bytes": total_bytes,
         "license_declared_by_publisher": "MIT",

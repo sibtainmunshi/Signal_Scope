@@ -9,14 +9,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 import numpy as np
-import torch
-from PIL import Image
+from PIL import Image, ImageOps
 
 from signalscope.inference import Detector
 from signalscope.metrics import binary_metrics
 from signalscope.paths import ROOT
-from PIL import ImageOps
-
 from signalscope.robustness import matched_format, matched_native
 
 PAIRS={"guided":"imagenet","ldm_200":"laion","glide_100_27":"laion","glide_50_27":"laion","glide_100_10":"laion","dalle":"laion"}

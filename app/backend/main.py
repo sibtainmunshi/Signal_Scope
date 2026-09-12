@@ -44,7 +44,7 @@ async def lifespan(application):
     yield
 
 
-app = FastAPI(title="SignalScope", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="SignalScope", version="0.2.0", lifespan=lifespan)
 app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
                    allow_methods=["GET", "POST"], allow_headers=["*"])
 
@@ -52,7 +52,7 @@ app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http
 @app.get("/api/health")
 def health():
     detector = getattr(app.state, "detector", None)
-    return {"ready": detector is not None, "version": "0.1.0",
+    return {"ready": detector is not None, "version": "0.2.0",
             "device": str(detector.device) if detector else None,
             "model_version": detector.model_version if detector else None,
             "message": "Local detector ready" if detector else "No trained checkpoint is available. Follow the README to train/download weights."}
@@ -90,6 +90,14 @@ def model_report():
         return {"ready": False, "metrics": None}
     validation = {"genimage": measured(detector, "genimage_val"), "cifake": measured(detector, "cifake_val", "val")}
     external = measured(detector, "external_dev")
+    reserved = measured(detector, "external_reserved")
+    test = measured(detector, "test")
+    if reserved:
+        unseen_status = "Frozen public reserved GLIDE/DALLE evaluation completed; organizer hidden result unavailable"
+    elif external:
+        unseen_status = "External development measured; reserved final generators not evaluated"
+    else:
+        unseen_status = "Not evaluated yet"
     return {"ready": True, "model_version": detector.model_version,
             "checkpoint_sha256": detector.checkpoint_hash, "architecture": "ResNet-18",
             "image_size": detector.image_size, "preprocessing": detector.preprocessing,
@@ -98,8 +106,11 @@ def model_report():
             "metrics": validation["genimage"] or validation["cifake"], "validation": validation,
             "organizer_baseline": None, "organizer_hidden_result": None,
             "external_development": external,
+            "external_reserved": reserved,
+            "external_reserved_matched": measured(detector, "external_reserved_matched"),
+            "cifake_test": test,
             "external_development_matched": measured(detector, "external_dev_matched"),
-            "unseen_generator_status": "External development measured; reserved final generators not evaluated" if external else "Not evaluated yet", "data_summary": detector.config.get("data_summary")}
+            "unseen_generator_status": unseen_status, "data_summary": detector.config.get("data_summary")}
 
 
 def analyse(content: bytes, explain: bool, robustness: bool) -> dict:
@@ -117,6 +128,11 @@ def analyse(content: bytes, explain: bool, robustness: bool) -> dict:
             image = uploaded.copy()
     except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError) as error:
         raise HTTPException(400, "The upload could not be decoded as a supported image.") from error
+    # Validate geometry before any crop/upscale allocation or model call.
+    try:
+        detector.input_region(image.width, image.height)
+    except ValueError as error:
+        raise HTTPException(413, str(error)) from error
     with MODEL_LOCK:
         prediction = detector.predict(image).to_dict()
         explanation = explain_prediction(detector, image) if explain else None

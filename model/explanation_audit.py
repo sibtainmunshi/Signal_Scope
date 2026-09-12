@@ -25,7 +25,13 @@ import torch
 from PIL import Image, ImageDraw, ImageFilter, ImageOps
 from scipy.stats import spearmanr, wilcoxon
 
-from signalscope.evidence import MEAN_PIXEL, _box_mean, explain_prediction, native_attribution, top_window
+from signalscope.evidence import (
+    MEAN_PIXEL,
+    _box_mean,
+    explain_prediction,
+    native_attribution,
+    top_window,
+)
 from signalscope.inference import Detector
 from signalscope.paths import ROOT
 from signalscope.robustness import transform_image
@@ -98,7 +104,7 @@ def main():
     detector = Detector(args.checkpoint)
     if detector.preprocessing != "native_multicrop_v1":
         raise ValueError("This audit targets the native multi-crop detector")
-    size, side = detector.image_size, max(1, detector.image_size//3)
+    side = max(1, detector.image_size//3)
     randomized = copy.deepcopy(detector.model)
     for module in list(randomized.layer4.modules()) + [randomized.fc]:
         if hasattr(module, "reset_parameters"):

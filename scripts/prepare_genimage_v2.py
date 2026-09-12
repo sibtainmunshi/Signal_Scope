@@ -46,7 +46,7 @@ def jpeg_quality(image):
     if not tables:
         return None
     scale = 100 * np.array(tables[0], dtype=float).sum() / STD_LUMA.sum()
-    return int(round(min(100, (200 - scale) / 2 if scale <= 100 else 5000 / scale)))
+    return round(min(100, (200 - scale) / 2 if scale <= 100 else 5000 / scale))
 
 
 def jpeg(image, quality):

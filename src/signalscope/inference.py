@@ -115,8 +115,10 @@ class Detector:
         trained_on = ("Initial model trained on CIFAKE (32x32 source images)." if dataset == "CIFAKE"
                       else f"Trained on {dataset}; unseen generators and processing pipelines can still fail.")
         limitations = [trained_on,
-                       "External development checks show substantial domain-shift errors; broad unseen-generator reliability is not established.",
+                       "Public external evaluations show substantial domain-shift errors; broad unseen-generator reliability is not established.",
                        "A visual score does not verify the truth of a depicted event."]
+        if self.calibrated:
+            limitations.append("Temperature scaling was fit on development sources; confidence and false-positive rates may not transfer to other sources.")
         if not self.calibrated:
             limitations.append("Scores have not yet been probability-calibrated.")
         if min(image.size) < 64:

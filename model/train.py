@@ -7,7 +7,7 @@ import json
 import random
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
@@ -80,7 +80,7 @@ def main():
     config = vars(args) | {"device_resolved": str(device), "train_count": len(training),
                            "validation_count": len(validation), "architecture": "resnet18",
                            "pretrained_source": "torchvision ResNet18 IMAGENET1K_V1" if not args.scratch else None,
-                           "created_utc": datetime.now(timezone.utc).isoformat(),
+                           "created_utc": datetime.now(UTC).isoformat(),
                            "torch_version": str(torch.__version__)}
     config["data_summary"] = json.loads((root_path(args.data)/"summary.json").read_text())
     (report / "config.json").write_text(json.dumps(config, indent=2)+"\n", encoding="utf-8")

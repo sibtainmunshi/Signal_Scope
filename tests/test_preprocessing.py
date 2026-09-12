@@ -1,10 +1,12 @@
 """Geometry and evaluation-transform checks. Synthetic fixtures; never accuracy evidence."""
 import numpy as np
+import pytest
 from PIL import Image
 
 from signalscope.preprocessing import (
     center_crop_box,
     center_crop_resize,
+    native_canvas_size,
     native_crop_boxes,
     native_crops,
     native_region,
@@ -45,3 +47,9 @@ def test_matched_format_returns_square_decoded_rgb():
     for size in ((500, 375), (256, 256), (128, 300)):
         output = matched_format(Image.new("RGBA", size, (10, 200, 30, 128)))
         assert output.size == (224, 224) and output.mode == "RGB"
+
+
+def test_native_upscale_rejects_pathological_aspect_ratio_before_allocation():
+    with pytest.raises(ValueError, match="20 megapixels"):
+        native_canvas_size(100_000, 1, 128)
+    assert native_canvas_size(1920, 1080, 128) == (1920, 1080)

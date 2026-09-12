@@ -1,0 +1,35 @@
+{
+  "model_version": "mixed_resnet18_native_v1_calibrated",
+  "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+  "source": "Archived previously saved final predictions; no inference rerun. Inputs are not redistributed.",
+  "files": [
+    {
+      "evaluation": "test",
+      "file": "report/final/predictions/test.csv.gz",
+      "sha256": "83bb25a609904318806ca96fdb6b18745d6f2293c12c2fdb682d7bf7e879f97b",
+      "uncompressed_sha256": "60aa6852aebd04c2684eb5d48f2c696f55b920cdbd9e2d60d1aec89f799f6c98",
+      "bytes": 230938
+    },
+    {
+      "evaluation": "external_reserved",
+      "file": "report/final/predictions/external_reserved.csv.gz",
+      "sha256": "0644df4c23e240a631181de9a6845a902814f81630da3b6a945c583d89c42e7a",
+      "uncompressed_sha256": "91a8df7dd9bea832c29ad0ed1191f35088d3e304da366a5bbcc3a72bedb7e2a3",
+      "bytes": 456955
+    },
+    {
+      "evaluation": "external_reserved_matched",
+      "file": "report/final/predictions/external_reserved_matched.csv.gz",
+      "sha256": "7e1cc6eb091b90ae89788ad8a460c42b550d62b9824cbed71c83c863086ca2c1",
+      "uncompressed_sha256": "c39589b7f62021f5f91a7c03f848e2a9a2c0954bb59b581308aff3a3bf08c0b1",
+      "bytes": 456751
+    },
+    {
+      "evaluation": "external_reserved_matched_native",
+      "file": "report/final/predictions/external_reserved_matched_native.csv.gz",
+      "sha256": "9ab39a8b49f4b27cf7fee1e80be1c07c0423d0cf31bc3eb349b4144a90edfacf",
+      "uncompressed_sha256": "8774a0ffc663ff0770c380e5e67fd68039c5dcfbb81d463a7e4a3513540cdb8f",
+      "bytes": 456677
+    }
+  ]
+}

@@ -22,3 +22,10 @@ additional product hint and never removes an image from binary evaluation.
 Explanation fields describe model influence and measured interventions. A
 heatmap must never be presented as ground-truth artifact segmentation.
 Metadata evidence is separate from, and never overrides, the image-only score.
+
+`GET /api/model` includes `external_reserved`, `external_reserved_matched` and
+`cifake_test` when saved results match the loaded checkpoint SHA-256. These public
+reserved results are distinct from the unavailable organizer hidden test.
+
+Native crop preprocessing also limits the upscaled canvas to 20 million pixels.
+Extremely narrow images that exceed this limit return HTTP 413 before allocation.

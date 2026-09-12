@@ -1,4 +1,5 @@
 """Native multi-crop checkpoint: prediction, explanation and stability agree. Never accuracy evidence."""
+import json
 from pathlib import Path
 
 import numpy as np
@@ -6,7 +7,7 @@ import pytest
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-CHECKPOINT = ROOT / "model/checkpoints/mixed_resnet18_native_v1/best.pt"
+CHECKPOINT = ROOT / json.loads((ROOT / "model/manifest.json").read_text(encoding="utf-8"))["path"]
 pytestmark = pytest.mark.skipif(not CHECKPOINT.exists(), reason="Native candidate checkpoint not available")
 
 

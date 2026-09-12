@@ -25,10 +25,13 @@ def source_region(width, height, size):
 
 def native_canvas_size(width, height, size):
     """Image size after the upscale applied only when the short side is below `size`."""
-    if min(width, height) >= size:
-        return width, height
-    scale = size / min(width, height)
-    return max(size, round(width * scale)), max(size, round(height * scale))
+    if min(width, height, size) <= 0:
+        raise ValueError("Image dimensions and crop size must be positive.")
+    scale = max(1.0, size / min(width, height))
+    canvas = max(size, round(width * scale)), max(size, round(height * scale))
+    if canvas[0] * canvas[1] > 20_000_000:
+        raise ValueError("Image aspect ratio requires more than 20 megapixels after minimum-size upscaling; use a less narrow image.")
+    return canvas
 
 
 def native_crop_boxes(width, height, size):

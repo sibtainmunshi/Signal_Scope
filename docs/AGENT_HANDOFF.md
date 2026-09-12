@@ -1,313 +1,79 @@
-# SignalScope agent handoff
+# SignalScope handoff - 12 September 2026
 
-Snapshot: 12 September 2026, after mixed_resnet18_v2 evaluation (see git log). Read actual files/reports and running-process state first;
-newer evidence supersedes this note. This is a continuation of an approved build,
-not a request to redesign the project from scratch.
+This replaces accumulated stale handoff entries. Read README.md and
+SUBMISSION_CHECKLIST.md for current evidence and outstanding deliverables.
 
-## User objective and constraints
+## Workspace and authorization
 
-- SIH 2026 internal selection; user wants top 45 of 118 teams. Do not guarantee rank.
-- Deadline: **15 September 2026, 17:00 IST**. Aim ready by 14:00.
-- Required public GitHub repository, working implementation, one-page report and 3?5 minute demo video.
-- User approved implementation, testing, public code pushes and trained-model distribution.
-- Only local laptop compute; no cloud GPU or paid inference API. RTX 4050 Laptop, 6 GB VRAM; Python 3.13.
-- Communicate briefly in Hinglish; explain measured results honestly. Do not stall on routine permissions.
+- Actual folder: `C:/Users/Sibtainhaidar/OneDrive/Desktop/signal_scope` (renamed by user).
+- Public repo: https://github.com/sibtainmunshi/Signal_Scope.git, branch main.
+- User authorized implementation, tests, commits, pushes and publishing the model.
+- Deadline: 15 September 2026, 17:00 IST; aim to finish at 14:00 IST.
+- No selection or broad accuracy guarantee. Local laptop only; RTX 4050 6 GB.
+- About 31 GiB free at this review. Raw data, caches and checkpoints stay out of Git.
 
-## Read in this order
+## Final model and protected evaluation
 
-1. `docs/SUBMISSION_CHECKLIST.md` ? PDF requirements and evidence gaps.
-2. `SIGNALSCOPE_EXECUTION_PLAN.md` ? approved full plan (local, ignored by Git).
-3. `x81oedo3sa0ye6enaouu.pdf` ? nine-page original problem statement (local, ignored).
-4. `docs/PROGRESS.md`, `README.md`, `data/README.md`.
-5. `docs/EXTERNAL_EVALUATION.md` and actual `report/runs/*` records.
+`mixed_resnet18_native_v1_calibrated`, ResNet-18, up to five native 128 px crops,
+mean logits, temperature 1.649664402, threshold 0.4553663730621338.
+SHA-256: `eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303`.
+Weights: 44,782,411 bytes. v0.2.0 manifest names the same frozen checkpoint.
 
-## Workspace and Git
+Training: 8,000 CIFAKE plus 6,239 audited GenImage BigGAN/SD1.5 images. Native v1
+beat the earlier models on format-matched development AUC (~0.653); VQDM and
+Midjourney additions failed the predeclared replacement rule. Preserve negative
+experiments. No further candidate selection against the final results.
 
-Actual local folder: `C:/Users/Sibtainhaidar/OneDrive/Desktop/signal_scope`.
-It was renamed from `New folder (2)`. Do not operate in the stale directory.
-Remote: https://github.com/sibtainmunshi/Signal_Scope.git ; branch `main`.
-Run `git status` / `git log` for the latest pushed commit.
-Existing Git credential manager authentication worked; never print credentials.
-Preserve all uncommitted work and existing checkpoints. No destructive resets.
-Only one assistant should edit this working tree at a time. Before launching a
-GPU job, check that no previous training job is still running.
+Freeze commit cda2234 precedes final evaluation commit 4d3f8a5. Both the original
+weights and final measurement files remain unchanged. CIFAKE test: AUC 0.99257688,
+accuracy 95.125%, real FPR 1.92%. Reserved GLIDE x3/DALLE: mean AUC 0.5651065 as
+distributed, 0.643012 matched, 0.6402025 matched-native. Most unseen AI images are
+missed at the fixed threshold. The three GLIDE configurations are one family;
+reserved comparisons share 500 real photos (4,500 unique images total).
 
-## Environment and app
+**Do not rerun final evaluation or tune against those labels.**
+`python scripts/verify_frozen_results.py` recomputes metrics from the archived
+scores without inference or data downloads. It verifies arithmetic, not image
+labels or the full training provenance. Development bootstrap CIs do not account
+for model-selection uncertainty or all unseen generator families.
 
-- `.venv/Scripts/python.exe`: working CUDA training environment, torch 2.10.0+cu128 / torchvision 0.25.0+cu128.
-- GPU confirmed functional. Use one GPU-heavy experiment at a time.
-- Optional CLIP package is installed from commit d05afc436d78f1c48dc0dbf8e5980a9d471f35f6.
-- CPU-only fresh evaluator environment is `tmp/evaluator_v010/.venv`; do not accidentally use it for GPU training.
-- Start app: `python scripts/run.py`; open http://127.0.0.1:8000 . A server may already be running.
-- React/Vite UI is in `app/frontend`; build with `npm --prefix app/frontend run build`.
-- Small prebuilt `app/frontend/dist` is intentionally tracked for evaluator convenience.
-- Model manifest: `model/manifest.json`. Current released model is robust ResNet-18 at 96px, uncalibrated, threshold 0.5.
-- Repo excludes raw data, downloaded archives, caches, venvs and model checkpoints.
+## Review and packaging fixes
 
-## Verified working build and evidence
+- Reviewed Claude's implementation and recomputed metrics from saved predictions;
+  all final and development numbers checked matched. Original 20 tests passed.
+- API/UI now show final reserved results separately from development validation.
+- Extremely narrow inputs are rejected before excessive upscaling allocates memory.
+- Native integration tests use the release checkpoint, not an unpublished parent.
+- 23 tests and Ruff pass; real CPU upload and desktop/mobile Chrome smoke pass.
+- One-page PDF corrected for tiny-image upscaling, final confusion matrix, sample
+  counts, limited causal interpretation and pending human review; visually checked.
+- Archived final score CSVs (1.6 MB) are in report/final/predictions; no image inputs.
+- Updated README and compact current checklist supersede tmp/release README draft.
 
-App, CLI and API share actual trained inference. Upload, returned-class Grad-CAM,
-masking diagnostic, JPEG/resize/blur checks, EXIF fields and JSON export work.
-C2PA is explicitly **not checked**. Heatmaps are not verified semantic defects.
-Eleven tests last passed: metric tests, actual CPU/API integration and multipart
-ZIP boundary/CRC tests. Headless desktop/mobile Chrome flows passed earlier.
+## Release execution
 
-Public development release: https://github.com/sibtainmunshi/Signal_Scope/releases/tag/v0.1.0
-Asset: 44,778,635 bytes; SHA256 fb4d5420f3c49aaa6e651e735ba03d78d9151480819a6f744bc65f0319812127.
-Fresh public clone at ef4e6b5 installed in a completely separate CPU environment,
-verified public model download and actual upload/evidence/UI in 257.2 seconds.
-No training data were needed. Record: `report/reproducibility/v0.1.0_windows_cpu.json`.
-Same physical Windows machine; do not claim a second-machine or universal timing test.
+`gh` is absent but **not a blocker**. Existing Git credential-manager credentials
+can authenticate GitHub REST requests; never print credentials or put them in files.
+Publish the release/tag at the reviewed code commit, upload the exact checkpoint,
+verify its public unauthenticated URL, then push the manifest on main. Check for an
+existing release/asset first. User need not upload the model manually.
 
-## Actual model results ? keep failures visible
+Run a fresh public clone with a new CPU virtual environment. Do not delete or use
+the GPU development environment as the evaluator environment. Record duration,
+package-cache status, checksum, actual API prediction, explanation and static UI.
 
-| Candidate | CIFAKE validation | External development mean AUC |
-|---|---|---|
-| cifake_resnet18_v1 | Full 9,964 val accuracy 97.82%, AUC 0.9977 | 0.487801 |
-| cifake_resnet18_robust_v1 (released) | 97.09%, AUC 0.9961, FPR 4% | 0.553416 |
-| robust native32 preprocessing probe | Diagnostic only; not released | 0.596782 |
-| cifake_clip_b32_v1 | 93.78%, AUC 0.9843 | 0.537154 |
+## Outstanding human evidence
 
-Robust augmentation improved paired 2k-val half-resolution accuracy 59.6%?94.85%
-and blur 64.9%?96.6%; bounded transformation-search failure 43.58%?6.27%.
-These are narrow development results. The external failures mean we have NOT
-built a dependable general-purpose detector yet. More diverse data is the current
-working hypothesis to test, not a guaranteed solution.
+The 40-image automated explanation audit is complete; the two-reviewer form is
+still blank. Do not invent human reviews. Semantic artifact correctness and
+localization against organizer annotations are unverified.
 
-## Data already present and protections
+The PDF explicitly restricts imagery of identifiable people. General public
+benchmarks contain incidental people despite category exclusions; an external
+LAION audit image contains a political poster. These were not identity-targeting
+tasks, but do not claim the raw benchmark is person-free. Public demo material
+must use reviewed animals/objects only. Do not publish the full private audit sheet.
 
-CIFAKE: authors' 120k archive audited; original author test 20k still untouched.
-378 train/test pixel overlaps excluded. Grouped splits and caches under
-`data/processed/cifake`; manifests under `data/manifests`.
-
-UniversalFakeDetect diffusion release: 875 MiB local ZIP. All 10k image hashes
-recorded. Fixed external development is guided/ImageNet and LDM200/LAION, 500
-real + 500 generated per domain. Reserve GLIDE configurations and DALLE plus
-separate LAION real images for final frozen-model evaluation. **Never train on
-this release.** Do not score reserved generators until final model/threshold
-freeze. LDM is related to SD training family; do not call it unrelated-family
-holdout after adding SD1.5. Pretrained-backbone overlap is unknown.
-
-New GenImage acquisition is COMPLETE: **7,808 images / 1,395,257,330 bytes**,
-original TRAIN folders only, BigGAN and SD1.5, matched real/AI categories. Uses
-pinned third-party HF mirror (explicit provenance and original CC BY-NC-SA plus
-noncommercial terms recorded). Person-centered categories excluded; background
-people can still occur (observed in fish images). No identity analysis; review
-demo images separately. Do not claim the dataset is entirely face-free.
-
-Multipart archive range downloader is verified; do not download full archives.
-`data/manifests/genimage_acquired.jsonl` is the completion manifest; per-image
-files and metadata are in `data/raw/genimage_subset` (all ignored by Git).
-`genimage_acquisition.json` records revision, index hashes and actual counts.
-The SD1.5 real folder lacks 42 ImageNet categories; canonical mapping is derived
-from BigGAN's full 1000 categories. Never renumber the subset classes.
-
-## Immediate work at this handoff
-
-**GenImage audit is COMPLETE.** Five exact overlaps with protected data were
-excluded, leaving **7,803 images: 6,239 train, 783 validation, 781 calibration**.
-The exact/perceptual checks, source/label counts and 160px PIL-bilinear cache are
-recorded in `data/manifests/genimage_summary.json` and `data/processed/genimage_subset`.
-Mixed-data training has now run (results in the section below). Do not redownload
-or rerun preparation unnecessarily. Check for newer jobs/reports before starting.
-The pHash<=4 check is conservative and not exhaustive; do not overstate it.
-
-Original planned commands (all ran successfully on 12 September):
-
-```powershell
-.\.venv\Scripts\python.exe scripts/prepare_genimage.py
-.\.venv\Scripts\python.exe model/train_mixed.py --run mixed_resnet18_v1
-.\.venv\Scripts\python.exe model/evaluate_mixed.py --checkpoint model/checkpoints/mixed_resnet18_v1/best.pt
-.\.venv\Scripts\python.exe model/evaluate_external.py --checkpoint model/checkpoints/mixed_resnet18_v1/best.pt
-.\.venv\Scripts\python.exe model/train_frozen_mixed.py
-```
-
-Run sequentially with one GPU job. Existing run directories are preserved; inspect
-before retrying failed runs and choose a new version name for new experiments.
-CNN mixed training uses 8k CIFAKE images plus audited GenImage training split,
-symmetric JPEG/resize/blur augmentation, and mean CIFAKE/GenImage validation AUC
-for selection. Frozen CLIP comparison fits our own head and balances source/label
-loss weights. External labels are evaluation-only. Keep failed results too.
-
-A versioned `pil_bilinear_v1` preprocessing path was added to Detector for the new
-CNN while preserving the released checkpoint's default torch preprocessing.
-`evaluate_mixed.py` checks raw-file versus cached-image score agreement.
-Current app remains on the old robust model until new results justify switching.
-If CLIP wins, its runtime/backbone, attribution and artifact download are NOT yet
-integrated; account for larger weights and CPU behavior before choosing it.
-
-## Mixed-data results and current decision (12 September)
-
-Data audit: GenImage real = non-square JPEG (quality ~96); generated = square PNG
-(BigGAN 128 px, SD1.5 512 px). The external release has the same real-JPEG vs
-generated-PNG split. `--protocol matched` (docs/EXTERNAL_EVALUATION.md) gives both
-labels an identical centre crop, 224 px resize and JPEG q90. Always report both
-protocols and real-image FPR.
-
-| Candidate | GenImage val AUC | CIFAKE val AUC | External mean AUC, as distributed | External mean AUC, matched |
-|---|---|---|---|---|
-| cifake_resnet18_robust_v1 (released) | - | 0.996 | 0.553 | 0.540 |
-| mixed_resnet18_v1 (160 px squash, JPEG always) | 0.945 | 0.995 | 0.627 | 0.574 |
-| mixed_clip_b32_v1 (frozen CLIP + our head) | 0.985 | 0.975 | 0.708 | 0.542 |
-| mixed_resnet18_v2 (centre crop, format-balanced) | 0.904 | 0.995 | 0.550 | 0.549 |
-
-`model/compare_candidates.py` regenerates `report/candidate_comparison.md` from
-saved reports. Format cues inflate as-distributed gains; once removed, resize-based
-160 px training transfers near chance. No candidate yet justifies replacing the
-release. Next planned experiment: native-resolution crops (no resize) with format
-balancing, judged by both protocols. Several candidates have now been compared on
-the same development data; state this selection count when reporting.
-
-v2 commands:
-
-```powershell
-.\.venv\Scripts\python.exe scripts/prepare_genimage_v2.py
-.\.venv\Scripts\python.exe model/train_mixed.py --run mixed_resnet18_v2 --genimage-cache data/processed/genimage_subset_v2 --preprocessing pil_center_crop_v1 --final-jpeg-prob 0.5
-.\.venv\Scripts\python.exe model/evaluate_mixed.py --checkpoint model/checkpoints/mixed_resnet18_v2/best.pt
-.\.venv\Scripts\python.exe model/evaluate_external.py --checkpoint model/checkpoints/mixed_resnet18_v2/best.pt --protocol matched
-.\.venv\Scripts\python.exe model/compare_candidates.py
-```
-
-New tested code: `signalscope/preprocessing.py` (`pil_center_crop_v1`), Detector
-`input_region`, Grad-CAM overlay that dims unanalysed borders, and hash-checked,
-config-derived `/api/model` plus UI text. `model/calibrate_mixed.py` (domain-balanced
-temperature, strictest per-domain validation threshold at max FPR, ECE) is written
-and unit-tested but not yet run. The already running local app server predates
-these backend changes; restart it to see them. 16 tests pass.
-
-## In flight: native-resolution candidate (12 September)
-
-`model/train_native.py` + `signalscope/native_dataset.py` train `mixed_resnet18_native_v1`:
-random 128 px crops at native resolution (no resize); every generated GenImage
-training image, and BigGAN real photos after 128 px matching, is JPEG-compressed at
-stored resolution with quality drawn from real training JPEGs; symmetric rescale,
-blur and crop-JPEG augmentation. Inference preprocessing `native_multicrop_v1`
-averages logits of up to five native crops (`Detector.score_images`). Training
-finished (best epoch 6: GenImage val AUC 0.956, FPR 4.1%; CIFAKE val 0.993).
-A new format-only control `matched_native` (native centre crop + JPEG q90, no
-resize) was declared in docs/EXTERNAL_EVALUATION.md before any native score.
-
-Evaluation chain (log `tmp/logs/eval_native_v1.log`; rerun if interrupted):
-
-```powershell
-$ck = "model/checkpoints/mixed_resnet18_native_v1/best.pt"
-.\.venv\Scripts\python.exe model/evaluate_mixed.py --checkpoint $ck
-.\.venv\Scripts\python.exe model/evaluate_external.py --checkpoint $ck
-.\.venv\Scripts\python.exe model/evaluate_external.py --checkpoint $ck --protocol matched
-.\.venv\Scripts\python.exe model/evaluate_external.py --checkpoint $ck --protocol matched_native
-# matched_native also for cifake_resnet18_robust_v1, mixed_resnet18_v1, mixed_resnet18_v2
-.\.venv\Scripts\python.exe model/compare_candidates.py
-```
-
-Verified: `score_images` equals the old per-row path on CPU (max diff 3e-8).
-CPU versus saved GPU scores differ by up to ~1.4e-3, most likely GPU TF32 convolutions (not
-separately confirmed); no label flips in a 50-image check. The app runs on CPU.
-Multi-crop stitched Grad-CAM is now implemented (`native_attribution`,
-`_explain_multicrop` in `signalscope/evidence.py`) and tested.
-
-## Native candidate results and next steps (12 September)
-
-`mixed_resnet18_native_v1` is the leading candidate: external dev mean AUC 0.647
-as distributed, 0.653 matched, 0.649 matched_native; GenImage val 0.956; CIFAKE val
-0.993. Paired bootstrap versus release: +0.113 [0.083, 0.142] matched
-(`report/external_bootstrap.md`, `model/bootstrap_external.py`). Seed-2027 replicate
-reached 0.670 as distributed (variation ~0.02). Seed 2026 stays primary.
-
-Calibrated copy: `model/checkpoints/mixed_resnet18_native_v1_calibrated/best.pt`
-(T=1.65, threshold 0.455; see its `calibration.json` and
-`report/runs/mixed_resnet18_native_v1_calibrated/calibration.json`). ECE improved
-on CIFAKE but worsened on GenImage; report this.
-
-Steps 1-2 below are DONE: calibrated external AUC unchanged; real FPR at 0.455 is
-4.0%/12.8% as distributed and 11.8%/16.0% matched, with external AI recall 11-43%.
-Seed-2027 replicate matched 0.667 (+0.126 [0.096, 0.156] vs release). Audit results
-are in `docs/EXPLANATION_AUDIT.md`. Continue from step 3.
-
-Next, in order (one GPU job at a time):
-1. Evaluate the calibrated checkpoint: `model/evaluate_mixed.py` and
-   `model/evaluate_external.py` with all three protocols (AUC unchanged; FPR/TPR at 0.455).
-2. `model/explanation_audit.py --checkpoint <calibrated>` (writes
-   `report/explanation_audit/<version>/`; the image contact sheet stays in `tmp/`
-   because images may contain people and need review before publication).
-3. Integrate in app: `model/manifest.json` (new release v0.2.0 asset + SHA-256),
-   default checkpoint in `app/backend/main.py`, `model/predict.py`,
-   `scripts/download_model.py`/`setup.py`, README results, UI copy. Rerun
-   robustness (`model/benchmark_robustness.py` uses CIFAKE; add GenImage val) on the frozen model.
-4. Freeze; then run CIFAKE test (`model/evaluate.py --split test --final-test`) and
-   reserved GLIDE/DALLE (`evaluate_external.py --split reserved --final-test`, all protocols) once.
-5. One-page report, demo script/assets, fresh-clone CPU check, submission links.
-
-## Status update (12 September, later)
-
-- Robustness done for the calibrated native model (see PROGRESS). `evaluate.py` and
-  `benchmark_robustness.py` now use `Detector.score_images` (multi-crop safe); CIFAKE
-  evaluator smoke-tested on CPU with the native model (writes to `tmp/` via `--output`).
-- App/CLI/tests read the default checkpoint from `model/manifest.json`. A v0.2.0
-  manifest for the native calibrated model is prepared at `tmp/release/manifest_v0.2.0.json`
-  with asset `tmp/release/signalscope-resnet18-native-v1-calibrated.pt`
-  (44,782,411 bytes, SHA-256 eab7d9d8...b303). `gh` is not installed: the user must
-  create GitHub release v0.2.0 and upload that asset before the manifest is switched
-  and pushed (otherwise fresh-clone setup breaks). Do not push a manifest pointing
-  at a missing asset.
-- One-page report builder: `scripts/build_report.py [--model <version>]` renders
-  `report/model_report.html/.pdf` from saved reports via
-  `app/frontend/scripts/render_report.mjs` and fails if the PDF exceeds one page.
-  Final reserved rows show "pending" until evaluated. Rebuild after freeze.
-- Demo script: `docs/DEMO_SCRIPT.md`. Reviewed demo images (animals, no people) are
-  copied locally to `tmp/demo/selected/` (GenImage validation; not in training).
-- IN FLIGHT: data-diversity experiment. Downloading GenImage VQDM (2/class) and
-  Midjourney (1/class) train images (~1.8 GB; logs `tmp/logs/download_*.log`;
-  manifests `data/manifests/genimage_{vqdm,midjourney}_*`). ADM (guided-diffusion
-  family of the external dev set) and GLIDE (reserved) are deliberately excluded.
-  Next: `python scripts/prepare_genimage.py --tag vqdm` and `--tag midjourney`
-  (audits against protected data and the existing subset), then
-  `model/train_native.py --run mixed_resnet18_native_v2 --extra-manifests data/manifests/genimage_vqdm.csv data/manifests/genimage_midjourney.csv`,
-  evaluate with all three external protocols and bootstrap. Adopt only if the
-  matched external AUC clearly improves; otherwise keep native_v1.
-- RESULT: native+VQDM (`mixed_resnet18_native_vqdm_v1`) was WORSE (external 0.609 /
-  0.575 / 0.595) and is rejected. native+VQDM+Midjourney (`mixed_resnet18_native_v2`)
-  is queued by a background waiter (log `tmp/logs/mixed_resnet18_native_v2.log`, then
-  bootstrap and comparison logs `tmp/logs/*_final_candidates.log`). If that job was
-  interrupted, rerun the commands above. Apply the pre-declared rule in PROGRESS:
-  keep native_v1 unless matched AUC beats 0.653 by >0.02 with no worse real FPR.
-  If native_v2 is not adopted, the release asset in `tmp/release/` is final.
-- DONE: freeze (`report/final/freeze.json`, commit cda2234) and the one-time final
-  evaluation (`report/final/summary.json`): CIFAKE test AUC 0.9926; reserved unseen
-  0.565 / 0.643 / 0.640; baseline v0.1.0 reserved 0.548 / 0.546. Do not rerun.
-  REMAINING: user uploads the release asset; then push `model/manifest.json`
-  (currently switched locally only) and the README from `tmp/release/README_v0.2.0.md`,
-  verify the public download, fresh-clone CPU check, record the demo video, and get
-  two people to fill `report/explanation_audit/.../review_template.csv`.
-- FINAL MODEL DECIDED: native_v2 (VQDM+Midjourney) also failed the rule (matched
-  0.639; LDM real FPR 38-45%). `mixed_resnet18_native_v1_calibrated` is final (v0.2.0).
-  No more exploratory training. Remaining order: freeze + final evaluation with the
-  manifest switched LOCALLY (commit only report/final/freeze.json before scoring),
-  user uploads the release asset, then push manifest + README, rebuild the report,
-  fresh-clone CPU check, demo recording.
-- Draft final README for v0.2.0 (native_v1 numbers) is at `tmp/release/README_v0.2.0.md`;
-  copy it over README.md only when the v0.2.0 release asset is live.
-- Final evaluation is scripted: `python scripts/final_evaluation.py --freeze-only`
-  (only AFTER the final model's manifest/release is live; writes
-  `report/final/freeze.json` — commit and push it), then
-  `python scripts/final_evaluation.py --run` (CIFAKE test + reserved GLIDE/DALLE, all
-  protocols, once; refuses another checkpoint). Do NOT run it against the old
-  v0.1.0 manifest. Then `python scripts/build_report.py` for the final PDF.
-
-## Known follow-up work
-
-- Fix any audit/training/evaluation failures; verify comparable fixed development metrics.
-- Choose final detector from measured results; calibrate and select threshold on designated partitions.
-- Existing calibration script is CIFAKE-specific; adapt correctly if mixed model chosen. Avoid reusing stale metric reports with a new checkpoint hash.
-- Freeze model/threshold, then run reserved CIFAKE and external generators once for final reporting.
-- Complete 30?50-image explanation audit: matched masking controls, alternate baselines, randomization sensitivity, supported statements, honest failures.
-- Rerun robustness/defence for final detector. EXIF-only provenance is currently implemented; C2PA is optional/pending.
-- Final model card/report/UI must name actual training data and measured domains, not hardcode CIFAKE after a model change.
-- Publish final weights with proper source/license notes; update manifest and verify public download and CPU fresh clone again.
-- One-page PDF report and 3?5-minute actual demo video are still outstanding.
-- Optional generator attribution and caption consistency are deferred stretch features, not mandatory unfinished core.
-- Refresh README, checklist and this handoff; commit/push verified work, excluding large data/caches.
-
-No extra storage or paid API is currently required. Last read before final image
-batch was 17.65 GiB free; recheck before adding large caches. User wants exact
-storage requests only when necessary. The 44.8 MB release does not include Python
-dependencies, which are additional first-setup downloads.
+Finish the 3-5 minute actual-inference video, publish an accessible link, and check
+all submission links. Prepared animal images in tmp/demo/selected are GenImage
+validation examples, not new accuracy evidence. A demonstrated failure must remain.

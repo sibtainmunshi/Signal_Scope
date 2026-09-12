@@ -36,6 +36,8 @@ try {
   await page.screenshot({ path: path.join(out, 'desktop-stability.png'), fullPage: true });
   await page.getByRole('button', { name: 'Model report', exact: true }).click();
   await page.getByRole('heading', { name: 'Model report.', exact: true }).waitFor();
+  await page.getByRole('heading', { name: 'Reserved generators: final results', exact: true }).waitFor();
+  if ((await page.locator('body').innerText()).includes('remain unevaluated')) throw new Error('Stale final evaluation status');
   await page.screenshot({ path: path.join(out, 'desktop-report.png'), fullPage: true });
   await page.getByRole('button', { name: 'Analyze image', exact: true }).first().click();
   await page.setViewportSize({ width: 390, height: 844 });

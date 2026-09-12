@@ -72,3 +72,28 @@ def test_unsupported_format_is_rejected(client):
     stream = io.BytesIO()
     Image.new("RGB", (4,4)).save(stream, format="GIF")
     assert client.post("/api/predict", files={"image": ("a.gif", stream.getvalue(), "image/gif")}).status_code == 415
+
+
+def test_model_report_shows_frozen_results_only_for_loaded_checkpoint(client):
+    from app.backend.main import app, measured
+    model = client.get("/api/model").json()
+    assert model["external_reserved"]["checkpoint_sha256"] == model["checkpoint_sha256"]
+    assert model["external_reserved"]["unique_images_evaluated"] == 4500
+    assert model["external_reserved_matched"]["checkpoint_sha256"] == model["checkpoint_sha256"]
+    assert model["cifake_test"]["count"] == 20000
+    assert "completed" in model["unseen_generator_status"]
+    detector = app.state.detector
+    original = detector.checkpoint_hash
+    try:
+        detector.checkpoint_hash = "different-checkpoint"
+        assert measured(detector, "external_reserved", "test") is None
+    finally:
+        detector.checkpoint_hash = original
+
+
+def test_extreme_aspect_ratio_upload_is_rejected_before_upscale(client):
+    stream = io.BytesIO()
+    Image.new("RGB", (100_000, 1)).save(stream, format="PNG")
+    response = client.post("/api/predict", files={"image": ("narrow.png", stream.getvalue(), "image/png")})
+    assert response.status_code == 413
+    assert "aspect ratio" in response.json()["detail"]

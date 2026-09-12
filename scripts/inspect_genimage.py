@@ -46,7 +46,7 @@ def central_directory(generator):
     pos = tail.rfind(b"PK\x06\x06")
     if pos < 0:
         raise ValueError("Expected ZIP64 end record")
-    _, _, _, _, disk, central_disk, disk_count, total_count, size, offset = struct.unpack_from(
+    _, _, _, _, disk, central_disk, _disk_count, total_count, size, offset = struct.unpack_from(
         "<4sQ2H2L4Q", tail, pos
     )
     if disk != central_disk or size > 100 * 2**20:

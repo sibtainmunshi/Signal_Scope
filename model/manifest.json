@@ -1,14 +1,17 @@
 {
   "schema_version": 1,
-  "release": "v0.1.0",
-  "model_version": "cifake_resnet18_robust_v1",
-  "path": "model/checkpoints/cifake_resnet18_robust_v1/best.pt",
-  "url": "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.1.0/signalscope-resnet18-robust-v1.pt",
-  "bytes": 44778635,
-  "sha256": "fb4d5420f3c49aaa6e651e735ba03d78d9151480819a6f744bc65f0319812127",
-  "status": "Development checkpoint; CIFAKE validation measured, external generalisation not established.",
+  "release": "v0.2.0",
+  "model_version": "mixed_resnet18_native_v1_calibrated",
+  "path": "model/checkpoints/mixed_resnet18_native_v1_calibrated/best.pt",
+  "url": "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.2.0/signalscope-resnet18-native-v1-calibrated.pt",
+  "bytes": 44782411,
+  "sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+  "status": "Frozen v0.2.0 research model. Public reserved AUC 0.565 as distributed / 0.643 format-matched; substantial unseen-generator errors. Organizer hidden result unavailable.",
   "architecture": "resnet18",
-  "image_size": 96,
-  "threshold": 0.5,
-  "calibrated": false
+  "preprocessing": "native_multicrop_v1",
+  "image_size": 128,
+  "threshold": 0.4553663730621338,
+  "calibrated": true,
+  "training_data": "CIFAKE (8,000) + GenImage BigGAN/SD1.5 train-only subset (6,239)",
+  "license_note": "Weights are derived from GenImage (CC BY-NC-SA 4.0 with additional noncommercial terms); treat as a noncommercial research artifact."
 }

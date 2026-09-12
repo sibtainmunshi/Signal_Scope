@@ -1,13 +1,30 @@
 # SignalScope
 
-A locally trained real/AI image detector with model-linked attribution, measured
-post-processing stability, and reproducible evaluation. SIH 2026 internal selection project.
+A locally trained real-vs-AI-generated image detector that reports an AI-positive score,
+shows model-linked evidence and states its limits. SIH 2026 internal selection,
+Problem Statement 2.
 
-**Status: working development build, not a final validated submission.** CPU app,
-CLI, trained weights and benchmarks work. CIFAKE validation is strong, but the
-external development checks reveal serious generalization failures. We report
-those failures, and are actively improving the model. No organizer hidden score
-or selection probability is claimed.
+**Status: v0.2.0 model and evaluator build; demo recording and human explanation review pending.** All results below are self-evaluated on public
+data. The organizers supplied no dataset, baseline or hidden test; no organizer
+score is claimed or estimated.
+
+- Explanation examples (including a failure): [reviewed samples](report/explanation_samples/README.md)
+- One-page model report: [`report/model_report.pdf`](report/model_report.pdf)
+- Demo video (3-5 min): _link added after recording_
+- Model weights: [GitHub release v0.2.0](https://github.com/sibtainmunshi/Signal_Scope/releases/tag/v0.2.0) (44.8 MB, SHA-256 checked by setup)
+
+## Modules built
+
+| Module | Status | What exists |
+|---|---|---|
+| Core real/AI classification | Built | Our fine-tuned ResNet-18, continuous AI score, calibrated threshold, CLI/API/app |
+| A. Faithful explanation | Built, limited | Grad-CAM per native crop + masking diagnostic; 40-image audit. Shows model influence only; no named artifact is claimed |
+| B. Generator attribution | Not built | |
+| C. Robustness to degradation | Built | Paired JPEG/resize/blur benchmark; per-upload stability check |
+| D. Provenance and metadata | Partial | EXIF shown separately; C2PA **not checked**; metadata never changes the score |
+| E. Image-caption consistency | Not built | |
+| F. Deployable interface | Built | Local drag-and-drop web app (desktop/mobile), JSON export, CLI |
+| G. Active defence analysis | Built, bounded | Six-transformation flip search with measured success rate; no general adversarial claim |
 
 ## Run the app (no training required)
 
@@ -20,135 +37,182 @@ python scripts/setup.py
 python scripts/run.py
 ```
 
-Open **http://127.0.0.1:8000**. On Windows, `py -3.13` can replace `python`.
-The setup creates `.venv`, installs CPU PyTorch and pinned runtime packages, and
-downloads the **44.8 MB** checkpoint from the versioned GitHub release. Its exact
-size and SHA-256 are verified against [`model/manifest.json`](model/manifest.json).
-The prebuilt frontend is included: Node, CUDA, datasets, and paid APIs are not
-needed to use the app. First setup requires internet; inference then runs locally.
-
-**Download size:** repository code/UI is small and weights are ~44.8 MB. A fresh
-computer also downloads several hundred MB of Python/CPU dependencies. Our local
-training data and CUDA environment are not evaluator downloads. A fresh public clone with a separate CPU-only environment completed setup in
-**257.2 seconds** on our Windows laptop, including verified model download. Actual
-upload, explanation, stability and prebuilt-UI checks passed. This is one measured
-run, not a setup-time guarantee; see [reproduction record](report/reproducibility/v0.1.0_windows_cpu.json).
-
-For an already prepared project environment: `python scripts/setup.py --skip-install`.
+Open **http://127.0.0.1:8000**. On Windows, `py -3.13` can replace `python`. Setup
+creates `.venv`, installs CPU PyTorch and pinned packages, and downloads the 44.8 MB
+checkpoint named in [`model/manifest.json`](model/manifest.json), verifying its size
+and SHA-256. The prebuilt UI is included; Node, CUDA, datasets and paid APIs are not
+needed. First setup needs internet (several hundred MB of Python packages); inference
+then runs locally on CPU (about 15-50 ms per image on our laptop).
 
 ## Predict one image
 
-After setup, use the virtual environment's Python (`.venv/Scripts/python` on
-Windows, `.venv/bin/python` on Linux/macOS):
-
 ```shell
-.venv/Scripts/python model/predict.py --image path/to/image.jpg --device cpu
+.venv/Scripts/python model/predict.py --image path/to/image.jpg            # JSON
 .venv/Scripts/python model/predict.py --image path/to/image.jpg --label-only
 ```
 
-JSON contains `label` (`real` or `ai_generated`), continuous `ai_score` (AI is the
-positive class), threshold, model-assigned class confidence, model identity and
-limitations. Scores are **uncalibrated in v0.1.0**, not a percentage guarantee of
-correctness. `POST /api/predict` accepts multipart `image`, `explain`, and
-`robustness`. See [API contract](docs/API_CONTRACT.md).
+(`.venv/bin/python` on Linux/macOS.) JSON gives `label` (`real` or `ai_generated`),
+`ai_score` (AI is the positive class), `threshold`, `confidence` for the returned
+class, `calibrated`, model identity and limitations. Python: `from model.predict
+import predict` style use is available via `predict(image_path)`. API: `POST
+/api/predict` with multipart `image`, `explain`, `robustness`; see
+[API contract](docs/API_CONTRACT.md).
 
-## What works
+## How it works
 
-- Shared CPU/GPU detector for app, CLI and evaluation; no uploaded images persisted.
-- Responsive upload interface, original/attribution toggle and downloadable JSON.
-- Returned-class Grad-CAM with a measured masking diagnostic. This does **not**
-  establish a semantic artifact such as malformed text or inconsistent lighting.
-- JPEG, half-resolution and mild-blur stability checks using the same detector.
-- Separate EXIF evidence. C2PA is explicitly **not checked**; metadata does not
-  change the visual classifier's score.
-- Reproducible training, grouped exact-duplicate checks, calibration tooling,
-  per-generator evaluation and bounded post-processing failure analysis.
+1. The image is EXIF-oriented and converted to RGB; the local server processes it in memory and does not save the upload.
+2. Up to five **native-resolution 128 px crops** (centre and quadrant centres) are
+   taken without downscaling large images. Images with a short side below 128 px are
+   bilinearly upscaled; very narrow images exceeding the canvas limit are rejected.
+3. Our fine-tuned ResNet-18 scores each crop; logits are averaged, divided by the
+   fitted temperature (1.65) and passed through a sigmoid. The label is
+   `ai_generated` when the score is at least **0.455**.
+4. Evidence: stitched Grad-CAM with a masking diagnostic, score stability under JPEG,
+   resizing and blur, and EXIF fields. None of these change the score.
 
-## Measured results and limits
+Why this design: public real photos are usually JPEG while generated images are
+usually PNG, and our first datasets had exactly that split. A detector can learn compression and geometry shortcuts from decoded pixels. We found a frozen-CLIP head whose unseen-generator AUC of 0.708
+fell to 0.542 once both labels were given the same crop, resize and JPEG. Our
+detector is trained with JPEG-balanced data and evaluated both as distributed and
+format-matched; its **development** AUC is about 0.65 in both protocols. The separate final
+reserved results are lower, as reported below. Matching changes compression and
+geometry together; it does not prove that all shortcuts were removed.
 
-Development models use 20,000 CIFAKE training images, separate from the **9,964**
-full validation images below. Both use a ResNet-18 ImageNet-pretrained backbone,
-96-pixel input and threshold 0.5. The released checkpoint uses symmetric JPEG,
-resizing and blur augmentation. Calibration and final model selection are pending.
+## Data and licences
 
-| Full CIFAKE validation | Initial CNN | Released robust CNN |
-|---|---:|---:|
-| ROC-AUC | 0.9977 | 0.9961 |
-| Accuracy | 97.82% | 97.09% |
-| Macro-F1 | 0.9782 | 0.9709 |
-| Real-image false-positive rate | 2.08% | 4.00% |
+| Data | Use | Licence / credit |
+|---|---|---|
+| [CIFAKE](https://www.kaggle.com/datasets/birdy654/cifake-real-and-ai-generated-synthetic-images) (CIFAR-10 vs SD1.4, 32 px) | 8,000 train; grouped val/calibration; author test 20k reserved | MIT (publisher); Bird & Lotfi 2024; Krizhevsky & Hinton 2009 |
+| [GenImage](https://github.com/GenImage-Dataset/GenImage) BigGAN + SD1.5 train folders | 6,239 train, 783 val, 781 calibration | CC BY-NC-SA 4.0 + noncommercial terms; Zhu et al. NeurIPS 2023 |
+| [UniversalFakeDetect](https://github.com/WisconsinAIVision/UniversalFakeDetect) diffusion release | Evaluation only: dev guided/ImageNet, LDM/LAION; reserved GLIDE/DALLE | Ojha et al. CVPR 2023 |
 
-On a fixed **2,000-image validation subset**, half-resolution accuracy improved
-from **59.60% to 94.85%** and mild-blur accuracy from **64.90% to 96.60%**. A
-six-transformation bounded search flipped **43.58%** of initially correct baseline
-predictions versus **6.27%** for the robust model. This is a limited post-processing
-threat model, not a guarantee against arbitrary adversarial attacks.
+Exact duplicate exclusions and perceptual-hash screening protect the splits;
+perceptual screening is heuristic and cannot establish that all near duplicates were removed. Details: [data provenance](data/README.md),
+[external protocol](docs/EXTERNAL_EVALUATION.md). Because the weights are trained on
+GenImage, treat them as a **noncommercial research artifact**.
 
-External development uses 500 real + 500 generated images per domain from the
-[UniversalFakeDetect authors' diffusion release](https://github.com/WisconsinAIVision/UniversalFakeDetect).
-**The current model performs poorly on these different sources:**
+## Results (self-evaluated)
 
-| Released model, external development | ROC-AUC | Accuracy | Real-image false-positive rate |
-|---|---:|---:|---:|
-| Guided diffusion / ImageNet | 0.3613 | 45.90% | 92.20% |
-| LDM-200 / LAION | 0.7455 | 60.70% | 76.40% |
+Operating point: threshold 0.455, chosen on validation data to keep real-image false
+positives at or below 5% on each validation source. External domains were never
+used for training or thresholding.
 
-Mean external generator AUC is **0.5534**. These results are not suitable evidence
-of a dependable general-purpose detector. A CIFAKE score must not be presented
-as broad real-world accuracy. GLIDE/DALLE final generators and the author CIFAKE
-test set remain unscored until model/threshold freeze.
+| Evaluation | ROC-AUC [95% CI] | Macro-F1 | Accuracy | Real FPR | AI TPR |
+|---|---:|---:|---:|---:|---:|
+| CIFAKE validation (9,964) | 0.993 | 0.951 | 95.2% | 2.2% | 92.5% |
+| GenImage BigGAN/SD1.5 validation (783) | 0.956 | 0.898 | 89.8% | 4.9% | 85.0% |
+| **Unseen generators, external dev** (guided, LDM) | **0.647** [0.624, 0.670] | see report | see report | 4.0% / 12.8% | 10.8% / 37.0% |
+| Unseen generators, format-matched | **0.653** [0.628, 0.677] | see report | see report | 11.8% / 16.0% | 23.6% / 41.2% |
+| **Reserved GLIDE x3 + DALLE, unseen (final, once)** | 0.565 as distributed / **0.643** format-matched | 0.40 / 0.47 | 42% / 48% | 10.4% / 14.6% | 13-29% / 22-48% |
+| CIFAKE author test 20,000 (final, once) | 0.993 | 0.951 | 95.1% | 1.9% | 92.2% |
 
-Exact reports, configurations and plots are under [`report/runs`](report/runs).
-See [data provenance](data/README.md), [external protocol](docs/EXTERNAL_EVALUATION.md)
-and [development log](docs/PROGRESS.md). Backbone pretraining overlap is not fully
-known; the duplicate audit checks exact decoded pixels, not every near duplicate.
+Confusion matrices (rows actual real/AI, columns predicted real/AI):
+
+- GenImage validation: `[[351, 18], [62, 352]]`.
+- CIFAKE final test: `[[9808, 192], [783, 9217]]`.
+
+Each reserved generator is compared with 500 shared real photos and 1,000 generated
+images. There are 4,500 unique reserved images, reused across the three processing
+protocols. GLIDE x3 plus DALLE represents two generator families, not four independent
+families. External accuracy/F1 are means over generator pairs. The LDM development
+domain is related to the Stable Diffusion training family. ROC-AUC is a ranking
+metric, not percentage accuracy.
+
+**Baseline:** organizer baseline not supplied. Our first CIFAKE-only ResNet-18
+(v0.1.0) reached unseen-generator AUC 0.553 as distributed and 0.540 format-matched,
+flagging 92% of ImageNet and 76% of LAION real photos; on the reserved unseen set it
+scores 0.548 / 0.546 against our 0.565 / 0.643. The paired-bootstrap gain of
+the selected model is +0.113 [0.083, 0.142] format-matched; a second training seed
+also improved development AUC. These intervals condition on the fixed development
+images and do not include uncertainty from candidate selection or new generator families. Seven candidates were compared on development data:
+[comparison](report/candidate_comparison.md), [uncertainty](report/external_bootstrap.md).
+
+**Robustness (GenImage validation AUC):** original 0.956, JPEG q70 0.953, JPEG q30
+0.906, half resolution 0.896, mild blur 0.937. A bounded six-transformation search
+flipped 19.8% of initially correct predictions. On tiny 32 px CIFAKE images, half
+resolution drops AUC to 0.726: resizing is the main weakness.
+
+**Calibration:** temperature scaling on held-out calibration splits reduced CIFAKE
+ECE from 0.027 to 0.009 but raised GenImage ECE from 0.047 to 0.061. Confidence is
+not guaranteed to be calibrated on new sources.
+
+**Explanation audit** ([details](docs/EXPLANATION_AUDIT.md)): on 40 fixed images
+including failures, masking the top Grad-CAM region lowered the verdict score more
+than random regions in 72.5% of images (p = 0.002), but effects are small, and maps
+only partly depend on learned weights (randomization rho 0.52).
+
+## Limitations
+
+- Unseen-generator AUC is modest: 0.565 as distributed and 0.643 format-matched on
+  the reserved GLIDE/DALLE set. At the conservative threshold most unseen AI images
+  are missed (recall 13-48%); GLIDE is the weakest family.
+- PNG outputs scored worse than matched JPEG inputs in these checks;
+  the matching protocol changes both image geometry and compression. The result
+  does not isolate a causal explanation for the performance difference.
+- Resizing, blur and strong compression raise real-image false positives.
+- Grad-CAM shows model influence, not verified defects such as warped text.
+- Organizer hidden-test performance is unknown.
+
+## Verify published metrics without downloading datasets
+
+```shell
+python scripts/verify_frozen_results.py
+```
+
+The standard-library verifier recomputes AUC, macro-F1, confusion matrices,
+accuracy and rates from 1.6 MB of archived measured scores, with SHA-256 checks.
+This checks score arithmetic and integrity; reproducing scores from original
+images requires the cited datasets. It does not run inference again on reserved data.
+The freeze and original final records remain in [`report/final/`](report/final/).
 
 ## Reproduce development
+
+Training used the CUDA environment (RTX 4050 6 GB); CPU inference does not need it.
+See comments in each script. Use a **new run name** to reproduce training without
+overwriting the frozen checkpoint. Do not use previously inspected final results
+for further model selection. Data preparation requires the external manifest before
+the GenImage overlap audit. PDF rebuilding also needs Node, Chrome and `npm ci`
+in `app/frontend`.
 
 ```shell
 .venv/Scripts/python -m pip install -e ".[train,dev]"
 .venv/Scripts/python scripts/download_cifake.py
 .venv/Scripts/python scripts/prepare_cifake.py
-.venv/Scripts/python model/train.py --run cifake_resnet18_robust_v1 --epochs 8 --train-limit 20000 --val-limit 4000 --image-size 96 --batch-size 128 --device cuda --robust-augment
-.venv/Scripts/python model/evaluate.py --checkpoint model/checkpoints/cifake_resnet18_robust_v1/best.pt
-.venv/Scripts/python model/benchmark_robustness.py --checkpoint model/checkpoints/cifake_resnet18_robust_v1/best.pt
+.venv/Scripts/python scripts/download_external.py
+.venv/Scripts/python scripts/prepare_external.py
+.venv/Scripts/python scripts/download_genimage_subset.py
+.venv/Scripts/python scripts/prepare_genimage.py
+.venv/Scripts/python model/train_native.py --run reproduce_native_v1
+.venv/Scripts/python model/calibrate_mixed.py --checkpoint model/checkpoints/reproduce_native_v1/best.pt --output model/checkpoints/reproduce_native_v1_calibrated/best.pt
+.venv/Scripts/python model/evaluate_mixed.py --checkpoint model/checkpoints/reproduce_native_v1_calibrated/best.pt
+.venv/Scripts/python model/evaluate_external.py --checkpoint model/checkpoints/reproduce_native_v1_calibrated/best.pt --protocol matched
+.venv/Scripts/python model/benchmark_robustness.py --checkpoint model/checkpoints/reproduce_native_v1_calibrated/best.pt --dataset genimage
+.venv/Scripts/python model/explanation_audit.py --checkpoint model/checkpoints/reproduce_native_v1_calibrated/best.pt
+.venv/Scripts/python scripts/build_report.py
 ```
 
-The example training command needs GPU-enabled PyTorch. Our verified development
-machine uses RTX 4050 Laptop 6 GB and torch 2.10.0 / torchvision 0.25.0 from the
-[official cu128 wheels](https://pytorch.org/get-started/previous-versions/).
-Use a new run name to preserve an existing checkpoint. CIFAKE download/cache and
-optional external archive are development-only. The latter is ~875 MiB and read
-directly from ZIP. Instructions and split protections are in the scripts.
+Tests: `python -m pytest -q -p no:cacheprovider`. UI smoke:
+`node app/frontend/scripts/smoke.mjs` with the server running.
 
-Frontend changes: run `npm ci` then `npm run build` inside `app/frontend` and
-commit the updated small `dist` directory. Development server: `npm run dev`.
+## Repository layout
 
-Verification: `python -m pytest -q -p no:cacheprovider` (16 tests currently pass).
-Actual-model integration tests require only the downloaded checkpoint. Synthetic
-fixtures check API/CLI consistency; they are never used as accuracy evidence. The headless desktop/mobile smoke script is
-`node app/frontend/scripts/smoke.mjs` with the local server and installed Chrome.
-
-## Submission work remaining
-
-Improve external generalization; select and calibrate the final detector; run
-reserved evaluations; complete the explanation audit, one-page report, 3?5 minute
-demo video, and repeat clean-clone reproduction for the final release. The current development
-release has passed a separate-environment CPU setup check, but is not yet the
-submission-ready package.
+`app/` backend (FastAPI) and prebuilt React frontend; `src/signalscope/` shared
+model, preprocessing, evidence and metrics; `model/` training, inference, evaluation
+and calibration; `scripts/` setup, data and report tools; `report/` model report,
+run metrics, audit and comparisons; `docs/` protocols, progress and handoff; `tests/`.
 
 ## Originality and acknowledgements
 
-Our application, training/data pipeline, diagnostics and reporting are developed
-during 10?15 September 2026. AI coding assistants are used. We build on cited
-open-source libraries and permitted pretrained backbones; public papers' reported
-results and implementations are not represented as our own.
+All application, training, data and evaluation code was written for this project
+during 10-15 September 2026, with AI coding assistants. No public real-vs-fake
+notebook was copied. We build on:
 
-- [PyTorch / torchvision](https://pytorch.org/) and ImageNet-pretrained ResNet-18.
-- [CIFAKE](https://github.com/jordan-bird/CIFAKE-Real-and-AI-Generated-Synthetic-Images), Bird & Lotfi (2024); CIFAR-10, Krizhevsky & Hinton (2009).
-- [UniversalFakeDetect](https://github.com/WisconsinAIVision/UniversalFakeDetect), Ojha, Li & Lee (CVPR 2023), external data and generalization research.
-- Grad-CAM (Selvaraju et al.), [paper](https://openaccess.thecvf.com/content_iccv_2017/html/Selvaraju_Grad-CAM_Visual_Explanations_ICCV_2017_paper.html).
-- React, Vite, Lucide, FastAPI, Pillow, NumPy and scikit-learn.
+- PyTorch/torchvision and ImageNet-pretrained ResNet-18; React, Vite, FastAPI, Pillow, NumPy, SciPy, scikit-learn.
+- Datasets above: CIFAKE, CIFAR-10, GenImage, UniversalFakeDetect.
+- Ideas: native-resolution crops for diffusion detection (Corvi et al., ICASSP 2023);
+  JPEG/size dataset bias ([Grommelt et al., "Fake or JPEG?", 2024](https://arxiv.org/abs/2403.17608));
+  Grad-CAM (Selvaraju et al., ICCV 2017); saliency sanity checks (Adebayo et al.,
+  NeurIPS 2018); temperature scaling (Guo et al., ICML 2017).
 
-Use on general synthetic imagery, objects, products and scenes. Scores do not
-establish whether a depicted event happened or identify who created an image.
+For general objects, scenes and products. Scores do not establish whether a depicted
+event happened or who created an image; outputs are likelihoods, not accusations.

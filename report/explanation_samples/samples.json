@@ -1,0 +1,370 @@
+[
+  {
+    "name": "real_photo",
+    "source_file": "real_photo.jpeg",
+    "overlay_file": "real_photo_overlay.png",
+    "source_archive": "BigGAN",
+    "source_path": "data/raw/genimage_subset/ad31b2a2c2f00c338a4e0bede5815bfc367a613303583797a1c28c9f9dd38d04.jpeg",
+    "source_sha256": "04d930a760c26db124c9dbaf3ace59f264e09dd19acee47e1c0aee0097f151f5",
+    "split": "val",
+    "label": 0,
+    "review": "Assistant visual inspection: bird/chicken/orca, no people visible; not a human explanation-quality rating.",
+    "result": {
+      "prediction": {
+        "label": "real",
+        "ai_score": 0.005891817156225443,
+        "threshold": 0.4553663730621338,
+        "confidence": 0.9941081828437746,
+        "calibrated": true,
+        "review_recommended": false,
+        "inference_ms": 39.35,
+        "model_version": "mixed_resnet18_native_v1_calibrated",
+        "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+        "image_width": 492,
+        "image_height": 500,
+        "limitations": [
+          "Trained on CIFAKE + GenImage train-only subset; unseen generators and processing pipelines can still fail.",
+          "Public external evaluations show substantial domain-shift errors; broad unseen-generator reliability is not established.",
+          "A visual score does not verify the truth of a depicted event.",
+          "Temperature scaling was fit on development sources; confidence and false-positive rates may not transfer to other sources."
+        ]
+      },
+      "explanation": {
+        "method": "Grad-CAM on ResNet-18 layer4 for each native-resolution crop, stitched; model-influence visualization",
+        "target_class": "real",
+        "region_normalized": [
+          0.21747967479674796,
+          0.758,
+          0.30284552845528456,
+          0.842
+        ],
+        "analysed_region_normalized": [
+          0.11991869918699187,
+          0.122,
+          0.8800813008130082,
+          0.878
+        ],
+        "crops_analysed": 5,
+        "statements": [
+          "The verdict averages 5 native-resolution crop(s); the overlay combines Grad-CAM attribution for each crop.",
+          "Masking the highlighted patch changed the AI score by less than 0.1 percentage points; this diagnostic provides little evidence of a probability-level effect.",
+          "This analysis has not established a specific visible defect such as malformed text or inconsistent lighting.",
+          "Dimmed areas lie outside the analysed crops and did not influence the score."
+        ],
+        "masking_diagnostic": {
+          "ai_score_before": 0.005891817156225443,
+          "ai_score_after_top_patch": 0.005908194929361343,
+          "ai_score_after_corner_patches_mean": 0.006053750985302031,
+          "mask_baseline": "ImageNet channel-mean pixels in the analysed image",
+          "limitation": "Masking creates altered inputs; this is not causal proof or artifact ground truth."
+        },
+        "semantic_artifact_verified": false,
+        "elapsed_ms": 223.14
+      },
+      "robustness": {
+        "results": [
+          {
+            "transformation": "original",
+            "ai_score": 0.005891817156225443,
+            "label": "real",
+            "score_change": 0.0,
+            "label_changed": false
+          },
+          {
+            "transformation": "jpeg_q90",
+            "ai_score": 0.02923223376274109,
+            "label": "real",
+            "score_change": 0.023340416606515646,
+            "label_changed": false
+          },
+          {
+            "transformation": "jpeg_q70",
+            "ai_score": 0.03354231268167496,
+            "label": "real",
+            "score_change": 0.027650495525449514,
+            "label_changed": false
+          },
+          {
+            "transformation": "jpeg_q50",
+            "ai_score": 0.02344474196434021,
+            "label": "real",
+            "score_change": 0.017552924808114767,
+            "label_changed": false
+          },
+          {
+            "transformation": "half_resolution",
+            "ai_score": 0.04627782106399536,
+            "label": "real",
+            "score_change": 0.04038600390776992,
+            "label_changed": false
+          },
+          {
+            "transformation": "mild_blur",
+            "ai_score": 0.01835198886692524,
+            "label": "real",
+            "score_change": 0.012460171710699797,
+            "label_changed": false
+          }
+        ],
+        "threshold": 0.4553663730621338,
+        "max_absolute_score_change": 0.04038600390776992,
+        "label_flip_count": 0,
+        "transformations_tested": 5,
+        "note": "Stability is measured on this upload only; a stable verdict can still be wrong."
+      },
+      "metadata": {
+        "format": "JPEG",
+        "exif_present": false,
+        "fields": {},
+        "c2pa_status": "not_checked",
+        "fusion_policy": "Metadata is displayed separately and does not change the visual score.",
+        "note": "EXIF can be edited. Missing metadata does not indicate whether an image is real or generated."
+      }
+    }
+  },
+  {
+    "name": "generated_detected",
+    "source_file": "generated_detected.png",
+    "overlay_file": "generated_detected_overlay.png",
+    "source_archive": "stable_diffusion_v_1_5",
+    "source_path": "data/raw/genimage_subset/f85348fedb1c1afce66c62d0a5eedc39f69f2100aff4ab542c294daf533b745e.png",
+    "source_sha256": "ea574052abc4c5a8e97a06e0bae6164a0e533ed3b90275932a85a3ae05ef0707",
+    "split": "val",
+    "label": 1,
+    "review": "Assistant visual inspection: bird/chicken/orca, no people visible; not a human explanation-quality rating.",
+    "result": {
+      "prediction": {
+        "label": "ai_generated",
+        "ai_score": 0.8691685199737549,
+        "threshold": 0.4553663730621338,
+        "confidence": 0.8691685199737549,
+        "calibrated": true,
+        "review_recommended": false,
+        "inference_ms": 29.96,
+        "model_version": "mixed_resnet18_native_v1_calibrated",
+        "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+        "image_width": 512,
+        "image_height": 512,
+        "limitations": [
+          "Trained on CIFAKE + GenImage train-only subset; unseen generators and processing pipelines can still fail.",
+          "Public external evaluations show substantial domain-shift errors; broad unseen-generator reliability is not established.",
+          "A visual score does not verify the truth of a depicted event.",
+          "Temperature scaling was fit on development sources; confidence and false-positive rates may not transfer to other sources."
+        ]
+      },
+      "explanation": {
+        "method": "Grad-CAM on ResNet-18 layer4 for each native-resolution crop, stitched; model-influence visualization",
+        "target_class": "ai_generated",
+        "region_normalized": [
+          0.7578125,
+          0.748046875,
+          0.83984375,
+          0.830078125
+        ],
+        "analysed_region_normalized": [
+          0.125,
+          0.125,
+          0.875,
+          0.875
+        ],
+        "crops_analysed": 5,
+        "statements": [
+          "The verdict averages 5 native-resolution crop(s); the overlay combines Grad-CAM attribution for each crop.",
+          "Masking the highlighted patch changed the AI score by -0.2 percentage points (86.9% to 86.7%).",
+          "This analysis has not established a specific visible defect such as malformed text or inconsistent lighting.",
+          "Dimmed areas lie outside the analysed crops and did not influence the score."
+        ],
+        "masking_diagnostic": {
+          "ai_score_before": 0.8691685199737549,
+          "ai_score_after_top_patch": 0.8674538135528564,
+          "ai_score_after_corner_patches_mean": 0.8692289292812347,
+          "mask_baseline": "ImageNet channel-mean pixels in the analysed image",
+          "limitation": "Masking creates altered inputs; this is not causal proof or artifact ground truth."
+        },
+        "semantic_artifact_verified": false,
+        "elapsed_ms": 223.23
+      },
+      "robustness": {
+        "results": [
+          {
+            "transformation": "original",
+            "ai_score": 0.8691685199737549,
+            "label": "ai_generated",
+            "score_change": 0.0,
+            "label_changed": false
+          },
+          {
+            "transformation": "jpeg_q90",
+            "ai_score": 0.9292570948600769,
+            "label": "ai_generated",
+            "score_change": 0.06008857488632202,
+            "label_changed": false
+          },
+          {
+            "transformation": "jpeg_q70",
+            "ai_score": 0.9347641468048096,
+            "label": "ai_generated",
+            "score_change": 0.06559562683105469,
+            "label_changed": false
+          },
+          {
+            "transformation": "jpeg_q50",
+            "ai_score": 0.9344870448112488,
+            "label": "ai_generated",
+            "score_change": 0.0653185248374939,
+            "label_changed": false
+          },
+          {
+            "transformation": "half_resolution",
+            "ai_score": 0.9005048871040344,
+            "label": "ai_generated",
+            "score_change": 0.03133636713027954,
+            "label_changed": false
+          },
+          {
+            "transformation": "mild_blur",
+            "ai_score": 0.9223491549491882,
+            "label": "ai_generated",
+            "score_change": 0.05318063497543335,
+            "label_changed": false
+          }
+        ],
+        "threshold": 0.4553663730621338,
+        "max_absolute_score_change": 0.06559562683105469,
+        "label_flip_count": 0,
+        "transformations_tested": 5,
+        "note": "Stability is measured on this upload only; a stable verdict can still be wrong."
+      },
+      "metadata": {
+        "format": "PNG",
+        "exif_present": false,
+        "fields": {},
+        "c2pa_status": "not_checked",
+        "fusion_policy": "Metadata is displayed separately and does not change the visual score.",
+        "note": "EXIF can be edited. Missing metadata does not indicate whether an image is real or generated."
+      }
+    }
+  },
+  {
+    "name": "generated_missed",
+    "source_file": "generated_missed.png",
+    "overlay_file": "generated_missed_overlay.png",
+    "source_archive": "BigGAN",
+    "source_path": "data/raw/genimage_subset/deb9cfc120d109911d00de1a99f409ab998726afc07fe02d50e10f04358df23b.png",
+    "source_sha256": "77e4c37d1b0492b513c5d158d1211d7f3815d49d07b207b39c6aaf764efbfbb4",
+    "split": "val",
+    "label": 1,
+    "review": "Assistant visual inspection: bird/chicken/orca, no people visible; not a human explanation-quality rating.",
+    "result": {
+      "prediction": {
+        "label": "real",
+        "ai_score": 0.016237925738096237,
+        "threshold": 0.4553663730621338,
+        "confidence": 0.9837620742619038,
+        "calibrated": true,
+        "review_recommended": false,
+        "inference_ms": 9.55,
+        "model_version": "mixed_resnet18_native_v1_calibrated",
+        "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+        "image_width": 128,
+        "image_height": 128,
+        "limitations": [
+          "Trained on CIFAKE + GenImage train-only subset; unseen generators and processing pipelines can still fail.",
+          "Public external evaluations show substantial domain-shift errors; broad unseen-generator reliability is not established.",
+          "A visual score does not verify the truth of a depicted event.",
+          "Temperature scaling was fit on development sources; confidence and false-positive rates may not transfer to other sources."
+        ]
+      },
+      "explanation": {
+        "method": "Grad-CAM on ResNet-18 layer4 for each native-resolution crop, stitched; model-influence visualization",
+        "target_class": "real",
+        "region_normalized": [
+          0.40625,
+          0.5390625,
+          0.734375,
+          0.8671875
+        ],
+        "analysed_region_normalized": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "crops_analysed": 1,
+        "statements": [
+          "The verdict averages 1 native-resolution crop(s); the overlay combines Grad-CAM attribution for each crop.",
+          "Masking the highlighted patch changed the AI score by -0.3 percentage points (1.6% to 1.4%).",
+          "This analysis has not established a specific visible defect such as malformed text or inconsistent lighting."
+        ],
+        "masking_diagnostic": {
+          "ai_score_before": 0.016237925738096237,
+          "ai_score_after_top_patch": 0.013700329698622227,
+          "ai_score_after_corner_patches_mean": 0.02587061421945691,
+          "mask_baseline": "ImageNet channel-mean pixels in the analysed image",
+          "limitation": "Masking creates altered inputs; this is not causal proof or artifact ground truth."
+        },
+        "semantic_artifact_verified": false,
+        "elapsed_ms": 39.6
+      },
+      "robustness": {
+        "results": [
+          {
+            "transformation": "original",
+            "ai_score": 0.016237910836935043,
+            "label": "real",
+            "score_change": 0.0,
+            "label_changed": false
+          },
+          {
+            "transformation": "jpeg_q90",
+            "ai_score": 0.09646615386009216,
+            "label": "real",
+            "score_change": 0.08022824302315712,
+            "label_changed": false
+          },
+          {
+            "transformation": "jpeg_q70",
+            "ai_score": 0.11615323275327682,
+            "label": "real",
+            "score_change": 0.09991532191634178,
+            "label_changed": false
+          },
+          {
+            "transformation": "jpeg_q50",
+            "ai_score": 0.07582996785640717,
+            "label": "real",
+            "score_change": 0.05959205701947212,
+            "label_changed": false
+          },
+          {
+            "transformation": "half_resolution",
+            "ai_score": 0.3496030569076538,
+            "label": "real",
+            "score_change": 0.33336514607071877,
+            "label_changed": false
+          },
+          {
+            "transformation": "mild_blur",
+            "ai_score": 0.24385425448417664,
+            "label": "real",
+            "score_change": 0.2276163436472416,
+            "label_changed": false
+          }
+        ],
+        "threshold": 0.4553663730621338,
+        "max_absolute_score_change": 0.33336514607071877,
+        "label_flip_count": 0,
+        "transformations_tested": 5,
+        "note": "Stability is measured on this upload only; a stable verdict can still be wrong."
+      },
+      "metadata": {
+        "format": "PNG",
+        "exif_present": false,
+        "fields": {},
+        "c2pa_status": "not_checked",
+        "fusion_policy": "Metadata is displayed separately and does not change the visual score.",
+        "note": "EXIF can be edited. Missing metadata does not indicate whether an image is real or generated."
+      }
+    }
+  }
+]

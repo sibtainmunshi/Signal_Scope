@@ -8,7 +8,7 @@ pending rather than estimated.
 import argparse
 import json
 import subprocess
-from datetime import date
+from datetime import UTC, datetime
 from html import escape
 from pathlib import Path
 
@@ -108,7 +108,8 @@ def main():
     per_generator = "; ".join(
         f"{g['generator']} {g['roc_auc']:.3f}" for p in ("as_distributed", "matched") if external[p] for g in external[p]["per_generator"]
     )
-    cm = genimage_val["confusion_matrix"]
+    cm = (cifake_test or genimage_val)["confusion_matrix"]
+    cm_title = "CIFAKE author test confusion matrix" if cifake_test else "GenImage validation confusion matrix"
     def auc_pair(reports):
         return " / ".join(num(reports[p] and reports[p]["macro_generator_roc_auc"]) for p in ("as_distributed", "matched"))
 
@@ -153,7 +154,7 @@ def main():
     )
     html = f"""<!doctype html><html><head><meta charset="utf-8"><title>SignalScope model report</title><style>
 @page {{ size: A4; margin: 8mm 9mm; }}
-body {{ font: 7.6pt/1.3 "Segoe UI", Arial, sans-serif; color: #17202a; margin: 0; }}
+body {{ font: 8.3pt/1.3 "Segoe UI", Arial, sans-serif; color: #17202a; margin: 0; }}
 h1 {{ font-size: 13pt; margin: 0; }} h2 {{ font-size: 8.6pt; margin: 5px 0 2px; color: #0f4c5c; border-bottom: 1px solid #c9d6dc; }}
 .sub {{ color: #4a5a66; margin: 1px 0 4px; }} .grid {{ display: grid; grid-template-columns: 1fr 1.18fr; gap: 9px; }}
 table {{ border-collapse: collapse; width: 100%; }} td, th {{ border-bottom: 1px solid #e3e9ec; padding: 1.5px 3px; text-align: left; vertical-align: top; }}
@@ -162,24 +163,24 @@ th {{ background: #eef4f6; font-weight: 600; }} ul {{ margin: 1px 0; padding-lef
 </style></head><body>
 <h1>SignalScope &mdash; one-page model report</h1>
 <div class="sub">SIH 2026 internal, Problem Statement 2 &middot; model <b>{escape(model)}</b> &middot; SHA-256 <span class="mono">{sha[:16]}&hellip;</span>
-&middot; {date.today().isoformat()} &middot; github.com/sibtainmunshi/Signal_Scope</div>
+&middot; {datetime.now(UTC).date().isoformat()} &middot; github.com/sibtainmunshi/Signal_Scope</div>
 <div class="note"><b>Self-evaluated public-data results.</b> Organizers supplied no dataset, baseline or hidden-test scores; those fields are <b>not supplied</b>, not estimated.</div>
 <div class="grid"><div>
 <h2>Task and scope</h2>
-Binary real vs AI-generated image classification with a continuous AI-positive score; general objects, scenes and products only. Built: core detector, A (model-linked explanation + audit), C (robustness), D (EXIF only; C2PA not checked), F (local web app/CLI), G (bounded post-processing attack analysis).
+Binary real vs AI-generated image classification with a continuous AI-positive score; intended for general objects, scenes and products. Built: core detector, A (model-linked explanation + audit), C (robustness), D (EXIF only; C2PA not checked), F (local web app/CLI), G (bounded post-processing attack analysis).
 <h2>Data and splits</h2>
 <table><tr><th>Source</th><th>Use</th><th>Real / AI</th></tr>
 <tr><td>CIFAKE (CIFAR-10 vs SD1.4, 32 px)</td><td>train 8,000 of 79,689</td><td>4,000 / 4,000</td></tr>
-<tr><td>CIFAKE grouped val / calibration</td><td>selection / calibration</td><td>{cifake_val['real_count'] if cifake_val else '-'} / {cifake_val['ai_count'] if cifake_val else '-'} val</td></tr>
+<tr><td>CIFAKE grouped val / calibration</td><td>selection / calibration</td><td>5,000 / 4,964 val; 5,000 / 4,969 calibration</td></tr>
 <tr><td>GenImage BigGAN + SD1.5 (train folders)</td><td>train {sum(genimage['train']):,}</td><td>{genimage['train'][0]:,} / {genimage['train'][1]:,}</td></tr>
 <tr><td>GenImage val / calibration</td><td>selection / calibration</td><td>{genimage['val'][0]} / {genimage['val'][1]}; {genimage['calibration'][0]} / {genimage['calibration'][1]}</td></tr>
 {extension_rows}
 <tr><td>UniversalFakeDetect dev</td><td>evaluation only</td><td>guided vs ImageNet, LDM vs LAION, 500+500 each</td></tr>
-<tr><td>Reserved final</td><td>scored once after freeze</td><td>GLIDE x3, DALLE vs LAION; CIFAKE author test 20k</td></tr></table>
-Exact and perceptual-hash overlap exclusions against all protected data; grouped splits. Audit found real JPEG vs generated square PNG in both GenImage and the external set, so training balances JPEG and every external result is also reported <b>format-matched</b> (identical crop, resize and JPEG for both labels).
+<tr><td>Reserved final</td><td>scored once after freeze</td><td>4,000 AI + 500 shared LAION real; CIFAKE test 10k + 10k</td></tr></table>
+Exact-overlap and perceptual-hash screening against protected data; grouped splits. Hash screening is not exhaustive. Audit found real JPEG vs generated square PNG in both GenImage and the external set, so training balances JPEG and every external result is also reported <b>format-matched</b> (identical crop, resize and JPEG for both labels).
 <h2>Model and training</h2>
 <ul><li>ImageNet-pretrained ResNet-18, fine-tuned end to end (AdamW 2e-4, cosine, 10 epochs, batch 64, AMP); epoch chosen by mean GenImage/CIFAKE val AUC.</li>
-<li>Native-resolution random 128 px crops (no resizing); every generated training image JPEG-compressed with qualities drawn from the real photos; symmetric rescale, blur, flip and crop-JPEG augmentation.</li>
+<li>Random 128 px crops; small images upscaled, BigGAN real training photos resized to 128 px. GenImage generated training images receive JPEG compression; symmetric rescale, blur, flip and crop-JPEG augmentation.</li>
 <li>Inference: mean logit of up to five native 128 px crops; CPU ~15&ndash;50 ms per image on our laptop.</li>
 <li>{calibration_line}.</li></ul>
 <h2>Explanation (Module A)</h2>
@@ -187,8 +188,8 @@ Returned-class Grad-CAM per crop, stitched, plus a masking diagnostic. {audit_li
 </div><div>
 <h2>Results at the frozen operating point (threshold {num(manifest.get('threshold') if manifest.get('model_version') == model else calibration and calibration['threshold'])})</h2>
 <table><tr><th>Evaluation</th><th>ROC-AUC [95% CI]</th><th>Macro-F1</th><th>Accuracy</th><th>Real FPR</th><th>AI TPR</th></tr>{results_html}</table>
-External per-generator AUC (as distributed; then matched): {escape(per_generator)}. External F1, accuracy and rates are means over generator pairs.
-<h2>GenImage validation confusion matrix</h2>
+External per-generator AUC (as distributed; then matched): {escape(per_generator)}. External rates are means over generator pairs. Reserved pairs contain 1,000 AI + 500 shared real images; GLIDE x3 and DALLE represent two families. Development CIs condition on these images and model selection.
+<h2>{cm_title}</h2>
 <table style="width:60%"><tr><th></th><th>Pred. real</th><th>Pred. AI</th></tr><tr><th>Real</th><td>{cm[0][0]}</td><td>{cm[0][1]}</td></tr><tr><th>AI</th><td>{cm[1][0]}</td><td>{cm[1][1]}</td></tr></table>
 <h2>Baseline comparison (unseen-generator mean AUC, as distributed / matched)</h2>
 <table><tr><td>Organizer baseline</td><td>not supplied</td></tr><tr><td>Our CIFAKE-only ResNet-18 (v0.1.0)</td><td>{baseline_row}</td></tr>
@@ -197,10 +198,10 @@ Seven candidates were compared on the same development data (including a frozen 
 <h2>Robustness (Module C/G)</h2>{robust_line}.
 <h2>Limitations and failure cases</h2>
 <ul><li>Unseen-generator AUC is modest. {reserved_line}; GLIDE is weakest. At the conservative threshold most unseen AI images are missed.</li>
-<li>Pristine PNG outputs are harder than JPEG-compressed ones: training JPEG-balances generated images, so the model does not reward "no JPEG" as evidence of AI.</li>
+<li>PNG outputs scored worse than matched JPEG inputs here. Matching changes both geometry and encoding, so this does not isolate a causal file-format effect.</li>
 <li>Calibration is domain-specific: confidence and FPR need not transfer to new generators or pipelines.</li>
 <li>Resizing, blur and strong JPEG raise real-image false positives; tiny upscaled images are fragile.</li>
-<li>Grad-CAM shows model influence, not verified visual defects; audit sample is small and unannotated.</li>
+<li>Grad-CAM is model attribution, not verified defects. Audit sample is small; two-person usefulness review is pending.</li>
 <li>GenImage-derived weights are for noncommercial research use (CC BY-NC-SA 4.0).</li></ul>
 </div></div></body></html>"""
     output = ROOT / "report/model_report.html"

@@ -1,8 +1,8 @@
 # Demo video script (target 4 minutes; allowed 3–5)
 
 The video is the primary evidence (PDF section 7.4). Record real, live inference;
-never simulate a result. Numbers marked `<report>` must be read from the final
-`report/model_report.pdf` after model/threshold freeze, not from this draft.
+never simulate a result. All numbers below refer to the frozen v0.2.0 model. Read them alongside
+`report/model_report.pdf`; do not describe development results as final results.
 
 ## Before recording
 
@@ -35,7 +35,7 @@ never simulate a result. Numbers marked `<report>` must be read from the final
 | 0:25–1:15 | Upload own real photo, then the Stable Diffusion image | Read the verdict wording ("likely"), the AI score and the threshold. "The threshold was chosen on validation data to keep real-photo false positives near 5% on our validation sources." |
 | 1:15–2:00 | Evidence tab | "The heat map shows regions that influenced this model, stitched from five native-resolution crops; dimmed areas were not analysed. Masking the top region changes the score by the stated amount. It does not prove a visible defect, and we never claim one." Then upload the failure case: "Here the model is wrong; this is why the output is a likelihood, not a verdict." |
 | 2:00–2:35 | Stability tab, Metadata tab | "The same image re-compressed, resized and blurred: here is how the score moves." "EXIF is shown separately; C2PA is not checked, and metadata never changes the score." |
-| 2:35–3:30 | Model report page, then `report/model_report.pdf` | "On generators we never trained on, AUC improved from 0.55 for our first CIFAKE-only model to about 0.65. We found that real photos in public datasets are JPEGs while generated images are PNGs; a detector can cheat on that. So we also score every image format-matched: a CLIP model that looked best dropped to chance, while ours held at about 0.65." Final reserved GLIDE/DALLE AUC: `<report>`. |
+| 2:35–3:30 | Model report page, then `report/model_report.pdf` | "On generators we never trained on, AUC improved from 0.55 for our first CIFAKE-only model to about 0.65. We found that real photos in public datasets are JPEGs while generated images are PNGs; a detector can learn those processing shortcuts. So we also score every image format-matched: a CLIP model that looked best fell to 0.542, while ours held at about 0.65." Final reserved GLIDE/DALLE AUC: 0.565 as distributed, 0.643 format-matched; most unseen AI images are missed at the fixed threshold. Matching changes geometry and encoding together, so this does not prove that all shortcuts were removed. |
 | 3:30–4:10 | README and terminal | Show `python scripts/setup.py`, `python scripts/run.py`, and `model/predict.py --image <file>` printing JSON. "Weights download from the GitHub release with a SHA-256 check; no dataset or GPU is needed." |
 | 4:10–4:30 | Report limitations section | "Limits: unseen-generator accuracy is still modest, heavy resizing hurts, and calibration does not transfer to every source. Organizer hidden-test results were not available to us." |
 

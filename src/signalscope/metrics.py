@@ -25,7 +25,7 @@ def binary_metrics(labels, scores, threshold: float = .5) -> dict:
     cm = confusion_matrix(labels, predictions, labels=[0, 1])
     tn, fp, fn, tp = (int(v) for v in cm.ravel())
     return {
-        "count": int(len(labels)), "real_count": tn+fp, "ai_count": fn+tp,
+        "count": len(labels), "real_count": tn+fp, "ai_count": fn+tp,
         "roc_auc": float(roc_auc_score(labels, scores)) if len(np.unique(labels)) == 2 else None,
         "macro_f1": float(f1_score(labels, predictions, average="macro", labels=[0, 1], zero_division=0)),
         "accuracy": float(accuracy_score(labels, predictions)),
