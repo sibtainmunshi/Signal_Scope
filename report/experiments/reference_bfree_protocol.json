@@ -1,0 +1,16 @@
+{
+  "created_utc": "2026-09-12T15:57:55.474139+00:00",
+  "purpose": "Diagnose the large quality gap after user-reported modern generated-image failures. UI work is paused.",
+  "reference": "Official B-Free CVPR 2025 specialist detector; not a SignalScope-trained model.",
+  "source_commit": "c6a9f898782fb466b29af01f21960b67415afb0e",
+  "weights_url": "https://www.grip.unina.it/download/prog/B-Free/weights/BFREE_dino2reg4.zip",
+  "published_zip_md5": "f3f53fa647848b16cf81c913f148a198",
+  "evaluation": "Existing external development guided/ImageNet and LDM/LAION, as-distributed and matched. Threshold: official zero logit, no fitting to external data. Do not score reserved/test splits.",
+  "preflight": "Verify archive integrity, inspect safe checkpoint/config, reproduce supplied example scores, measure laptop GPU/CPU latency before full evaluation.",
+  "limits": [
+    "Published task-specific pretrained detector, not merely a generic backbone.",
+    "This comparison is not a new blind test and does not establish 99% real-world accuracy.",
+    "Do not silently replace the locally trained model or describe the third-party weights as our training.",
+    "No user photos are uploaded or used for training."
+  ]
+}

@@ -12,8 +12,8 @@ import numpy as np
 import torch
 from PIL import Image, ImageOps, ImageStat
 
-from .network import build_model, preprocess_batch
 from .limits import MAX_IMAGE_PIXELS
+from .network import build_model, preprocess_batch
 from .paths import root_path
 from .preprocessing import center_crop_resize, native_crops, native_region, source_region
 

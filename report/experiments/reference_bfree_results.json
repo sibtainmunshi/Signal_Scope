@@ -1,0 +1,160 @@
+{
+  "protocol": {
+    "created_utc": "2026-09-12T15:57:55.474139+00:00",
+    "purpose": "Diagnose the large quality gap after user-reported modern generated-image failures. UI work is paused.",
+    "reference": "Official B-Free CVPR 2025 specialist detector; not a SignalScope-trained model.",
+    "source_commit": "c6a9f898782fb466b29af01f21960b67415afb0e",
+    "weights_url": "https://www.grip.unina.it/download/prog/B-Free/weights/BFREE_dino2reg4.zip",
+    "published_zip_md5": "f3f53fa647848b16cf81c913f148a198",
+    "evaluation": "Existing external development guided/ImageNet and LDM/LAION, as-distributed and matched. Threshold: official zero logit, no fitting to external data. Do not score reserved/test splits.",
+    "preflight": "Verify archive integrity, inspect safe checkpoint/config, reproduce supplied example scores, measure laptop GPU/CPU latency before full evaluation.",
+    "limits": [
+      "Published task-specific pretrained detector, not merely a generic backbone.",
+      "This comparison is not a new blind test and does not establish 99% real-world accuracy.",
+      "Do not silently replace the locally trained model or describe the third-party weights as our training.",
+      "No user photos are uploaded or used for training."
+    ]
+  },
+  "protocol_sha256": "18e7f77907986e083571698d05e02cedf2c6fef5a92dac86bf8c30a1bdd4d05d",
+  "checkpoint_sha256": "5948ca78f4d94e820c250d24cdf155035b4a85960443800bfe6bb7f06bffe947",
+  "unique_images": 2000,
+  "threshold": 0.5,
+  "logit_threshold": 0,
+  "results": {
+    "as_distributed": {
+      "per_generator": [
+        {
+          "generator": "guided",
+          "count": 1000,
+          "real_count": 500,
+          "ai_count": 500,
+          "roc_auc": 0.9427920000000001,
+          "macro_f1": 0.8136956236897275,
+          "accuracy": 0.818,
+          "false_positive_rate": 0.03,
+          "true_positive_rate": 0.666,
+          "brier_score": 0.13625351624471052,
+          "threshold": 0.5,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              485,
+              15
+            ],
+            [
+              167,
+              333
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "ldm_200",
+          "count": 1000,
+          "real_count": 500,
+          "ai_count": 500,
+          "roc_auc": 0.997112,
+          "macro_f1": 0.9337285521496048,
+          "accuracy": 0.934,
+          "false_positive_rate": 0.13,
+          "true_positive_rate": 0.998,
+          "brier_score": 0.048338396153068744,
+          "threshold": 0.5,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              435,
+              65
+            ],
+            [
+              1,
+              499
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        }
+      ],
+      "mean_auc": 0.969952,
+      "mean_accuracy": 0.876,
+      "inference_seconds": 558.2493129999921,
+      "batch_size_limit": 4
+    },
+    "matched": {
+      "per_generator": [
+        {
+          "generator": "guided",
+          "count": 1000,
+          "real_count": 500,
+          "ai_count": 500,
+          "roc_auc": 0.896172,
+          "macro_f1": 0.7859691085461216,
+          "accuracy": 0.789,
+          "false_positive_rate": 0.092,
+          "true_positive_rate": 0.67,
+          "brier_score": 0.15262060334749425,
+          "threshold": 0.5,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              454,
+              46
+            ],
+            [
+              165,
+              335
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "ldm_200",
+          "count": 1000,
+          "real_count": 500,
+          "ai_count": 500,
+          "roc_auc": 0.993928,
+          "macro_f1": 0.9337112461883967,
+          "accuracy": 0.934,
+          "false_positive_rate": 0.132,
+          "true_positive_rate": 1.0,
+          "brier_score": 0.05032196033363952,
+          "threshold": 0.5,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              434,
+              66
+            ],
+            [
+              0,
+              500
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        }
+      ],
+      "mean_auc": 0.94505,
+      "mean_accuracy": 0.8615,
+      "inference_seconds": 569.4167369999923,
+      "batch_size_limit": 4
+    }
+  },
+  "limitations": [
+    "Third-party task-trained checkpoint; not a SignalScope training result.",
+    "Development comparison, not independent final evaluation or organizer score.",
+    "Author reports training on COCO/SD2.1. Their complete training hashes are unavailable; full cross-source overlap cannot be independently ruled out.",
+    "Sigmoid scores from the published logits are not calibrated probabilities on these sources."
+  ],
+  "complete": true
+}

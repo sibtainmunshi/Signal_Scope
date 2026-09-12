@@ -1,0 +1,414 @@
+{
+  "run": "mixed_clip_l14_balanced_v1",
+  "checkpoint": "model\\checkpoints\\mixed_clip_l14_balanced_v1\\head.pt",
+  "checkpoint_sha256": "dc889807cd6183c6cbf0859acd37784d6f28b0be6db297003079ad46671a0ebc",
+  "C": 10.0,
+  "temperature": 0.9469072146104929,
+  "threshold": 0.8214277320372911,
+  "domain_thresholds": {
+    "genimage": 0.5751732747743346,
+    "cifake": 0.8214277320372911
+  },
+  "validation_operating_point": {
+    "genimage": {
+      "count": 783,
+      "real_count": 369,
+      "ai_count": 414,
+      "roc_auc": 0.9912218687404265,
+      "macro_f1": 0.9501590529616167,
+      "accuracy": 0.9501915708812261,
+      "false_positive_rate": 0.018970189701897018,
+      "true_positive_rate": 0.9227053140096618,
+      "brier_score": 0.029846464993550603,
+      "threshold": 0.8214277320372911,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          362,
+          7
+        ],
+        [
+          32,
+          382
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ],
+      "ece": 0.025630315048923574
+    },
+    "cifake": {
+      "count": 4000,
+      "real_count": 2000,
+      "ai_count": 2000,
+      "roc_auc": 0.9099564999999998,
+      "macro_f1": 0.7589266961265831,
+      "accuracy": 0.767,
+      "false_positive_rate": 0.05,
+      "true_positive_rate": 0.584,
+      "brier_score": 0.12071782890248228,
+      "threshold": 0.8214277320372911,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          1900,
+          100
+        ],
+        [
+          832,
+          1168
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ],
+      "ece": 0.021516736510515302
+    }
+  },
+  "trials": [
+    {
+      "C": 0.1,
+      "mean_auc": 0.8759611454168468,
+      "validation": {
+        "genimage_as_distributed": {
+          "count": 783,
+          "real_count": 369,
+          "ai_count": 414,
+          "roc_auc": 0.987680504824372,
+          "macro_f1": 0.9435664583087628,
+          "accuracy": 0.9438058748403576,
+          "false_positive_rate": 0.06775067750677506,
+          "true_positive_rate": 0.9541062801932367,
+          "brier_score": 0.06481946081092547,
+          "threshold": 0.5,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              344,
+              25
+            ],
+            [
+              19,
+              395
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        "genimage_matched": {
+          "count": 783,
+          "real_count": 369,
+          "ai_count": 414,
+          "roc_auc": 0.9591335768430147,
+          "macro_f1": 0.8785576795921066,
+          "accuracy": 0.8786717752234994,
+          "false_positive_rate": 0.1002710027100271,
+          "true_positive_rate": 0.8599033816425121,
+          "brier_score": 0.10529593103867312,
+          "threshold": 0.5,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              332,
+              37
+            ],
+            [
+              58,
+              356
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        "cifake_as_distributed": {
+          "count": 4000,
+          "real_count": 2000,
+          "ai_count": 2000,
+          "roc_auc": 0.7483765000000001,
+          "macro_f1": 0.6389895220417785,
+          "accuracy": 0.65325,
+          "false_positive_rate": 0.5455,
+          "true_positive_rate": 0.852,
+          "brier_score": 0.21323966200081673,
+          "threshold": 0.5,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              909,
+              1091
+            ],
+            [
+              296,
+              1704
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        "cifake_matched": {
+          "count": 4000,
+          "real_count": 2000,
+          "ai_count": 2000,
+          "roc_auc": 0.808654,
+          "macro_f1": 0.6617871792545661,
+          "accuracy": 0.67775,
+          "false_positive_rate": 0.5395,
+          "true_positive_rate": 0.895,
+          "brier_score": 0.20108972267284192,
+          "threshold": 0.5,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              921,
+              1079
+            ],
+            [
+              210,
+              1790
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        }
+      }
+    },
+    {
+      "C": 1.0,
+      "mean_auc": 0.9268500245465288,
+      "validation": {
+        "genimage_as_distributed": {
+          "count": 783,
+          "real_count": 369,
+          "ai_count": 414,
+          "roc_auc": 0.991411701556629,
+          "macro_f1": 0.9602332953791459,
+          "accuracy": 0.9604086845466155,
+          "false_positive_rate": 0.051490514905149054,
+          "true_positive_rate": 0.9710144927536232,
+          "brier_score": 0.03589588484474783,
+          "threshold": 0.5,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              350,
+              19
+            ],
+            [
+              12,
+              402
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        "genimage_matched": {
+          "count": 783,
+          "real_count": 369,
+          "ai_count": 414,
+          "roc_auc": 0.9736001466294856,
+          "macro_f1": 0.9205310371922473,
+          "accuracy": 0.9208173690932312,
+          "false_positive_rate": 0.08672086720867209,
+          "true_positive_rate": 0.927536231884058,
+          "brier_score": 0.06738129235463602,
+          "threshold": 0.5,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              337,
+              32
+            ],
+            [
+              30,
+              384
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        "cifake_as_distributed": {
+          "count": 4000,
+          "real_count": 2000,
+          "ai_count": 2000,
+          "roc_auc": 0.8586165000000001,
+          "macro_f1": 0.7758306772712532,
+          "accuracy": 0.77625,
+          "false_positive_rate": 0.267,
+          "true_positive_rate": 0.8195,
+          "brier_score": 0.15629315933038826,
+          "threshold": 0.5,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              1466,
+              534
+            ],
+            [
+              361,
+              1639
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        "cifake_matched": {
+          "count": 4000,
+          "real_count": 2000,
+          "ai_count": 2000,
+          "roc_auc": 0.88377175,
+          "macro_f1": 0.794246283573497,
+          "accuracy": 0.79425,
+          "false_positive_rate": 0.21,
+          "true_positive_rate": 0.7985,
+          "brier_score": 0.14299945526144886,
+          "threshold": 0.5,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              1580,
+              420
+            ],
+            [
+              403,
+              1597
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        }
+      }
+    },
+    {
+      "C": 10.0,
+      "mean_auc": 0.9464286817403742,
+      "validation": {
+        "genimage_as_distributed": {
+          "count": 783,
+          "real_count": 369,
+          "ai_count": 414,
+          "roc_auc": 0.9912218687404265,
+          "macro_f1": 0.9601902497027348,
+          "accuracy": 0.9604086845466155,
+          "false_positive_rate": 0.05962059620596206,
+          "true_positive_rate": 0.9782608695652174,
+          "brier_score": 0.030090367247245873,
+          "threshold": 0.5,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              347,
+              22
+            ],
+            [
+              9,
+              405
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        "genimage_matched": {
+          "count": 783,
+          "real_count": 369,
+          "ai_count": 414,
+          "roc_auc": 0.9739863582210702,
+          "macro_f1": 0.9192367199587417,
+          "accuracy": 0.9195402298850575,
+          "false_positive_rate": 0.08943089430894309,
+          "true_positive_rate": 0.927536231884058,
+          "brier_score": 0.05897282877816917,
+          "threshold": 0.5,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              336,
+              33
+            ],
+            [
+              30,
+              384
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        "cifake_as_distributed": {
+          "count": 4000,
+          "real_count": 2000,
+          "ai_count": 2000,
+          "roc_auc": 0.9099564999999998,
+          "macro_f1": 0.8314325730292117,
+          "accuracy": 0.8315,
+          "false_positive_rate": 0.1885,
+          "true_positive_rate": 0.8515,
+          "brier_score": 0.12075579539214809,
+          "threshold": 0.5,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              1623,
+              377
+            ],
+            [
+              297,
+              1703
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        "cifake_matched": {
+          "count": 4000,
+          "real_count": 2000,
+          "ai_count": 2000,
+          "roc_auc": 0.91055,
+          "macro_f1": 0.8267468706153505,
+          "accuracy": 0.82675,
+          "false_positive_rate": 0.169,
+          "true_positive_rate": 0.8225,
+          "brier_score": 0.1209186547494507,
+          "threshold": 0.5,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              1662,
+              338
+            ],
+            [
+              355,
+              1645
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        }
+      }
+    }
+  ]
+}

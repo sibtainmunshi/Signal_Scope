@@ -1,0 +1,18 @@
+{
+  "purpose": "Re-fit only the operating threshold of the existing CLIP L/14 candidates under a stricter internal false-positive policy, then re-run the unchanged advancement gate.",
+  "declared_before_reading_external_scores": true,
+  "threshold_policy": "Strictest domain threshold on internal original-format validation with FPR <= 2%; the previous policy was <= 5%.",
+  "policy_justification": "Measured before this experiment: released v0.2.0 used the <=5% internal policy and recorded 12.8% real-photo FPR on external LAION development images, about 2.6x its internal allowance. A 2% internal target aims at roughly 5% external. Single declared value; the policy is not retried at other values after seeing results.",
+  "applied_to": "Release model mixed_resnet18_native_v1_calibrated and both CLIP L/14 candidates, identically. Baseline false-positive rates and macro-F1 are recomputed at the baseline's own new threshold.",
+  "gate": "Copied verbatim from clip_l14_development_v1: >=.03 mean AUC gain in each protocol, no generator AUC loss >.02, >=.03 mean macro-F1 gain in each protocol, no generator FPR increase >.05.",
+  "scores": "No new image inference. Candidate internal and external scores are recomputed from the existing feature cache with the serialized float32 head; release scores come from its archived per-image prediction files.",
+  "protected": "No reserved, test or user-image data. No released artifact, checkpoint or earlier report is modified.",
+  "source_experiment_sha256": "f45d423c4dc6bb05f595219f2ebd3dc78c43dd6389df7ce4bd5a7f67ddf82639",
+  "limits": [
+    "Reused external development data; not a blind test and not an organizer result.",
+    "ROC-AUC is threshold independent, so the AUC checks repeat the original measurement.",
+    "A better operating point does not establish real-world accuracy on unseen generators.",
+    "Candidates differ in both training views and domain weight, so this is not a causal ablation."
+  ],
+  "created_utc": "2026-09-12T22:57:31.915598+00:00"
+}

@@ -71,6 +71,7 @@ def test_corrupt_and_oversized_uploads_return_clear_errors(client):
 
 def test_phone_size_uploads_pass_and_excessive_geometry_is_rejected(client):
     import numpy as np
+
     from signalscope.preprocessing import native_canvas_size
 
     assert native_canvas_size(6000, 4000, 128) == (6000, 4000)

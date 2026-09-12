@@ -198,7 +198,7 @@ def main():
             cal[domain] = (torch.tensor(classifier.decision_function(x), dtype=torch.float64), torch.tensor(y, dtype=torch.float64))
         log_temp = torch.nn.Parameter(torch.zeros((), dtype=torch.float64))
         optimizer = torch.optim.LBFGS([log_temp], lr=.1, max_iter=100, line_search_fn="strong_wolfe")
-        def closure():
+        def closure(optimizer=optimizer, log_temp=log_temp, cal=cal):
             optimizer.zero_grad()
             loss = sum(F.binary_cross_entropy_with_logits(z/log_temp.clamp(-3, 3).exp(), y) for z, y in cal.values())/len(cal)
             loss.backward()
@@ -243,7 +243,7 @@ def main():
     for fmt in FORMATS:
         folder = "external_dev" if fmt == "as_distributed" else "external_dev_matched"
         baselines[fmt] = json.loads((ROOT / "report/runs/mixed_resnet18_native_v1_calibrated" / folder / "metrics.json").read_text())
-        def external_batches():
+        def external_batches(fmt=fmt):
             with zipfile.ZipFile(ROOT / "data/downloads/universalfakedetect_diffusion.zip") as archive:
                 for start in range(0, len(rows), BATCH):
                     tensors = []

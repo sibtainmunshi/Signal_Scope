@@ -51,3 +51,19 @@ measurement limits are in CLAUDE_QA_FIXES.md and CODEX_QA_FIXES.md.
 Post-release development probes did not replace the frozen model. The CIFAKE-1k
 candidate improved mean development AUC but reduced calibrated AI recall; the
 tradeoff is recorded in POST_RELEASE_EXPERIMENTS.md. No new blind-test claim.
+
+Interface gaps found against the problem statement are now closed: `model/predict.py`
+accepts `--images-dir`/`--image-list` for the organizers' batch scoring, uploads allow
+25 MiB and 40 MP so ordinary phone photographs are accepted, and a declared
+simulated-screenshot degradation is measured (GenImage validation AUC 0.893 against
+0.956 original). The simulation is synthetic resampling, not real device capture.
+
+Frozen CLIP ViT-L/14 with our own head measured far better development ranking
+(format-matched mean AUC 0.789 against 0.653) but failed one predeclared
+false-positive check, twice, including under a stricter threshold policy applied to
+both models. It is not released. A diagnostic spot check on user-supplied ChatGPT
+images and phone photographs found the released model's ranking inverted on that
+small set. Both outcomes are recorded in POST_RELEASE_EXPERIMENTS.md. The headline
+limitation is unchanged and understated by the CIFAKE numbers: unseen-generator
+performance is weak, and the published B-Free reference reaches 0.945-0.970 on the
+same development images that v0.2.0 scores 0.647-0.653 on.

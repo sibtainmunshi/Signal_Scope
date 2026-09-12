@@ -1,0 +1,1061 @@
+{
+  "protocol_sha256": "c294b9111b8e1d558dcf4860dd1f3adeb2439ac50cd0bcf75f6c698af592a6d4",
+  "policy_max_internal_fpr": 0.02,
+  "baseline": {
+    "run": "mixed_resnet18_native_v1_calibrated",
+    "released_threshold": 0.4553663730621338,
+    "new_threshold": 0.6437230706214905,
+    "new_domain_thresholds": {
+      "genimage": 0.6437230706214905,
+      "cifake": 0.5303574204444885
+    },
+    "external_at_new_threshold": {
+      "as_distributed": {
+        "per_generator": [
+          {
+            "generator": "guided",
+            "real_source": "imagenet",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.629644,
+            "macro_f1": 0.36641258119871617,
+            "accuracy": 0.513,
+            "false_positive_rate": 0.006,
+            "true_positive_rate": 0.032,
+            "brier_score": 0.36948820181435743,
+            "threshold": 0.6437230706214905,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                497,
+                3
+              ],
+              [
+                484,
+                16
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          },
+          {
+            "generator": "ldm_200",
+            "real_source": "laion",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.6651800000000001,
+            "macro_f1": 0.5147636363636363,
+            "accuracy": 0.583,
+            "false_positive_rate": 0.042,
+            "true_positive_rate": 0.208,
+            "brier_score": 0.2704041872777381,
+            "threshold": 0.6437230706214905,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                479,
+                21
+              ],
+              [
+                396,
+                104
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          }
+        ],
+        "mean_auc": 0.6474120000000001,
+        "mean_macro_f1": 0.44058810878117627
+      },
+      "matched": {
+        "per_generator": [
+          {
+            "generator": "guided",
+            "real_source": "imagenet",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.61136,
+            "macro_f1": 0.40358049683476954,
+            "accuracy": 0.518,
+            "false_positive_rate": 0.044,
+            "true_positive_rate": 0.08,
+            "brier_score": 0.317794843956521,
+            "threshold": 0.6437230706214905,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                478,
+                22
+              ],
+              [
+                460,
+                40
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          },
+          {
+            "generator": "ldm_200",
+            "real_source": "laion",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.694644,
+            "macro_f1": 0.5304843304843305,
+            "accuracy": 0.588,
+            "false_positive_rate": 0.062,
+            "true_positive_rate": 0.238,
+            "brier_score": 0.2516678848402254,
+            "threshold": 0.6437230706214905,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                469,
+                31
+              ],
+              [
+                381,
+                119
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          }
+        ],
+        "mean_auc": 0.6530020000000001,
+        "mean_macro_f1": 0.46703241365955006
+      }
+    },
+    "external_at_released_threshold": {
+      "as_distributed": {
+        "source": "UniversalFakeDetect CVPR 2023 diffusion release",
+        "split": "dev",
+        "evaluation_kind": "external_development",
+        "protocol": "as_distributed",
+        "protocol_description": "Files scored as distributed. Real images are JPEG (ImageNet mostly non-square); generated images are square PNG, so format and aspect-ratio cues remain available.",
+        "model_version": "mixed_resnet18_native_v1_calibrated",
+        "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+        "preprocessing": "Same full-image preprocessing as app/CLI; no external-domain adaptation.",
+        "threshold": 0.4553663730621338,
+        "unique_images_evaluated": 2000,
+        "macro_generator_roc_auc": 0.6474120000000001,
+        "per_generator": [
+          {
+            "generator": "guided",
+            "real_source": "imagenet",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.629644,
+            "macro_f1": 0.43068254565535036,
+            "accuracy": 0.534,
+            "false_positive_rate": 0.04,
+            "true_positive_rate": 0.108,
+            "brier_score": 0.36948820181435743,
+            "threshold": 0.4553663730621338,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                480,
+                20
+              ],
+              [
+                446,
+                54
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          },
+          {
+            "generator": "ldm_200",
+            "real_source": "laion",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.6651800000000001,
+            "macro_f1": 0.5955171777131032,
+            "accuracy": 0.621,
+            "false_positive_rate": 0.128,
+            "true_positive_rate": 0.37,
+            "brier_score": 0.2704041872777381,
+            "threshold": 0.4553663730621338,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                436,
+                64
+              ],
+              [
+                315,
+                185
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          }
+        ],
+        "organizer_hidden_result": null,
+        "limitations": [
+          "Domains are unseen in our task training, not necessarily absent from backbone pretraining.",
+          "Development domains may guide model selection and are not a blind final test.",
+          "Shared LAION real images are reused for per-generator comparisons; no inflated pooled sample count is reported."
+        ]
+      },
+      "matched": {
+        "source": "UniversalFakeDetect CVPR 2023 diffusion release",
+        "split": "dev",
+        "evaluation_kind": "external_development",
+        "protocol": "matched",
+        "protocol_description": "Every image of both labels: centre square crop, bicubic resize to 224, JPEG quality 90, then the detector's own preprocessing. Reduces file-format and aspect-ratio cues; earlier compression traces are weakened, not removed.",
+        "model_version": "mixed_resnet18_native_v1_calibrated",
+        "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+        "preprocessing": "Same full-image preprocessing as app/CLI; no external-domain adaptation.",
+        "threshold": 0.4553663730621338,
+        "unique_images_evaluated": 2000,
+        "macro_generator_roc_auc": 0.6530020000000001,
+        "per_generator": [
+          {
+            "generator": "guided",
+            "real_source": "imagenet",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.61136,
+            "macro_f1": 0.5076317085179715,
+            "accuracy": 0.559,
+            "false_positive_rate": 0.118,
+            "true_positive_rate": 0.236,
+            "brier_score": 0.317794843956521,
+            "threshold": 0.4553663730621338,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                441,
+                59
+              ],
+              [
+                382,
+                118
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          },
+          {
+            "generator": "ldm_200",
+            "real_source": "laion",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.694644,
+            "macro_f1": 0.6080502701728352,
+            "accuracy": 0.626,
+            "false_positive_rate": 0.16,
+            "true_positive_rate": 0.412,
+            "brier_score": 0.2516678848402254,
+            "threshold": 0.4553663730621338,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                420,
+                80
+              ],
+              [
+                294,
+                206
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          }
+        ],
+        "organizer_hidden_result": null,
+        "limitations": [
+          "Domains are unseen in our task training, not necessarily absent from backbone pretraining.",
+          "Development domains may guide model selection and are not a blind final test.",
+          "Shared LAION real images are reused for per-generator comparisons; no inflated pooled sample count is reported."
+        ]
+      }
+    }
+  },
+  "candidates": [
+    {
+      "run": "mixed_clip_l14_standard_v1",
+      "checkpoint": "model\\checkpoints\\mixed_clip_l14_standard_v1\\head.pt",
+      "checkpoint_sha256": "002a1f524f804549af442ac913aee2cc51a2c22c4f01e4539640d2dd064c640b",
+      "previous_threshold": 0.6244282965552722,
+      "new_threshold": 0.8525902247858653,
+      "new_domain_thresholds": {
+        "genimage": 0.8354893792993575,
+        "cifake": 0.8525902247858653
+      },
+      "validation_operating_point": {
+        "genimage": {
+          "count": 783,
+          "real_count": 369,
+          "ai_count": 414,
+          "roc_auc": 0.9893955461293744,
+          "macro_f1": 0.9323098554332029,
+          "accuracy": 0.9323116219667944,
+          "false_positive_rate": 0.016260162601626018,
+          "true_positive_rate": 0.8864734299516909,
+          "brier_score": 0.03743298738059382,
+          "threshold": 0.8525902247858653,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              363,
+              6
+            ],
+            [
+              47,
+              367
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        "cifake": {
+          "count": 4000,
+          "real_count": 2000,
+          "ai_count": 2000,
+          "roc_auc": 0.9784010000000001,
+          "macro_f1": 0.8816305131803098,
+          "accuracy": 0.88275,
+          "false_positive_rate": 0.02,
+          "true_positive_rate": 0.7855,
+          "brier_score": 0.054177041025640575,
+          "threshold": 0.8525902247858653,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              1960,
+              40
+            ],
+            [
+              429,
+              1571
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        }
+      },
+      "float32_float64_check": {
+        "genimage": {
+          "float32_head_auc": 0.9893955461293744,
+          "recorded_float64_auc": 0.9893955461293744
+        },
+        "cifake": {
+          "float32_head_auc": 0.9784010000000001,
+          "recorded_float64_auc": 0.9784010000000001
+        }
+      },
+      "external_score_parity": {
+        "as_distributed": {
+          "max_abs_difference_float32_vs_archived_float64": 0.0
+        },
+        "matched": {
+          "max_abs_difference_float32_vs_archived_float64": 0.0
+        }
+      },
+      "external": {
+        "as_distributed": {
+          "per_generator": [
+            {
+              "generator": "guided",
+              "real_source": "imagenet",
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.7134120000000002,
+              "macro_f1": 0.4899205425521215,
+              "accuracy": 0.574,
+              "false_positive_rate": 0.02,
+              "true_positive_rate": 0.168,
+              "brier_score": 0.3404066757875209,
+              "threshold": 0.8525902247858653,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  490,
+                  10
+                ],
+                [
+                  416,
+                  84
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            },
+            {
+              "generator": "ldm_200",
+              "real_source": "laion",
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.709928,
+              "macro_f1": 0.5194875128071629,
+              "accuracy": 0.569,
+              "false_positive_rate": 0.11,
+              "true_positive_rate": 0.248,
+              "brier_score": 0.3134771979580427,
+              "threshold": 0.8525902247858653,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  445,
+                  55
+                ],
+                [
+                  376,
+                  124
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            }
+          ],
+          "mean_auc": 0.71167,
+          "mean_macro_f1": 0.5047040276796422
+        },
+        "matched": {
+          "per_generator": [
+            {
+              "generator": "guided",
+              "real_source": "imagenet",
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.6464840000000001,
+              "macro_f1": 0.3747338087772874,
+              "accuracy": 0.517,
+              "false_positive_rate": 0.006,
+              "true_positive_rate": 0.04,
+              "brier_score": 0.44033422926157867,
+              "threshold": 0.8525902247858653,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  497,
+                  3
+                ],
+                [
+                  480,
+                  20
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            },
+            {
+              "generator": "ldm_200",
+              "real_source": "laion",
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.603524,
+              "macro_f1": 0.38108660313483367,
+              "accuracy": 0.502,
+              "false_positive_rate": 0.056,
+              "true_positive_rate": 0.06,
+              "brier_score": 0.43055085748085653,
+              "threshold": 0.8525902247858653,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  472,
+                  28
+                ],
+                [
+                  470,
+                  30
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            }
+          ],
+          "mean_auc": 0.625004,
+          "mean_macro_f1": 0.3779102059560605
+        }
+      },
+      "gate_checks": {
+        "as_distributed_mean_auc": true,
+        "as_distributed_mean_f1": true,
+        "as_distributed_guided_auc": true,
+        "as_distributed_guided_fpr": true,
+        "as_distributed_ldm_200_auc": true,
+        "as_distributed_ldm_200_fpr": false,
+        "matched_mean_auc": false,
+        "matched_mean_f1": false,
+        "matched_guided_auc": true,
+        "matched_guided_fpr": true,
+        "matched_ldm_200_auc": false,
+        "matched_ldm_200_fpr": true
+      },
+      "passed_gate": false,
+      "previous_gate_checks": {
+        "as_distributed_mean_auc": true,
+        "as_distributed_mean_f1": true,
+        "as_distributed_guided_auc": true,
+        "as_distributed_guided_fpr": true,
+        "as_distributed_ldm_200_auc": true,
+        "as_distributed_ldm_200_fpr": true,
+        "matched_mean_auc": false,
+        "matched_mean_f1": false,
+        "matched_guided_auc": true,
+        "matched_guided_fpr": true,
+        "matched_ldm_200_auc": false,
+        "matched_ldm_200_fpr": true
+      },
+      "previous_external": {
+        "as_distributed": {
+          "protocol": "as_distributed",
+          "per_generator": [
+            {
+              "generator": "guided",
+              "real_source": "imagenet",
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.7134120000000002,
+              "macro_f1": 0.5609027838763503,
+              "accuracy": 0.615,
+              "false_positive_rate": 0.034,
+              "true_positive_rate": 0.264,
+              "brier_score": 0.3404066757875209,
+              "threshold": 0.6244282965552722,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  483,
+                  17
+                ],
+                [
+                  368,
+                  132
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            },
+            {
+              "generator": "ldm_200",
+              "real_source": "laion",
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.709928,
+              "macro_f1": 0.5755603185943743,
+              "accuracy": 0.599,
+              "false_positive_rate": 0.166,
+              "true_positive_rate": 0.364,
+              "brier_score": 0.3134771979580427,
+              "threshold": 0.6244282965552722,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  417,
+                  83
+                ],
+                [
+                  318,
+                  182
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            }
+          ],
+          "mean_auc": 0.71167,
+          "mean_macro_f1": 0.5682315512353623
+        },
+        "matched": {
+          "protocol": "matched",
+          "per_generator": [
+            {
+              "generator": "guided",
+              "real_source": "imagenet",
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.6464840000000001,
+              "macro_f1": 0.38609842719431764,
+              "accuracy": 0.516,
+              "false_positive_rate": 0.024,
+              "true_positive_rate": 0.056,
+              "brier_score": 0.44033422926157867,
+              "threshold": 0.6244282965552722,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  488,
+                  12
+                ],
+                [
+                  472,
+                  28
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            },
+            {
+              "generator": "ldm_200",
+              "real_source": "laion",
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.603524,
+              "macro_f1": 0.410894147736253,
+              "accuracy": 0.508,
+              "false_positive_rate": 0.086,
+              "true_positive_rate": 0.102,
+              "brier_score": 0.43055085748085653,
+              "threshold": 0.6244282965552722,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  457,
+                  43
+                ],
+                [
+                  449,
+                  51
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            }
+          ],
+          "mean_auc": 0.625004,
+          "mean_macro_f1": 0.3984962874652853
+        }
+      }
+    },
+    {
+      "run": "mixed_clip_l14_balanced_v1",
+      "checkpoint": "model\\checkpoints\\mixed_clip_l14_balanced_v1\\head.pt",
+      "checkpoint_sha256": "dc889807cd6183c6cbf0859acd37784d6f28b0be6db297003079ad46671a0ebc",
+      "previous_threshold": 0.8214277320372911,
+      "new_threshold": 0.9121414300806222,
+      "new_domain_thresholds": {
+        "genimage": 0.7718927169415071,
+        "cifake": 0.9121414300806222
+      },
+      "validation_operating_point": {
+        "genimage": {
+          "count": 783,
+          "real_count": 369,
+          "ai_count": 414,
+          "roc_auc": 0.9912218687404265,
+          "macro_f1": 0.9208110400626386,
+          "accuracy": 0.9208173690932312,
+          "false_positive_rate": 0.013550135501355014,
+          "true_positive_rate": 0.8623188405797102,
+          "brier_score": 0.029846464993550603,
+          "threshold": 0.9121414300806222,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              364,
+              5
+            ],
+            [
+              57,
+              357
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        "cifake": {
+          "count": 4000,
+          "real_count": 2000,
+          "ai_count": 2000,
+          "roc_auc": 0.9099564999999998,
+          "macro_f1": 0.6728738069989395,
+          "accuracy": 0.69875,
+          "false_positive_rate": 0.02,
+          "true_positive_rate": 0.4175,
+          "brier_score": 0.12071782890248228,
+          "threshold": 0.9121414300806222,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              1960,
+              40
+            ],
+            [
+              1165,
+              835
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        }
+      },
+      "float32_float64_check": {
+        "genimage": {
+          "float32_head_auc": 0.9912218687404265,
+          "recorded_float64_auc": 0.9912218687404265
+        },
+        "cifake": {
+          "float32_head_auc": 0.9099564999999998,
+          "recorded_float64_auc": 0.9099564999999998
+        }
+      },
+      "external_score_parity": {
+        "as_distributed": {
+          "max_abs_difference_float32_vs_archived_float64": 0.0
+        },
+        "matched": {
+          "max_abs_difference_float32_vs_archived_float64": 0.0
+        }
+      },
+      "external": {
+        "as_distributed": {
+          "per_generator": [
+            {
+              "generator": "guided",
+              "real_source": "imagenet",
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.8211600000000001,
+              "macro_f1": 0.5192256327524867,
+              "accuracy": 0.595,
+              "false_positive_rate": 0.008,
+              "true_positive_rate": 0.198,
+              "brier_score": 0.2591269677070147,
+              "threshold": 0.9121414300806222,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  496,
+                  4
+                ],
+                [
+                  401,
+                  99
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            },
+            {
+              "generator": "ldm_200",
+              "real_source": "laion",
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.721188,
+              "macro_f1": 0.5956048019041237,
+              "accuracy": 0.615,
+              "false_positive_rate": 0.166,
+              "true_positive_rate": 0.396,
+              "brier_score": 0.2654809221943947,
+              "threshold": 0.9121414300806222,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  417,
+                  83
+                ],
+                [
+                  302,
+                  198
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            }
+          ],
+          "mean_auc": 0.771174,
+          "mean_macro_f1": 0.5574152173283051
+        },
+        "matched": {
+          "per_generator": [
+            {
+              "generator": "guided",
+              "real_source": "imagenet",
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.8081119999999999,
+              "macro_f1": 0.47236848329591397,
+              "accuracy": 0.565,
+              "false_positive_rate": 0.016,
+              "true_positive_rate": 0.146,
+              "brier_score": 0.24749814680522605,
+              "threshold": 0.9121414300806222,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  492,
+                  8
+                ],
+                [
+                  427,
+                  73
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            },
+            {
+              "generator": "ldm_200",
+              "real_source": "laion",
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.769092,
+              "macro_f1": 0.6374645414880491,
+              "accuracy": 0.658,
+              "false_positive_rate": 0.104,
+              "true_positive_rate": 0.42,
+              "brier_score": 0.23822610074379638,
+              "threshold": 0.9121414300806222,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  448,
+                  52
+                ],
+                [
+                  290,
+                  210
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            }
+          ],
+          "mean_auc": 0.788602,
+          "mean_macro_f1": 0.5549165123919815
+        }
+      },
+      "gate_checks": {
+        "as_distributed_mean_auc": true,
+        "as_distributed_mean_f1": true,
+        "as_distributed_guided_auc": true,
+        "as_distributed_guided_fpr": true,
+        "as_distributed_ldm_200_auc": true,
+        "as_distributed_ldm_200_fpr": false,
+        "matched_mean_auc": true,
+        "matched_mean_f1": true,
+        "matched_guided_auc": true,
+        "matched_guided_fpr": true,
+        "matched_ldm_200_auc": true,
+        "matched_ldm_200_fpr": true
+      },
+      "passed_gate": false,
+      "previous_gate_checks": {
+        "as_distributed_mean_auc": true,
+        "as_distributed_mean_f1": true,
+        "as_distributed_guided_auc": true,
+        "as_distributed_guided_fpr": true,
+        "as_distributed_ldm_200_auc": true,
+        "as_distributed_ldm_200_fpr": false,
+        "matched_mean_auc": true,
+        "matched_mean_f1": true,
+        "matched_guided_auc": true,
+        "matched_guided_fpr": true,
+        "matched_ldm_200_auc": true,
+        "matched_ldm_200_fpr": true
+      },
+      "previous_external": {
+        "as_distributed": {
+          "protocol": "as_distributed",
+          "per_generator": [
+            {
+              "generator": "guided",
+              "real_source": "imagenet",
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.8211600000000001,
+              "macro_f1": 0.5688064216797232,
+              "accuracy": 0.625,
+              "false_positive_rate": 0.014,
+              "true_positive_rate": 0.264,
+              "brier_score": 0.2591269677070147,
+              "threshold": 0.8214277320372911,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  493,
+                  7
+                ],
+                [
+                  368,
+                  132
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            },
+            {
+              "generator": "ldm_200",
+              "real_source": "laion",
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.721188,
+              "macro_f1": 0.6395273531532192,
+              "accuracy": 0.646,
+              "false_positive_rate": 0.22,
+              "true_positive_rate": 0.512,
+              "brier_score": 0.2654809221943947,
+              "threshold": 0.8214277320372911,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  390,
+                  110
+                ],
+                [
+                  244,
+                  256
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            }
+          ],
+          "mean_auc": 0.771174,
+          "mean_macro_f1": 0.6041668874164712
+        },
+        "matched": {
+          "protocol": "matched",
+          "per_generator": [
+            {
+              "generator": "guided",
+              "real_source": "imagenet",
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.8081119999999999,
+              "macro_f1": 0.5435167240448809,
+              "accuracy": 0.605,
+              "false_positive_rate": 0.028,
+              "true_positive_rate": 0.238,
+              "brier_score": 0.24749814680522605,
+              "threshold": 0.8214277320372911,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  486,
+                  14
+                ],
+                [
+                  381,
+                  119
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            },
+            {
+              "generator": "ldm_200",
+              "real_source": "laion",
+              "count": 1000,
+              "real_count": 500,
+              "ai_count": 500,
+              "roc_auc": 0.769092,
+              "macro_f1": 0.6728337504703015,
+              "accuracy": 0.68,
+              "false_positive_rate": 0.172,
+              "true_positive_rate": 0.532,
+              "brier_score": 0.23822610074379638,
+              "threshold": 0.8214277320372911,
+              "positive_class": "ai_generated",
+              "confusion_matrix": [
+                [
+                  414,
+                  86
+                ],
+                [
+                  234,
+                  266
+                ]
+              ],
+              "confusion_matrix_order": [
+                "real",
+                "ai_generated"
+              ]
+            }
+          ],
+          "mean_auc": 0.788602,
+          "mean_macro_f1": 0.6081752372575913
+        }
+      }
+    }
+  ],
+  "selected": null,
+  "complete": true,
+  "evaluation_kind": "Reused external development under a re-fitted operating point; not a blind test",
+  "release_changed": false
+}

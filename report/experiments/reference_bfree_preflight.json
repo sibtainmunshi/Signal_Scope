@@ -1,0 +1,27 @@
+{
+  "model": "B-Free official reference; not trained by SignalScope",
+  "devices": {
+    "cuda": {
+      "logit": -5.9374775886535645,
+      "author_logit": -5.9374785,
+      "absolute_difference": 9.113464356502732e-07,
+      "latency_seconds": [
+        0.2845641999997497,
+        0.28455480000002353,
+        0.28609740000001693
+      ],
+      "peak_allocated_bytes": 632211456
+    },
+    "cpu": {
+      "logit": -5.937478065490723,
+      "author_logit": -5.9374785,
+      "absolute_difference": 4.345092774471482e-07,
+      "latency_seconds": [
+        3.117743700000119,
+        3.064814800000022,
+        3.14193989999967
+      ]
+    }
+  },
+  "checkpoint_sha256": "5948ca78f4d94e820c250d24cdf155035b4a85960443800bfe6bb7f06bffe947"
+}

@@ -108,3 +108,30 @@ validation examples, not new accuracy evidence. A demonstrated failure must rema
   assuming a previous PID is still alive. User can run python scripts/run.py.
 - Remaining human task: independent explanation usefulness review. Do not fill
   it with assistant-generated judgments. No new storage request.
+
+
+## 13 September - state after the CLIP L/14 measurement
+
+- **Released model is still `mixed_resnet18_native_v1_calibrated` (v0.2.0).** Nothing
+  about it, its threshold, its reports or its release assets changed.
+- `clip_l14_development_v1` is complete and immutable: `selected` is null. `balanced_v1`
+  passed 11 of 12 checks, failing as-distributed LDM/LAION real-photo FPR.
+- `clip_l14_threshold_policy_v2` re-fitted the operating point under a stricter declared
+  policy applied to both models and the same check failed again. Do not retry further
+  threshold values against that check; that would be fitting to development labels.
+- Codex's flagged float32/float64 serialization question is resolved: the production
+  float32 head reproduces the recorded float64 validation AUC exactly, and external
+  scores match the archived CSVs to 0.0.
+- CLIP is still **not integrated** into the app: `Detector` is ResNet-only and Grad-CAM
+  relies on `layer4`. No integration work was started, because the candidate did not
+  advance. Do not wire it in without a passing gate or an explicit user decision.
+- The user's 11 ChatGPT images and 18 phone photographs are **gone from `tmp/user_eval`**
+  (the folders exist and are empty). Aggregate diagnostic results are in
+  POST_RELEASE_EXPERIMENTS.md; the per-file scores were never committed because the
+  photographs are private. Ask the user to supply them again before any re-test, and
+  never train or threshold on them.
+- Open decision for the user: ship v0.2.0 with honest limitations, or pursue a further
+  evidence-led attempt at the real weakness, which is real-photo domain coverage in
+  training (the training reals are CIFAKE 32 px and GenImage only, while the failing
+  domain is LAION-style web photography).
+- Ruff passes across model, src, app, tests and scripts; 34 tests pass.

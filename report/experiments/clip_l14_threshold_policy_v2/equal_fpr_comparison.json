@@ -1,0 +1,247 @@
+{
+  "purpose": "Equal-false-positive-rate recall comparison, removing the operating-point confound from the gate's own-threshold false-positive rule.",
+  "release_model": "mixed_resnet18_native_v1_calibrated",
+  "candidate": "mixed_clip_l14_balanced_v1",
+  "data": "Existing external guided/ImageNet and LDM/LAION development images, 2,000 unique per protocol.",
+  "thresholds": "Chosen per model, per generator, per protocol to meet each stated real-photo FPR budget on these development labels. Diagnostic only: these are not deployed thresholds.",
+  "limits": [
+    "Development data reused for analysis; not a blind test or an organizer result.",
+    "Thresholds here are fitted on external labels, so the recall values are optimistic upper bounds for what a single internally fitted threshold would deliver.",
+    "Two domains only, one of which is related to the Stable Diffusion training family.",
+    "No reserved, test or user images are involved."
+  ],
+  "results": {
+    "as_distributed": {
+      "guided": {
+        "real_source": "imagenet",
+        "images": 1000,
+        "budgets": {
+          "real_fpr_budget_2pc": {
+            "release": {
+              "threshold": 0.5323320627212524,
+              "false_positive_rate": 0.02,
+              "true_positive_rate": 0.076,
+              "macro_f1": 0.40680863043172266,
+              "roc_auc": 0.629644
+            },
+            "clip_l14_balanced": {
+              "threshold": 0.7251554189497048,
+              "false_positive_rate": 0.02,
+              "true_positive_rate": 0.316,
+              "macro_f1": 0.6043948139756523,
+              "roc_auc": 0.8211600000000001
+            },
+            "recall_difference": 0.24
+          },
+          "real_fpr_budget_5pc": {
+            "release": {
+              "threshold": 0.4209919571876526,
+              "false_positive_rate": 0.05,
+              "true_positive_rate": 0.13,
+              "macro_f1": 0.4470489241495372,
+              "roc_auc": 0.629644
+            },
+            "clip_l14_balanced": {
+              "threshold": 0.44860667753345135,
+              "false_positive_rate": 0.05,
+              "true_positive_rate": 0.426,
+              "macro_f1": 0.6650045739760092,
+              "roc_auc": 0.8211600000000001
+            },
+            "recall_difference": 0.296
+          },
+          "real_fpr_budget_10pc": {
+            "release": {
+              "threshold": 0.30288833379745483,
+              "false_positive_rate": 0.098,
+              "true_positive_rate": 0.212,
+              "macro_f1": 0.4971480461988138,
+              "roc_auc": 0.629644
+            },
+            "clip_l14_balanced": {
+              "threshold": 0.2481848941787457,
+              "false_positive_rate": 0.1,
+              "true_positive_rate": 0.534,
+              "macro_f1": 0.707194227484219,
+              "roc_auc": 0.8211600000000001
+            },
+            "recall_difference": 0.32200000000000006
+          }
+        }
+      },
+      "ldm_200": {
+        "real_source": "laion",
+        "images": 1000,
+        "budgets": {
+          "real_fpr_budget_2pc": {
+            "release": {
+              "threshold": 0.7550265192985535,
+              "false_positive_rate": 0.018,
+              "true_positive_rate": 0.118,
+              "macro_f1": 0.4467503344086867,
+              "roc_auc": 0.6651800000000001
+            },
+            "clip_l14_balanced": {
+              "threshold": 0.9981392789046009,
+              "false_positive_rate": 0.018,
+              "true_positive_rate": 0.06,
+              "macro_f1": 0.3917298112076639,
+              "roc_auc": 0.721188
+            },
+            "recall_difference": -0.057999999999999996
+          },
+          "real_fpr_budget_5pc": {
+            "release": {
+              "threshold": 0.6204495429992676,
+              "false_positive_rate": 0.05,
+              "true_positive_rate": 0.23,
+              "macro_f1": 0.5289522058823529,
+              "roc_auc": 0.6651800000000001
+            },
+            "clip_l14_balanced": {
+              "threshold": 0.9925461848510838,
+              "false_positive_rate": 0.05,
+              "true_positive_rate": 0.136,
+              "macro_f1": 0.4522688892324693,
+              "roc_auc": 0.721188
+            },
+            "recall_difference": -0.094
+          },
+          "real_fpr_budget_10pc": {
+            "release": {
+              "threshold": 0.5073789358139038,
+              "false_positive_rate": 0.1,
+              "true_positive_rate": 0.33,
+              "macro_f1": 0.5809637832984136,
+              "roc_auc": 0.6651800000000001
+            },
+            "clip_l14_balanced": {
+              "threshold": 0.9696570901408434,
+              "false_positive_rate": 0.1,
+              "true_positive_rate": 0.28,
+              "macro_f1": 0.5464100011063171,
+              "roc_auc": 0.721188
+            },
+            "recall_difference": -0.04999999999999999
+          }
+        }
+      }
+    },
+    "matched": {
+      "guided": {
+        "real_source": "imagenet",
+        "images": 1000,
+        "budgets": {
+          "real_fpr_budget_2pc": {
+            "release": {
+              "threshold": 0.7424163222312927,
+              "false_positive_rate": 0.02,
+              "true_positive_rate": 0.04,
+              "macro_f1": 0.3710691823899371,
+              "roc_auc": 0.61136
+            },
+            "clip_l14_balanced": {
+              "threshold": 0.8806750633192455,
+              "false_positive_rate": 0.02,
+              "true_positive_rate": 0.184,
+              "macro_f1": 0.5033246355733629,
+              "roc_auc": 0.8081119999999999
+            },
+            "recall_difference": 0.144
+          },
+          "real_fpr_budget_5pc": {
+            "release": {
+              "threshold": 0.5870819687843323,
+              "false_positive_rate": 0.05,
+              "true_positive_rate": 0.116,
+              "macro_f1": 0.43470066371226146,
+              "roc_auc": 0.61136
+            },
+            "clip_l14_balanced": {
+              "threshold": 0.7148082395358282,
+              "false_positive_rate": 0.05,
+              "true_positive_rate": 0.33,
+              "macro_f1": 0.6017258546299369,
+              "roc_auc": 0.8081119999999999
+            },
+            "recall_difference": 0.21400000000000002
+          },
+          "real_fpr_budget_10pc": {
+            "release": {
+              "threshold": 0.4900462031364441,
+              "false_positive_rate": 0.098,
+              "true_positive_rate": 0.202,
+              "macro_f1": 0.4894586894586894,
+              "roc_auc": 0.61136
+            },
+            "clip_l14_balanced": {
+              "threshold": 0.3963529423956483,
+              "false_positive_rate": 0.098,
+              "true_positive_rate": 0.496,
+              "macro_f1": 0.6860629688847726,
+              "roc_auc": 0.8081119999999999
+            },
+            "recall_difference": 0.294
+          }
+        }
+      },
+      "ldm_200": {
+        "real_source": "laion",
+        "images": 1000,
+        "budgets": {
+          "real_fpr_budget_2pc": {
+            "release": {
+              "threshold": 0.7648559212684631,
+              "false_positive_rate": 0.018,
+              "true_positive_rate": 0.116,
+              "macro_f1": 0.44493059170891225,
+              "roc_auc": 0.694644
+            },
+            "clip_l14_balanced": {
+              "threshold": 0.9969660558143537,
+              "false_positive_rate": 0.02,
+              "true_positive_rate": 0.094,
+              "macro_f1": 0.42395094998326593,
+              "roc_auc": 0.769092
+            },
+            "recall_difference": -0.022000000000000006
+          },
+          "real_fpr_budget_5pc": {
+            "release": {
+              "threshold": 0.6511294841766357,
+              "false_positive_rate": 0.05,
+              "true_positive_rate": 0.228,
+              "macro_f1": 0.5274118381609766,
+              "roc_auc": 0.694644
+            },
+            "clip_l14_balanced": {
+              "threshold": 0.9822272716161545,
+              "false_positive_rate": 0.048,
+              "true_positive_rate": 0.268,
+              "macro_f1": 0.5583419022554007,
+              "roc_auc": 0.769092
+            },
+            "recall_difference": 0.04000000000000001
+          },
+          "real_fpr_budget_10pc": {
+            "release": {
+              "threshold": 0.5354565978050232,
+              "false_positive_rate": 0.1,
+              "true_positive_rate": 0.344,
+              "macro_f1": 0.5903398228707424,
+              "roc_auc": 0.694644
+            },
+            "clip_l14_balanced": {
+              "threshold": 0.9198695465826919,
+              "false_positive_rate": 0.1,
+              "true_positive_rate": 0.408,
+              "macro_f1": 0.6317127274120687,
+              "roc_auc": 0.769092
+            },
+            "recall_difference": 0.064
+          }
+        }
+      }
+    }
+  }
+}

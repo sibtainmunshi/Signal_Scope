@@ -106,3 +106,35 @@ Development screenshot benchmark completed: unchanged release GenImage validatio
 simulation AUC .893497 vs original .956325, accuracy .781609, FPR .054201 (783 images).
 Synthetic screenshot only; archived old reports preserved. Interface fixes committed
 locally as 4798f4c. No new CLIP accuracy or replacement claimed.
+
+## 13 September - CLIP L/14 measured, gate not passed, release unchanged
+
+The two-candidate frozen CLIP ViT-L/14 experiment completed (789.6 s). `balanced_v1`
+reached external development mean AUC 0.771 as distributed and 0.789 format-matched
+against the release model's 0.647 and 0.653, with guided format-matched AUC rising from
+0.611 to 0.808. It passed 11 of 12 predeclared checks and failed one: as-distributed
+LDM/LAION real-photo FPR 22.0% against 12.8% allowed +5 points. `selected` is null.
+
+A declared stricter threshold policy (internal validation FPR <= 2% instead of <= 5%),
+applied identically to the release model and both candidates, did not rescue it: the
+baseline's own false positives fell to 4.2% while the candidate reached 16.6%, so the
+same single check failed again. The serialized float32 head reproduced the recorded
+float64 validation AUC exactly and external scores matched archived values to 0.0,
+closing the serialization-parity question Codex flagged.
+
+An equal-false-positive-rate comparison shows what the candidate actually trades: two to
+three times the release model's recall on guided/ImageNet at every budget (42.6% versus
+13.0% at 5% FPR as distributed), roughly level on LDM/LAION, and worse there as
+distributed. Its mean AUC advantage is concentrated in one of two reused domains.
+
+Also recorded: a full-grid coverage probe (0.647 to 0.649 as distributed, 0.653 to 0.658
+matched) confirming spatial sampling was not the bottleneck; the official B-Free
+reference detector scoring 0.970 and 0.945 on the same development images, which places
+the gap in approach rather than hardware; and a diagnostic spot check of 11 ChatGPT
+images and 18 user phone photographs through the running app, where the released model
+detected 0 of 11 and its ranking was inverted (small-sample AUC 0.036 as uploaded, 0.429
+with formats equalised). Those user files are no longer in the working tree.
+
+Ruff passes across model, src, app, tests and scripts after fixing loop-variable
+binding, an unused import and two import blocks. 34 tests pass. v0.2.0 remains the
+released model and no reserved or test data was touched.

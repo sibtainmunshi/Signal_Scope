@@ -1,0 +1,304 @@
+{
+  "protocol": {
+    "created_utc": "2026-09-12T16:00:28.473501+00:00",
+    "purpose": "Isolate the effect of sparse spatial sampling, without changing weights or fitting on user examples.",
+    "weights": "mixed_resnet18_native_v1_calibrated",
+    "method": "Grid of native 128px crops, stride 128, with a final edge-aligned crop per axis; all canvas pixels covered. Mean of all crop logits, original temperature and threshold. Crop batches of at most 64.",
+    "allowed_data": "Existing external development only, as-distributed and matched; no reserved data.",
+    "promotion": "Diagnostic only. No app change until development AUC, real-photo FPR, recall, latency and calibration are reviewed. This cannot teach semantic hand/anatomy detection.",
+    "unchanged": "Released weights, final reports, app and UI."
+  },
+  "protocol_sha256": "4d4920d3a5ca5e9451104dc711b979be47603de99ef02f669c1e9e018e07e5f8",
+  "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+  "threshold": 0.4553663730621338,
+  "device": "cuda",
+  "unique_images": 2000,
+  "results": {
+    "as_distributed": {
+      "sparse_reference": {
+        "source": "UniversalFakeDetect CVPR 2023 diffusion release",
+        "split": "dev",
+        "evaluation_kind": "external_development",
+        "protocol": "as_distributed",
+        "protocol_description": "Files scored as distributed. Real images are JPEG (ImageNet mostly non-square); generated images are square PNG, so format and aspect-ratio cues remain available.",
+        "model_version": "mixed_resnet18_native_v1_calibrated",
+        "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+        "preprocessing": "Same full-image preprocessing as app/CLI; no external-domain adaptation.",
+        "threshold": 0.4553663730621338,
+        "unique_images_evaluated": 2000,
+        "macro_generator_roc_auc": 0.6474120000000001,
+        "per_generator": [
+          {
+            "generator": "guided",
+            "real_source": "imagenet",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.629644,
+            "macro_f1": 0.43068254565535036,
+            "accuracy": 0.534,
+            "false_positive_rate": 0.04,
+            "true_positive_rate": 0.108,
+            "brier_score": 0.36948820181435743,
+            "threshold": 0.4553663730621338,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                480,
+                20
+              ],
+              [
+                446,
+                54
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          },
+          {
+            "generator": "ldm_200",
+            "real_source": "laion",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.6651800000000001,
+            "macro_f1": 0.5955171777131032,
+            "accuracy": 0.621,
+            "false_positive_rate": 0.128,
+            "true_positive_rate": 0.37,
+            "brier_score": 0.2704041872777381,
+            "threshold": 0.4553663730621338,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                436,
+                64
+              ],
+              [
+                315,
+                185
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          }
+        ],
+        "organizer_hidden_result": null,
+        "limitations": [
+          "Domains are unseen in our task training, not necessarily absent from backbone pretraining.",
+          "Development domains may guide model selection and are not a blind final test.",
+          "Shared LAION real images are reused for per-generator comparisons; no inflated pooled sample count is reported."
+        ]
+      },
+      "dense_per_generator": [
+        {
+          "generator": "guided",
+          "count": 1000,
+          "real_count": 500,
+          "ai_count": 500,
+          "roc_auc": 0.61548,
+          "macro_f1": 0.4416159488139825,
+          "accuracy": 0.542,
+          "false_positive_rate": 0.034,
+          "true_positive_rate": 0.118,
+          "brier_score": 0.36866436852086215,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              483,
+              17
+            ],
+            [
+              441,
+              59
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "ldm_200",
+          "count": 1000,
+          "real_count": 500,
+          "ai_count": 500,
+          "roc_auc": 0.682772,
+          "macro_f1": 0.6168926785836586,
+          "accuracy": 0.642,
+          "false_positive_rate": 0.102,
+          "true_positive_rate": 0.386,
+          "brier_score": 0.26641132423701835,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              449,
+              51
+            ],
+            [
+              307,
+              193
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        }
+      ],
+      "dense_mean_auc": 0.6491260000000001,
+      "mean_inference_ms": 4.243392300000323,
+      "p95_inference_ms": 6.740160000094874,
+      "max_crops": 336
+    },
+    "matched": {
+      "sparse_reference": {
+        "source": "UniversalFakeDetect CVPR 2023 diffusion release",
+        "split": "dev",
+        "evaluation_kind": "external_development",
+        "protocol": "matched",
+        "protocol_description": "Every image of both labels: centre square crop, bicubic resize to 224, JPEG quality 90, then the detector's own preprocessing. Reduces file-format and aspect-ratio cues; earlier compression traces are weakened, not removed.",
+        "model_version": "mixed_resnet18_native_v1_calibrated",
+        "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+        "preprocessing": "Same full-image preprocessing as app/CLI; no external-domain adaptation.",
+        "threshold": 0.4553663730621338,
+        "unique_images_evaluated": 2000,
+        "macro_generator_roc_auc": 0.6530020000000001,
+        "per_generator": [
+          {
+            "generator": "guided",
+            "real_source": "imagenet",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.61136,
+            "macro_f1": 0.5076317085179715,
+            "accuracy": 0.559,
+            "false_positive_rate": 0.118,
+            "true_positive_rate": 0.236,
+            "brier_score": 0.317794843956521,
+            "threshold": 0.4553663730621338,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                441,
+                59
+              ],
+              [
+                382,
+                118
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          },
+          {
+            "generator": "ldm_200",
+            "real_source": "laion",
+            "count": 1000,
+            "real_count": 500,
+            "ai_count": 500,
+            "roc_auc": 0.694644,
+            "macro_f1": 0.6080502701728352,
+            "accuracy": 0.626,
+            "false_positive_rate": 0.16,
+            "true_positive_rate": 0.412,
+            "brier_score": 0.2516678848402254,
+            "threshold": 0.4553663730621338,
+            "positive_class": "ai_generated",
+            "confusion_matrix": [
+              [
+                420,
+                80
+              ],
+              [
+                294,
+                206
+              ]
+            ],
+            "confusion_matrix_order": [
+              "real",
+              "ai_generated"
+            ]
+          }
+        ],
+        "organizer_hidden_result": null,
+        "limitations": [
+          "Domains are unseen in our task training, not necessarily absent from backbone pretraining.",
+          "Development domains may guide model selection and are not a blind final test.",
+          "Shared LAION real images are reused for per-generator comparisons; no inflated pooled sample count is reported."
+        ]
+      },
+      "dense_per_generator": [
+        {
+          "generator": "guided",
+          "count": 1000,
+          "real_count": 500,
+          "ai_count": 500,
+          "roc_auc": 0.605668,
+          "macro_f1": 0.5038247767211496,
+          "accuracy": 0.554,
+          "false_positive_rate": 0.128,
+          "true_positive_rate": 0.236,
+          "brier_score": 0.31983828604327436,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              436,
+              64
+            ],
+            [
+              382,
+              118
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "ldm_200",
+          "count": 1000,
+          "real_count": 500,
+          "ai_count": 500,
+          "roc_auc": 0.710172,
+          "macro_f1": 0.6323186655367361,
+          "accuracy": 0.649,
+          "false_positive_rate": 0.138,
+          "true_positive_rate": 0.436,
+          "brier_score": 0.247296267966318,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              431,
+              69
+            ],
+            [
+              282,
+              218
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        }
+      ],
+      "dense_mean_auc": 0.6579200000000001,
+      "mean_inference_ms": 3.510456850002356,
+      "p95_inference_ms": 4.274539999778426,
+      "max_crops": 4
+    }
+  }
+}

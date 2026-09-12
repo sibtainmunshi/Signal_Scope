@@ -8,7 +8,7 @@ import time
 
 import numpy as np
 import torch
-from PIL import ExifTags, Image, ImageFilter, ImageOps
+from PIL import ExifTags, Image, ImageOps
 from torch.nn import functional as F
 
 from .inference import Detector
