@@ -142,3 +142,47 @@ development imagery, now visible on ordinary high-resolution phone photographs.
 **With 11 and 18 images, no accuracy, precision or recall figure may be quoted from this
 table.** It answers one question only: does the candidate behave sensibly on modern
 generated images where the released model does not. It does.
+
+## A third, genuinely fresh check: 2025-2026 generators (AI Detect Arena Benchmark)
+
+The reserved GLIDE/DALL-E evaluation and both public development sources are 2021-2023
+vintage. To check whether the measured gains generalise to today's generators, the
+[AI Detect Arena Benchmark v0.1](https://github.com/AI-Detect-Arena/benchmark-dataset)
+(CC BY 4.0 metadata; AI images via official provider APIs; real photos under the
+Unsplash licence) was scored as a **third independent evaluation**: 17 current
+generators (Flux Pro/Schnell/2, GPT Image 1.5, Gemini 3 Pro, Grok Aurora, SD 3.5,
+Ideogram v3, Leonardo Phoenix, Recraft v3, Hunyuan v3, Seedream v3/v4, Qwen 2512, GLM
+Image, Wan v2.6, Z Image), ~60 images each, plus real photos across six categories.
+2,050 images total; 93 (all real-labelled) were excluded for exact overlap with our
+protected data - the benchmark's "real photos are from Unsplash" claim does not hold
+for all of them, some are recycled COCO images. 12 more were excluded for a
+metadata/archive filename mismatch and 7 for within-dataset duplicates. 1,938 retained.
+
+**No weight, temperature or threshold was fitted here. Evaluation only.**
+
+| | v0.3.0 CLIP candidate | v0.2.0 ResNet (released) |
+|---|---:|---:|
+| Macro AUC (17 generators) | 0.604 | 0.604 |
+| Overall AUC | 0.602 | 0.610 |
+| Real-photo FPR | **68.3%** | 24.8% |
+| AI recall | 76.4% | 39.7% |
+
+**The candidate's advantage on GLIDE/DALL-E (0.849 macro AUC) does not reproduce on
+genuinely current generators: both models sit at chance-adjacent 0.60 AUC, and several
+individual generators score below 0.5 for one or both models** (candidate: Gemini 3 Pro
+0.416, GPT 0.468, Grok Aurora 0.492; released: Recraft v3 0.431, Ideogram v3 0.455).
+The candidate's real-photo false-positive rate is markedly worse here (68.3%) than on
+either the LDM/LAION development check (22.0%) or the reserved COCO check (0.28-1.69%),
+confirming the earlier finding was not a fluke and is not confined to LAION-style
+imagery: it recurs, worse, on this fresh and stylistically different (portrait, food,
+animal, product, landscape, art) real-photo mix.
+
+This directly validates the concern that motivated the check: strong performance on
+2021-2023 benchmarks is not evidence of performance on today's generators. Per-generator
+AUC has a wide interval at n=60 per generator, but the overall pattern across 17
+independent generators and two architecturally different detectors is consistent enough
+to treat as a real, disclosed weakness rather than noise. [Protocol/results](../report/experiments/aidetectarena_eval_v1/results.json).
+
+A bounded training attempt using a held-out split of this same dataset follows, under
+the same discipline as every other candidate here: declared protocol, one gate,
+reported regardless of outcome.

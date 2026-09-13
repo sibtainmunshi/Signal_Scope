@@ -1,0 +1,60 @@
+{
+  "created_utc": "2026-09-13T19:25:10.218780+00:00",
+  "dataset": "AI Detect Arena Benchmark v0.1 - evaluation only, current 2025-2026 generators",
+  "source": "https://github.com/AI-Detect-Arena/benchmark-dataset",
+  "licence": "CC BY 4.0 (metadata/docs); AI images via official provider APIs for research/benchmarking; real photos under the Unsplash License",
+  "total_images": 2050,
+  "retained": 1938,
+  "excluded": {
+    "within_dataset_exact_duplicate": 7,
+    "exact_overlap_with_existing_or_protected_data": 93,
+    "archive_member_missing": 12
+  },
+  "label_counts": {
+    "1": 1017,
+    "0": 921
+  },
+  "generator_counts": {
+    "Qwen 2512": 60,
+    "Flux": 60,
+    "Seedream": 120,
+    "GLM Image": 60,
+    "Wan v2.6": 60,
+    "Flux Schnell": 60,
+    "Z": 60,
+    "Hunyuan v3": 59,
+    "Ideogram v3": 60,
+    "Sd": 60,
+    "Leonardo Phoenix": 58,
+    "Grok Aurora": 60,
+    "Recraft v3": 60,
+    "Flux Pro v1.1": 60,
+    "Gpt": 60,
+    "Gemini 3 Pro": 60
+  },
+  "category_counts": {
+    "art": 336,
+    "portrait": 339,
+    "product": 327,
+    "food": 319,
+    "animal": 315,
+    "landscape": 302
+  },
+  "manifest_sha256": "7ae1e994a8c9bc837ca4153f59f2f8875385014a4a581b7c22f4caacc1c5a773",
+  "archive_sha256": "1e62844bba714c2e190792844d4169fa3119fac3c2c143dad1eb8062e20b67e4",
+  "protected_manifests": {
+    "cifake": "b1bddb1d857b3d6926a9a39796d437256fc02536ff2af772e47adae88f686f3d",
+    "external": "8149884f168b1db3093fd8632516539f085dfef0c1d458b191eef9b88c1e2335",
+    "genimage": "6cc079dccf326403e4507c039420874eba091cf984266bd2fd0e3b476a91e636",
+    "genimage_vqdm": "66bb0cba36b1e5d7b8892ac75e112127372ae2344b32f8a39e10590117f1b433",
+    "genimage_midjourney": "3414cfc2c36c7433f893670d3e747a103a0b9305cd8903f014283ccb44118d4d",
+    "coco_real_v1": "0dbe25fd6455976bb2323e939e237329c090336ecf5d83cb4ca952daa3fc34b1"
+  },
+  "role": "Evaluation only. No train/val split is assigned here; a training use would need its own declared protocol and split, added as a separate step.",
+  "limits": [
+    "pHash overlap check is heuristic; exact and near overlap cannot be exhaustively ruled out.",
+    "AI images were produced via provider APIs for this benchmark, not verified independently.",
+    "17 generators average ~60 images each; too few per generator for a robust training signal alone.",
+    "Not the organizers' held-out set; a public third-party benchmark used as an additional check."
+  ]
+}

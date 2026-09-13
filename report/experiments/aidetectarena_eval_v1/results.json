@@ -1,0 +1,1318 @@
+{
+  "manifest_sha256": null,
+  "images_scored": 1938,
+  "models": {
+    "v0.3.0_clip_candidate": {
+      "checkpoint_sha256": "51e1e07d9b0fed13895b7f7a7fe7b207133cae68eca585582fb3c9c05606613f",
+      "threshold": 0.8214277320372911,
+      "overall": {
+        "count": 1938,
+        "real_count": 921,
+        "ai_count": 1017,
+        "roc_auc": 0.6019791663330333,
+        "macro_f1": 0.5216403706280061,
+        "accuracy": 0.5515995872033024,
+        "false_positive_rate": 0.6829533116178067,
+        "true_positive_rate": 0.7640117994100295,
+        "brier_score": 0.39457927268898024,
+        "threshold": 0.8214277320372911,
+        "positive_class": "ai_generated",
+        "confusion_matrix": [
+          [
+            292,
+            629
+          ],
+          [
+            240,
+            777
+          ]
+        ],
+        "confusion_matrix_order": [
+          "real",
+          "ai_generated"
+        ]
+      },
+      "per_generator": [
+        {
+          "generator": "Flux",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.7001266739051755,
+          "macro_f1": 0.30932367774473035,
+          "accuracy": 0.3506625891946993,
+          "false_positive_rate": 0.6829533116178067,
+          "true_positive_rate": 0.8666666666666667,
+          "brier_score": 0.673383114328539,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              292,
+              629
+            ],
+            [
+              8,
+              52
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Flux Pro v1.1",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.6381107491856678,
+          "macro_f1": 0.30495775545990755,
+          "accuracy": 0.3476044852191641,
+          "false_positive_rate": 0.6829533116178067,
+          "true_positive_rate": 0.8166666666666667,
+          "brier_score": 0.6725791098802261,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              292,
+              629
+            ],
+            [
+              11,
+              49
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Flux Schnell",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.6521172638436482,
+          "macro_f1": 0.30495775545990755,
+          "accuracy": 0.3476044852191641,
+          "false_positive_rate": 0.6829533116178067,
+          "true_positive_rate": 0.8166666666666667,
+          "brier_score": 0.673907247301244,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              292,
+              629
+            ],
+            [
+              11,
+              49
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "GLM Image",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.6063879840752804,
+          "macro_f1": 0.3005638441195549,
+          "accuracy": 0.34454638124362896,
+          "false_positive_rate": 0.6829533116178067,
+          "true_positive_rate": 0.7666666666666667,
+          "brier_score": 0.6717739447149056,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              292,
+              629
+            ],
+            [
+              14,
+              46
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Gemini 3 Pro",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.4158342381469417,
+          "macro_f1": 0.27816022544283414,
+          "accuracy": 0.3292558613659531,
+          "false_positive_rate": 0.6829533116178067,
+          "true_positive_rate": 0.5166666666666667,
+          "brier_score": 0.6828199938062022,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              292,
+              629
+            ],
+            [
+              29,
+              31
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Gpt",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.4682591386174448,
+          "macro_f1": 0.28571014411953277,
+          "accuracy": 0.3343527013251784,
+          "false_positive_rate": 0.6829533116178067,
+          "true_positive_rate": 0.6,
+          "brier_score": 0.6787554860971233,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              292,
+              629
+            ],
+            [
+              24,
+              36
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Grok Aurora",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.49249004705030763,
+          "macro_f1": 0.29317737057463084,
+          "accuracy": 0.3394495412844037,
+          "false_positive_rate": 0.6829533116178067,
+          "true_positive_rate": 0.6833333333333333,
+          "brier_score": 0.6775024594742265,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              292,
+              629
+            ],
+            [
+              19,
+              41
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Hunyuan v3",
+          "ai_count": 59,
+          "count": 980,
+          "real_count": 921,
+          "roc_auc": 0.6171074182447229,
+          "macro_f1": 0.3008432197927733,
+          "accuracy": 0.3448979591836735,
+          "false_positive_rate": 0.6829533116178067,
+          "true_positive_rate": 0.7796610169491526,
+          "brier_score": 0.6746964992090071,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              292,
+              629
+            ],
+            [
+              13,
+              46
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Ideogram v3",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.7218060079623597,
+          "macro_f1": 0.31366200540282857,
+          "accuracy": 0.35372069317023447,
+          "false_positive_rate": 0.6829533116178067,
+          "true_positive_rate": 0.9166666666666666,
+          "brier_score": 0.6699698455642703,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              292,
+              629
+            ],
+            [
+              5,
+              55
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Leonardo Phoenix",
+          "ai_count": 58,
+          "count": 979,
+          "real_count": 921,
+          "roc_auc": 0.7754502227713505,
+          "macro_f1": 0.3142555681656973,
+          "accuracy": 0.35444330949948927,
+          "false_positive_rate": 0.6829533116178067,
+          "true_positive_rate": 0.9482758620689655,
+          "brier_score": 0.6716010635816511,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              292,
+              629
+            ],
+            [
+              3,
+              55
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Qwen 2512",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.6242490047050309,
+          "macro_f1": 0.30495775545990755,
+          "accuracy": 0.3476044852191641,
+          "false_positive_rate": 0.6829533116178067,
+          "true_positive_rate": 0.8166666666666667,
+          "brier_score": 0.6724157338774861,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              292,
+              629
+            ],
+            [
+              11,
+              49
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Recraft v3",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.5496742671009773,
+          "macro_f1": 0.2976188229652431,
+          "accuracy": 0.3425076452599388,
+          "false_positive_rate": 0.6829533116178067,
+          "true_positive_rate": 0.7333333333333333,
+          "brier_score": 0.6759888213193949,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              292,
+              629
+            ],
+            [
+              16,
+              44
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Sd",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.5713716974303293,
+          "macro_f1": 0.2976188229652431,
+          "accuracy": 0.3425076452599388,
+          "false_positive_rate": 0.6829533116178067,
+          "true_positive_rate": 0.7333333333333333,
+          "brier_score": 0.6759949026468504,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              292,
+              629
+            ],
+            [
+              16,
+              44
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Seedream",
+          "ai_count": 120,
+          "count": 1041,
+          "real_count": 921,
+          "roc_auc": 0.5825642417661961,
+          "macro_f1": 0.3421860871416284,
+          "accuracy": 0.366954851104707,
+          "false_positive_rate": 0.6829533116178067,
+          "true_positive_rate": 0.75,
+          "brier_score": 0.6419456907464783,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              292,
+              629
+            ],
+            [
+              30,
+              90
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Wan v2.6",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.6915852334419108,
+          "macro_f1": 0.303496247888572,
+          "accuracy": 0.34658511722731905,
+          "false_positive_rate": 0.6829533116178067,
+          "true_positive_rate": 0.8,
+          "brier_score": 0.673371722140531,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              292,
+              629
+            ],
+            [
+              12,
+              48
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Z",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.5499819037278321,
+          "macro_f1": 0.2946610643199339,
+          "accuracy": 0.34046890927624873,
+          "false_positive_rate": 0.6829533116178067,
+          "true_positive_rate": 0.7,
+          "brier_score": 0.6774564677845838,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              292,
+              629
+            ],
+            [
+              18,
+              42
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        }
+      ],
+      "per_category": [
+        {
+          "category": "animal",
+          "count": 315,
+          "real_count": 145,
+          "ai_count": 170,
+          "roc_auc": 0.582920892494929,
+          "macro_f1": 0.5070422535211268,
+          "accuracy": 0.5587301587301587,
+          "false_positive_rate": 0.7448275862068966,
+          "true_positive_rate": 0.8176470588235294,
+          "brier_score": 0.39419105286325545,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              37,
+              108
+            ],
+            [
+              31,
+              139
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "category": "art",
+          "count": 336,
+          "real_count": 166,
+          "ai_count": 170,
+          "roc_auc": 0.45159461374911414,
+          "macro_f1": 0.41102143665778035,
+          "accuracy": 0.42857142857142855,
+          "false_positive_rate": 0.7409638554216867,
+          "true_positive_rate": 0.5941176470588235,
+          "brier_score": 0.4743373532070872,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              43,
+              123
+            ],
+            [
+              69,
+              101
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "category": "food",
+          "count": 319,
+          "real_count": 149,
+          "ai_count": 170,
+          "roc_auc": 0.6091985787603633,
+          "macro_f1": 0.5589247242676614,
+          "accuracy": 0.5956112852664577,
+          "false_positive_rate": 0.6711409395973155,
+          "true_positive_rate": 0.8294117647058824,
+          "brier_score": 0.36656998914379507,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              49,
+              100
+            ],
+            [
+              29,
+              141
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "category": "landscape",
+          "count": 302,
+          "real_count": 134,
+          "ai_count": 168,
+          "roc_auc": 0.49808990760483307,
+          "macro_f1": 0.4812512415429019,
+          "accuracy": 0.5132450331125827,
+          "false_positive_rate": 0.7014925373134329,
+          "true_positive_rate": 0.6845238095238095,
+          "brier_score": 0.4264325922613206,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              40,
+              94
+            ],
+            [
+              53,
+              115
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "category": "portrait",
+          "count": 339,
+          "real_count": 170,
+          "ai_count": 169,
+          "roc_auc": 0.69951270449008,
+          "macro_f1": 0.577383103273831,
+          "accuracy": 0.5929203539823009,
+          "false_positive_rate": 0.6,
+          "true_positive_rate": 0.7869822485207101,
+          "brier_score": 0.35564218574754897,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              68,
+              102
+            ],
+            [
+              36,
+              133
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "category": "product",
+          "count": 327,
+          "real_count": 157,
+          "ai_count": 170,
+          "roc_auc": 0.7261146496815286,
+          "macro_f1": 0.5874236874236874,
+          "accuracy": 0.6207951070336392,
+          "false_positive_rate": 0.6496815286624203,
+          "true_positive_rate": 0.8705882352941177,
+          "brier_score": 0.3512719503777626,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              55,
+              102
+            ],
+            [
+              22,
+              148
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        }
+      ],
+      "macro_generator_roc_auc": 0.6035697557484485
+    },
+    "v0.2.0_resnet_released": {
+      "checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
+      "threshold": 0.4553663730621338,
+      "overall": {
+        "count": 1938,
+        "real_count": 921,
+        "ai_count": 1017,
+        "roc_auc": 0.6100611002747003,
+        "macro_f1": 0.5561779287933005,
+        "accuracy": 0.5660474716202271,
+        "false_positive_rate": 0.247557003257329,
+        "true_positive_rate": 0.3972468043264503,
+        "brier_score": 0.2848301632405618,
+        "threshold": 0.4553663730621338,
+        "positive_class": "ai_generated",
+        "confusion_matrix": [
+          [
+            693,
+            228
+          ],
+          [
+            613,
+            404
+          ]
+        ],
+        "confusion_matrix_order": [
+          "real",
+          "ai_generated"
+        ]
+      },
+      "per_generator": [
+        {
+          "generator": "Flux",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.6700687658342382,
+          "macro_f1": 0.515872469356838,
+          "accuracy": 0.7370030581039755,
+          "false_positive_rate": 0.247557003257329,
+          "true_positive_rate": 0.5,
+          "brier_score": 0.14917887541231892,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              693,
+              228
+            ],
+            [
+              30,
+              30
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Flux Pro v1.1",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.5863916033297141,
+          "macro_f1": 0.4806203686391056,
+          "accuracy": 0.72579001019368,
+          "false_positive_rate": 0.247557003257329,
+          "true_positive_rate": 0.31666666666666665,
+          "brier_score": 0.15401853109255642,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              693,
+              228
+            ],
+            [
+              41,
+              19
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Flux Schnell",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.5595729279768368,
+          "macro_f1": 0.4806203686391056,
+          "accuracy": 0.72579001019368,
+          "false_positive_rate": 0.247557003257329,
+          "true_positive_rate": 0.31666666666666665,
+          "brier_score": 0.15546333239117516,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              693,
+              228
+            ],
+            [
+              41,
+              19
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "GLM Image",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.8328628302569671,
+          "macro_f1": 0.5746531320138747,
+          "accuracy": 0.7573904179408767,
+          "false_positive_rate": 0.247557003257329,
+          "true_positive_rate": 0.8333333333333334,
+          "brier_score": 0.13954408106939908,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              693,
+              228
+            ],
+            [
+              10,
+              50
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Gemini 3 Pro",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.5987332609482446,
+          "macro_f1": 0.47730179028132996,
+          "accuracy": 0.7247706422018348,
+          "false_positive_rate": 0.247557003257329,
+          "true_positive_rate": 0.3,
+          "brier_score": 0.15346368791088602,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              693,
+              228
+            ],
+            [
+              42,
+              18
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Gpt",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.5027868259138617,
+          "macro_f1": 0.4739634140308874,
+          "accuracy": 0.7237512742099899,
+          "false_positive_rate": 0.247557003257329,
+          "true_positive_rate": 0.2833333333333333,
+          "brier_score": 0.15869587352648493,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              693,
+              228
+            ],
+            [
+              43,
+              17
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Grok Aurora",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.5730365544697792,
+          "macro_f1": 0.4806203686391056,
+          "accuracy": 0.72579001019368,
+          "false_positive_rate": 0.247557003257329,
+          "true_positive_rate": 0.31666666666666665,
+          "brier_score": 0.15468811139876404,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              693,
+              228
+            ],
+            [
+              41,
+              19
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Hunyuan v3",
+          "ai_count": 59,
+          "count": 980,
+          "real_count": 921,
+          "roc_auc": 0.6163160897329727,
+          "macro_f1": 0.4909430197252229,
+          "accuracy": 0.7295918367346939,
+          "false_positive_rate": 0.247557003257329,
+          "true_positive_rate": 0.3728813559322034,
+          "brier_score": 0.15196031326341766,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              693,
+              228
+            ],
+            [
+              37,
+              22
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Ideogram v3",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.45497647484618176,
+          "macro_f1": 0.46040791181712176,
+          "accuracy": 0.7196738022426096,
+          "false_positive_rate": 0.247557003257329,
+          "true_positive_rate": 0.21666666666666667,
+          "brier_score": 0.16126290507989058,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              693,
+              228
+            ],
+            [
+              47,
+              13
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Leonardo Phoenix",
+          "ai_count": 58,
+          "count": 979,
+          "real_count": 921,
+          "roc_auc": 0.6035980381144932,
+          "macro_f1": 0.5011508794124365,
+          "accuracy": 0.7334014300306435,
+          "false_positive_rate": 0.247557003257329,
+          "true_positive_rate": 0.43103448275862066,
+          "brier_score": 0.15229078920686823,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              693,
+              228
+            ],
+            [
+              33,
+              25
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Qwen 2512",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.7252804922186029,
+          "macro_f1": 0.5127592455869522,
+          "accuracy": 0.7359836901121305,
+          "false_positive_rate": 0.247557003257329,
+          "true_positive_rate": 0.48333333333333334,
+          "brier_score": 0.14608867891939123,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              693,
+              228
+            ],
+            [
+              31,
+              29
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Recraft v3",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.43143322475570034,
+          "macro_f1": 0.44651924651924657,
+          "accuracy": 0.7155963302752294,
+          "false_positive_rate": 0.247557003257329,
+          "true_positive_rate": 0.15,
+          "brier_score": 0.16267920915626383,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              693,
+              228
+            ],
+            [
+              51,
+              9
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Sd",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.6457654723127036,
+          "macro_f1": 0.4904592673592127,
+          "accuracy": 0.7288481141692151,
+          "false_positive_rate": 0.247557003257329,
+          "true_positive_rate": 0.36666666666666664,
+          "brier_score": 0.15062050373666247,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              693,
+              228
+            ],
+            [
+              38,
+              22
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Seedream",
+          "ai_count": 120,
+          "count": 1041,
+          "real_count": 921,
+          "roc_auc": 0.7068494390155627,
+          "macro_f1": 0.5794279250161604,
+          "accuracy": 0.7310278578290106,
+          "false_positive_rate": 0.247557003257329,
+          "true_positive_rate": 0.5666666666666667,
+          "brier_score": 0.1574130157959029,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              693,
+              228
+            ],
+            [
+              52,
+              68
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Wan v2.6",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.542652913499819,
+          "macro_f1": 0.4739634140308874,
+          "accuracy": 0.7237512742099899,
+          "false_positive_rate": 0.247557003257329,
+          "true_positive_rate": 0.2833333333333333,
+          "brier_score": 0.15638818789305586,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              693,
+              228
+            ],
+            [
+              43,
+              17
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "Z",
+          "ai_count": 60,
+          "count": 981,
+          "real_count": 921,
+          "roc_auc": 0.6137531668476294,
+          "macro_f1": 0.5064793130366901,
+          "accuracy": 0.7339449541284404,
+          "false_positive_rate": 0.247557003257329,
+          "true_positive_rate": 0.45,
+          "brier_score": 0.15222431194795694,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              693,
+              228
+            ],
+            [
+              33,
+              27
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        }
+      ],
+      "per_category": [
+        {
+          "category": "animal",
+          "count": 315,
+          "real_count": 145,
+          "ai_count": 170,
+          "roc_auc": 0.6513590263691683,
+          "macro_f1": 0.6051993207730251,
+          "accuracy": 0.6063492063492063,
+          "false_positive_rate": 0.2827586206896552,
+          "true_positive_rate": 0.5117647058823529,
+          "brier_score": 0.261824737555826,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              104,
+              41
+            ],
+            [
+              83,
+              87
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "category": "art",
+          "count": 336,
+          "real_count": 166,
+          "ai_count": 170,
+          "roc_auc": 0.5127569099929128,
+          "macro_f1": 0.5257870801700997,
+          "accuracy": 0.5446428571428571,
+          "false_positive_rate": 0.2469879518072289,
+          "true_positive_rate": 0.3411764705882353,
+          "brier_score": 0.3167776564511619,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              125,
+              41
+            ],
+            [
+              112,
+              58
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "category": "food",
+          "count": 319,
+          "real_count": 149,
+          "ai_count": 170,
+          "roc_auc": 0.5688116857481248,
+          "macro_f1": 0.4702886074917737,
+          "accuracy": 0.4890282131661442,
+          "false_positive_rate": 0.2751677852348993,
+          "true_positive_rate": 0.2823529411764706,
+          "brier_score": 0.3113509621339839,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              108,
+              41
+            ],
+            [
+              122,
+              48
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "category": "landscape",
+          "count": 302,
+          "real_count": 134,
+          "ai_count": 168,
+          "roc_auc": 0.46290867093105903,
+          "macro_f1": 0.4554485761916103,
+          "accuracy": 0.4735099337748344,
+          "false_positive_rate": 0.26119402985074625,
+          "true_positive_rate": 0.2619047619047619,
+          "brier_score": 0.34700927530754316,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              99,
+              35
+            ],
+            [
+              124,
+              44
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "category": "portrait",
+          "count": 339,
+          "real_count": 170,
+          "ai_count": 169,
+          "roc_auc": 0.667942916811695,
+          "macro_f1": 0.5558477255027716,
+          "accuracy": 0.5781710914454278,
+          "false_positive_rate": 0.2,
+          "true_positive_rate": 0.35502958579881655,
+          "brier_score": 0.26899453112324384,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              136,
+              34
+            ],
+            [
+              109,
+              60
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "category": "product",
+          "count": 327,
+          "real_count": 157,
+          "ai_count": 170,
+          "roc_auc": 0.7684526039715249,
+          "macro_f1": 0.6966917448211893,
+          "accuracy": 0.6972477064220184,
+          "false_positive_rate": 0.22929936305732485,
+          "true_positive_rate": 0.6294117647058823,
+          "brier_score": 0.20728399800652778,
+          "threshold": 0.4553663730621338,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              121,
+              36
+            ],
+            [
+              63,
+              107
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        }
+      ],
+      "macro_generator_roc_auc": 0.6040048800045817
+    }
+  },
+  "purpose": "Third independent evaluation on genuinely 2025-2026-era generators (Flux, GPT Image 1.5, Gemini 3 Pro, SD 3.5, Seedream, Midjourney-class, etc.), after GLIDE/DALLE (reserved, 2021-2023 vintage) and the private user-image veto check.",
+  "dataset": "AI Detect Arena Benchmark v0.1 (github.com/AI-Detect-Arena/benchmark-dataset)",
+  "limits": [
+    "Public third-party benchmark, not the organizers' held-out set; no organizer score is implied.",
+    "No weight, temperature or threshold is fitted on this data; evaluation only.",
+    "93 of 2,050 images were excluded for exact overlap with our protected data (all real-labelled; the benchmark's 'real photos are from Unsplash' claim does not hold for all of them).",
+    "Generators average ~60 images each; per-generator AUC has a wide confidence interval at this sample size."
+  ]
+}
