@@ -1,0 +1,32 @@
+{
+  "purpose": "Confirm the runtime reproduction of the official CLIP image transform, so the deployed runtime needs no CLIP package.",
+  "reference": "clip.load('ViT-L/14').preprocess, the transform used to build the training features",
+  "reproduction": "signalscope.preprocessing.clip_array, PIL and numpy only",
+  "synthetic_shapes_max_abs_difference": {
+    "224x224": 0.0,
+    "225x224": 0.0,
+    "224x225": 0.0,
+    "223x401": 0.0,
+    "401x223": 0.0,
+    "32x32": 0.0,
+    "1x1": 0.0,
+    "4000x3000": 0.0,
+    "3000x4000": 0.0,
+    "1600x97": 0.0,
+    "97x1600": 0.0,
+    "640x481": 0.0,
+    "481x640": 0.0
+  },
+  "development_images": {
+    "count": 60,
+    "max_abs_difference": 0.0,
+    "mean_abs_difference": 0.0
+  },
+  "worst_max_abs_difference": 0.0,
+  "identical": true,
+  "limits": [
+    "Equality of preprocessing is not an accuracy claim.",
+    "Only the image transform is reproduced; the text tower is unused.",
+    "EXIF orientation and RGB conversion happen before this transform, as in training."
+  ]
+}

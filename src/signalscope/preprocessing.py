@@ -1,8 +1,47 @@
 """Declared image geometry shared by training caches, inference and explanations."""
 
+import numpy as np
 from PIL import Image
 
 from .limits import MAX_IMAGE_PIXELS, MAX_UPSCALED_PIXELS
+
+# Official CLIP image statistics, reproduced so the runtime needs no CLIP package.
+CLIP_MEAN = (0.48145466, 0.4578275, 0.40821073)
+CLIP_STD = (0.26862954, 0.26130258, 0.27577711)
+
+
+def clip_resize_box(width, height, size=224):
+    """Geometry of the official CLIP transform: short-side resize, then a central crop.
+
+    Deliberately reproduces torchvision's integer arithmetic rather than the rounding
+    used by `center_crop_box`, because the CLIP candidates' training features were
+    produced by that exact transform. `model/verify_clip_preprocessing.py` checks the
+    reproduction against the real transform.
+    """
+    if min(width, height) <= 0:
+        raise ValueError("Image dimensions must be positive.")
+    short, long = (width, height) if width <= height else (height, width)
+    new_short, new_long = size, int(size * long / short)
+    resized = (new_short, new_long) if width <= height else (new_long, new_short)
+    left = round((resized[0] - size) / 2.0)
+    top = round((resized[1] - size) / 2.0)
+    return resized, (left, top, left + size, top + size)
+
+
+def clip_input_region(width, height, size=224):
+    """Normalized region of the oriented image that the CLIP crop actually covers."""
+    resized, (left, top, right, bottom) = clip_resize_box(width, height, size)
+    return (left / resized[0], top / resized[1], right / resized[0], bottom / resized[1])
+
+
+def clip_array(image, size=224):
+    """Normalized CHW float32 array matching the official CLIP preprocessing."""
+    resized, box = clip_resize_box(image.width, image.height, size)
+    cropped = image.resize(resized, Image.Resampling.BICUBIC).crop(box)
+    array = np.asarray(cropped, dtype=np.float32).transpose(2, 0, 1) / 255.0
+    mean = np.asarray(CLIP_MEAN, dtype=np.float32).reshape(3, 1, 1)
+    std = np.asarray(CLIP_STD, dtype=np.float32).reshape(3, 1, 1)
+    return (array - mean) / std
 
 
 def center_crop_box(width, height, size):

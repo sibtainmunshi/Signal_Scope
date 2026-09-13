@@ -12,10 +12,18 @@ import numpy as np
 import torch
 from PIL import Image, ImageOps, ImageStat
 
+from .clipmodel import ClipLinearModel, load_visual
 from .limits import MAX_IMAGE_PIXELS
 from .network import build_model, preprocess_batch
 from .paths import root_path
-from .preprocessing import center_crop_resize, native_crops, native_region, source_region
+from .preprocessing import (
+    center_crop_resize,
+    clip_array,
+    clip_input_region,
+    native_crops,
+    native_region,
+    source_region,
+)
 
 
 @dataclass
@@ -46,16 +54,24 @@ class Detector:
         self.device = torch.device("cuda" if device == "auto" and torch.cuda.is_available()
                                    else "cpu" if device == "auto" else device)
         payload = torch.load(self.path, map_location="cpu", weights_only=True)
-        if payload.get("architecture") != "resnet18":
+        self.architecture = payload.get("architecture")
+        if self.architecture == "resnet18":
+            self.model = build_model(pretrained=False)
+            self.model.load_state_dict(payload["state_dict"], strict=True)
+            self.visual_hash = None
+        elif self.architecture == "clip_vitl14_linear":
+            tower, self.visual_hash = load_visual(payload, self.device)
+            self.model = ClipLinearModel(tower, payload["weight"], payload["bias"])
+        else:
             raise ValueError("Unsupported checkpoint architecture.")
-        self.model = build_model(pretrained=False)
-        self.model.load_state_dict(payload["state_dict"], strict=True)
         self.model.to(self.device).eval()
         self.image_size = int(payload["image_size"])
         self.preprocessing = payload.get("preprocessing", "torch_bilinear_v1")
         if self.preprocessing not in {"torch_bilinear_v1", "pil_bilinear_v1", "pil_center_crop_v1",
-                                      "native_multicrop_v1"}:
+                                      "native_multicrop_v1", "clip_center_crop_v1"}:
             raise ValueError("Unsupported checkpoint preprocessing version.")
+        if (self.architecture == "clip_vitl14_linear") != (self.preprocessing == "clip_center_crop_v1"):
+            raise ValueError("CLIP checkpoints require clip_center_crop_v1 preprocessing.")
         self.threshold = float(payload.get("threshold", .5))
         self.temperature = float(payload.get("temperature", 1.))
         if self.temperature <= 0 or not 0 <= self.threshold <= 1:
@@ -69,6 +85,9 @@ class Detector:
     def tensor(self, image: Image.Image) -> torch.Tensor:
         """Normalized model input: one row, or one row per crop for multi-crop preprocessing."""
         image = ImageOps.exif_transpose(image).convert("RGB")
+        if self.preprocessing == "clip_center_crop_v1":
+            array = clip_array(image, self.image_size)
+            return torch.from_numpy(array).unsqueeze(0).to(self.device)
         if self.preprocessing == "native_multicrop_v1":
             _, crops = native_crops(image, self.image_size)
             batch = torch.stack([torch.from_numpy(np.array(crop)).permute(2, 0, 1) for crop in crops])
@@ -87,6 +106,8 @@ class Detector:
             return source_region(width, height, self.image_size)
         if self.preprocessing == "native_multicrop_v1":
             return native_region(width, height, self.image_size)
+        if self.preprocessing == "clip_center_crop_v1":
+            return clip_input_region(width, height, self.image_size)
         return (0.0, 0.0, 1.0, 1.0)
 
     def score_tensor(self, tensor: torch.Tensor) -> torch.Tensor:
