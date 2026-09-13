@@ -1,0 +1,45 @@
+{
+  "model_version": "mixed_clip_l14_balanced_v1",
+  "checkpoint_sha256": "dc889807cd6183c6cbf0859acd37784d6f28b0be6db297003079ad46671a0ebc",
+  "attribution": "Input-gradient attribution on the frozen CLIP ViT-L/14 embedding with our linear head",
+  "sample": "40 fixed development images across 8 strata, hash-ordered, failures included by design",
+  "correct_predictions": 30,
+  "localisation_supported_count": 17,
+  "localisation_rule": "masking the highlighted region moves the returned class's own score by at least one percentage point and further than equally sized corner patches",
+  "randomization": "our linear head re-initialized; the frozen public backbone is unchanged, so a high correlation means the map follows image structure rather than anything we trained",
+  "limits": [
+    "Model-influence diagnostics only; no visible artifact is verified.",
+    "Masked inputs are out of distribution.",
+    "Development images, some of which were seen during model selection.",
+    "Forty images is a small sample and no reserved data is read."
+  ],
+  "mean": {
+    "top_beats_random_median_count": 16,
+    "median_top_percentile": 0.1875,
+    "mean_effect_top_points": 7.220847415237586,
+    "mean_effect_random_points": 10.605419365683701,
+    "wilcoxon_p": 0.2948169606661395
+  },
+  "blur": {
+    "top_beats_random_median_count": 19,
+    "median_top_percentile": 0.40625,
+    "mean_effect_top_points": 10.23282768500394,
+    "mean_effect_random_points": 9.783928114202354,
+    "wilcoxon_p": 0.8160389817658142
+  },
+  "jpeg_q70_spearman": {
+    "n": 40,
+    "median": 0.7881886742746578,
+    "mean": 0.7727142163643809
+  },
+  "jpeg_q70_top_iou": {
+    "n": 40,
+    "median": 0.5610358945954625,
+    "mean": 0.4734143769538533
+  },
+  "randomization_spearman": {
+    "n": 10,
+    "median": 0.8398194070772731,
+    "mean": 0.813622184920464
+  }
+}

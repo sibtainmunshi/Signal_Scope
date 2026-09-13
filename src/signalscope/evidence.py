@@ -127,7 +127,7 @@ def _resnet_attribution(detector: Detector, tensor: torch.Tensor) -> tuple:
     return heatmap, peak, ai_score, target_ai, "Grad-CAM",         "Grad-CAM on ResNet-18 layer4; model-influence visualization"
 
 
-def _clip_attribution(detector: Detector, tensor: torch.Tensor) -> tuple:
+def _clip_attribution(detector: Detector, tensor: torch.Tensor, model=None) -> tuple:
     """Input-gradient attribution, pooled to the vision transformer's patch grid.
 
     Grad-CAM needs a convolutional stage that this backbone does not have. The head is
@@ -136,9 +136,10 @@ def _clip_attribution(detector: Detector, tensor: torch.Tensor) -> tuple:
     granularity the model actually consumes instead of implying per-pixel precision.
     """
     patch = 14
+    model = model or detector.model
     probe = tensor.clone().requires_grad_(True)
     with torch.enable_grad():
-        logits = detector.model(probe).flatten()/detector.temperature
+        logits = model(probe).flatten()/detector.temperature
         ai_score = float(torch.sigmoid(logits.detach()).item())
         target_ai = ai_score >= detector.threshold
         target = logits[0] if target_ai else -logits[0]
