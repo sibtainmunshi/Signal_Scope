@@ -63,19 +63,18 @@ def robustness_evidence(detector: Detector, image: Image.Image) -> dict:
             "note": "Stability is measured on this upload only; a stable verdict can still be wrong."}
 
 
-def explain_prediction(detector: Detector, image: Image.Image) -> dict:
-    """Grad-CAM of the returned class, plus a bounded masking diagnostic."""
-    start = time.perf_counter()
-    image = ImageOps.exif_transpose(image).convert("RGB")
-    if detector.preprocessing == "native_multicrop_v1":
-        return _explain_multicrop(detector, image, start)
-    tensor = detector.tensor(image)
+def _normalize_map(coarse: torch.Tensor, size: int) -> tuple[torch.Tensor, float]:
+    """Upsample an attribution map to the model input and scale it to a 0-1 peak."""
+    heatmap = F.interpolate(coarse, size=(size, size), mode="bilinear", align_corners=False)[0, 0]
+    peak = float(heatmap.max())
+    return (heatmap/peak if peak > 1e-12 else torch.zeros_like(heatmap)), peak
+
+
+def _resnet_attribution(detector: Detector, tensor: torch.Tensor) -> tuple:
+    """Grad-CAM at the last convolutional stage of the ResNet backbone."""
     captured = []
-
-    def capture(module, inputs, output):
-        captured.append(output)
-
-    handle = detector.model.layer4.register_forward_hook(capture)
+    handle = detector.model.layer4.register_forward_hook(
+        lambda module, inputs, output: captured.append(output))
     try:
         with torch.enable_grad():
             logits = detector.model(tensor).flatten()/detector.temperature
@@ -83,14 +82,47 @@ def explain_prediction(detector: Detector, image: Image.Image) -> dict:
             target_ai = ai_score >= detector.threshold
             target = logits[0] if target_ai else -logits[0]
             gradients = torch.autograd.grad(target, captured[0])[0]
-            weights = gradients.mean(dim=(2,3), keepdim=True)
+            weights = gradients.mean(dim=(2, 3), keepdim=True)
             coarse = (weights*captured[0]).sum(dim=1, keepdim=True).relu().detach()
-            heatmap = F.interpolate(coarse, size=(detector.image_size, detector.image_size),
-                                    mode="bilinear", align_corners=False)[0,0]
-            peak = float(heatmap.max())
-            heatmap = heatmap/peak if peak > 1e-12 else torch.zeros_like(heatmap)
+            heatmap, peak = _normalize_map(coarse, detector.image_size)
     finally:
         handle.remove()
+    return heatmap, peak, ai_score, target_ai, "Grad-CAM",         "Grad-CAM on ResNet-18 layer4; model-influence visualization"
+
+
+def _clip_attribution(detector: Detector, tensor: torch.Tensor) -> tuple:
+    """Input-gradient attribution, pooled to the vision transformer's patch grid.
+
+    Grad-CAM needs a convolutional stage that this backbone does not have. The head is
+    linear on the embedding, so one backward pass gives an exact input gradient; taking
+    gradient times input and pooling to the 14 px patch grid keeps the map at the
+    granularity the model actually consumes instead of implying per-pixel precision.
+    """
+    patch = 14
+    probe = tensor.clone().requires_grad_(True)
+    with torch.enable_grad():
+        logits = detector.model(probe).flatten()/detector.temperature
+        ai_score = float(torch.sigmoid(logits.detach()).item())
+        target_ai = ai_score >= detector.threshold
+        target = logits[0] if target_ai else -logits[0]
+        gradients = torch.autograd.grad(target, probe)[0]
+        signed = (gradients*probe.detach()).sum(dim=1, keepdim=True).relu().detach()
+        pooled = F.avg_pool2d(signed, patch, stride=patch)
+        heatmap, peak = _normalize_map(pooled, detector.image_size)
+    return heatmap, peak, ai_score, target_ai, "input-gradient attribution",         ("Input-gradient attribution on the frozen CLIP ViT-L/14 embedding with our linear "
+         f"head, pooled to the {patch} px patch grid; model-influence visualization")
+
+
+def explain_prediction(detector: Detector, image: Image.Image) -> dict:
+    """Returned-class attribution for the backbone in use, plus a masking diagnostic."""
+    start = time.perf_counter()
+    image = ImageOps.exif_transpose(image).convert("RGB")
+    if detector.preprocessing == "native_multicrop_v1":
+        return _explain_multicrop(detector, image, start)
+    tensor = detector.tensor(image)
+    attribution = (_clip_attribution if detector.architecture == "clip_vitl14_linear"
+                   else _resnet_attribution)
+    heatmap, peak, ai_score, target_ai, attribution_label, method = attribution(detector, tensor)
     values = heatmap.cpu().numpy()
     height = width = detector.image_size
     side = max(1, width//3)
@@ -108,7 +140,7 @@ def explain_prediction(detector: Detector, image: Image.Image) -> dict:
         probes = tensor.repeat(len(boxes),1,1,1)
         for i, (left,top,right,bottom) in enumerate(boxes):
             probes[i,:,top:bottom,left:right] = 0
-        with torch.inference_mode():
+        with torch.no_grad():
             measured = detector.score_tensor(probes).cpu().numpy()
         score_after = float(measured[0])
         comparison_mean = float(np.mean(measured[1:]))
@@ -137,9 +169,9 @@ def explain_prediction(detector: Detector, image: Image.Image) -> dict:
     overlay = Image.fromarray(np.uint8(np.clip(original*(1-alpha)+color*alpha,0,255)))
     statements = []
     if peak <= 1e-12:
-        statements.append("No positive Grad-CAM region was identified for this verdict.")
+        statements.append(f"No positive {attribution_label} region was identified for this verdict.")
     else:
-        statements.append("The overlay highlights regions of positive Grad-CAM attribution for this verdict.")
+        statements.append(f"The overlay highlights regions of positive {attribution_label} for this verdict.")
         delta = 100 * (score_after - ai_score)
         if abs(delta) < .1:
             statements.append("Masking the highlighted patch changed the AI score by less than 0.1 percentage points; this diagnostic provides little evidence of a probability-level effect.")
@@ -152,7 +184,7 @@ def explain_prediction(detector: Detector, image: Image.Image) -> dict:
         statements.append("The input is too small for detailed visual-cue claims.")
     span_x, span_y = region[2]-region[0], region[3]-region[1]
     return {
-        "method": "Grad-CAM on ResNet-18 layer4; model-influence visualization",
+        "method": method,
         "target_class": "ai_generated" if target_ai else "real",
         "overlay_data_url": png_data_url(overlay),
         "heatmap_data_url": png_data_url(mask),

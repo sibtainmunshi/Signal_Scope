@@ -117,7 +117,9 @@ class Detector:
     def image_logits(self, images: list[Image.Image]) -> torch.Tensor:
         """Uncalibrated logit per image; multi-crop logits are averaged."""
         tensors = [self.tensor(image) for image in images]
-        with torch.inference_mode():
+        # no_grad rather than inference_mode: the traced CLIP tower cannot consume
+        # inference tensors once an attribution backward pass has run in the same request.
+        with torch.no_grad():
             logits = self.model(torch.cat(tensors)).flatten()
         return torch.stack([chunk.mean() for chunk in logits.split([len(t) for t in tensors])])
 
