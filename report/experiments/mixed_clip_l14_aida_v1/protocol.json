@@ -1,0 +1,42 @@
+{
+  "run": "mixed_clip_l14_aida_v1",
+  "hypothesis": "Adding held-out-verified 2025-2026 generator and diverse real-photo training data reduces the measured 66.2% real-photo FPR / 0.614 macro AUC on genuinely current generators, without regressing the existing external development check.",
+  "motivation": "AIDA holdout baseline (recomputed from saved v0.3.0 scores, no new inference): macro_auc=0.6144, real_fpr=0.662",
+  "parent_protocol_sha256": "4c162b16c08ed4260247ab557b02300851a2847ed4117a240260a74c2fb8ebdf",
+  "aida_manifest_sha256": "4b5ab6e3fa3199ecfba797625ae4795fb6732fdc44324c4e2dfb84152f45e520",
+  "aida_split": "60/40 hash split per (label, generator-or-real) stratum, fixed before this run; holdout is never used for fitting, calibration or threshold selection",
+  "training_views": [
+    "as_distributed",
+    "matched"
+  ],
+  "loss_mass": {
+    "genimage_real": 0.25,
+    "genimage_ai": 0.25,
+    "cifake_real": 0.05,
+    "cifake_ai": 0.05,
+    "aida_real": 0.2,
+    "aida_ai": 0.2
+  },
+  "C_grid": [
+    0.1,
+    1.0,
+    10.0
+  ],
+  "C_selection": "Mean AUC over original GenImage/CIFAKE validation and both formats; no AIDA/external scoring for C choice",
+  "temperature": "Refit on unchanged complete GenImage/CIFAKE calibration only, equal domain BCE",
+  "threshold": "Unchanged rule: max of original GenImage/CIFAKE validation thresholds at internal FPR<=5%. AIDA holdout is not used to fit any threshold.",
+  "gate": {
+    "external_dev_max_auc_drop": 0.02,
+    "external_dev_max_generator_auc_drop": 0.02,
+    "aida_holdout_min_macro_auc_gain": 0.05,
+    "aida_holdout_min_real_fpr_drop": 0.15,
+    "description": "Passes only if external-dev mean AUC does not drop by more than 0.02 in either protocol from the current candidate's own 0.771/0.789, no external generator AUC drops more than 0.02, AND AIDA holdout macro AUC improves by >=0.05 over 0.614 AND real-photo FPR drops by >=0.15 from 0.662. All four conditions required."
+  },
+  "reserve": "GLIDE/DALLE reserved and COCO reserved are not read here. If this candidate passes, its own reserved evaluation and release process are separate, later decisions.",
+  "limits": [
+    "AIDA holdout is a single fixed split, not a new blind test; the underlying benchmark is itself a third-party research artifact, not the organizers' data.",
+    "17 generators average ~35 held-out images each; per-generator AIDA holdout AUC has a wide interval at this sample size.",
+    "No further AIDA-mixture variant will be tried after this if it fails; that would be fitting to holdout labels."
+  ],
+  "created_utc": "2026-09-13T20:05:26.186044+00:00"
+}

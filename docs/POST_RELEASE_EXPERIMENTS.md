@@ -186,3 +186,37 @@ to treat as a real, disclosed weakness rather than noise. [Protocol/results](../
 A bounded training attempt using a held-out split of this same dataset follows, under
 the same discipline as every other candidate here: declared protocol, one gate,
 reported regardless of outcome.
+
+## The bounded AIDA training attempt failed - by design, and correctly
+
+Motivated by the finding above, one training attempt mixed a 60% split of AIDA
+(1,183 images, both real and AI labels, 17 generators) into the existing
+CIFAKE+GenImage training mixture at 40% combined loss mass (20% real, 20% AI),
+keeping architecture, C-grid, calibration and threshold rule unchanged. The
+remaining 40% (755 images) was held out and never touched during fitting. Gate
+declared before training: no external-dev mean AUC drop >0.02 in either protocol,
+no external generator AUC drop >0.02, AND AIDA holdout macro AUC gain >=0.05 with
+real-photo FPR drop >=0.15.
+
+| | v0.3.0 (current) | AIDA-mixture candidate |
+|---|---:|---:|
+| AIDA holdout macro AUC | 0.614 | **0.981** |
+| AIDA holdout real-photo FPR | 66.2% | **3.4%** |
+| External dev mean AUC, as distributed | 0.771 | **0.652** |
+| External dev mean AUC, matched | 0.789 | **0.647** |
+
+**The gate failed, decisively, on the external-development side** (both mean AUCs
+dropped roughly 0.12-0.14, far past the declared 0.02 tolerance; guided and ldm_200
+AUC and FPR checks failed too). The near-perfect AIDA holdout score is not read as
+a win: it is the signature of overfitting to this specific benchmark's own visual
+characteristics (resolution, compression, category composition) rather than
+learning generalisable real-vs-AI features, evidenced directly by the catastrophic
+collapse on the unrelated GLIDE/LDM/LAION development check.
+
+**This candidate is rejected and not deployed.** v0.3.0 (`mixed_clip_l14_balanced_v1_release`)
+remains the served model. Per the declared protocol, no further AIDA-mixture
+variant will be attempted; doing so after seeing this result would be fitting to
+holdout labels rather than testing a hypothesis. The real-photo false-positive
+weakness on genuinely current generators (66.2% FPR, AI Detect Arena Benchmark)
+remains a disclosed, open limitation of the deployed model.
+[Protocol/results](../report/experiments/mixed_clip_l14_aida_v1/results.json).

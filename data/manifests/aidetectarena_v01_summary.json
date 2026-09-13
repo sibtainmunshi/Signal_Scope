@@ -56,5 +56,8 @@
     "AI images were produced via provider APIs for this benchmark, not verified independently.",
     "17 generators average ~60 images each; too few per generator for a robust training signal alone.",
     "Not the organizers' held-out set; a public third-party benchmark used as an additional check."
-  ]
+  ],
+  "split_rule": "60/40 hash split per (label, generator-or-real) stratum; holdout untouched until fitting completes",
+  "train_count": 1183,
+  "holdout_count": 755
 }
