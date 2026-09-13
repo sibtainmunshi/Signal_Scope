@@ -1,46 +1,95 @@
-# Immediate continuation for Claude Code — 13 September 2026
+# Coordination note for Codex - 13 September 2026, afternoon
 
-User instruction: prioritize competitive model quality for submission on **15 September, 17:00 IST** (target 14:00). User requested a precise handoff before Codex usage runs out. Continue implementation; do not ask A/B again. Local laptop only, one GPU job at a time, one writer. Current working tree contains uncommitted user/Claude B-Free reference files; preserve them.
+Written by Claude Code, continuing from Codex's `train_clip_coco.py` handoff. This
+replaces the earlier continuation list; the items Codex left are resolved below.
 
-## Running model job
+## One writer per tree
 
-- `model/preflight_clip_l14.py` downloaded official generic CLIP ViT-L/14 into `.cache/clip/ViT-L-14.pt` (932,768,134 bytes); SHA-256 `b8cca3fd41ae0c99ba7e8951adf17d267cdb84cd88be6f7c2e0eca1737a03836`.
-- Verified RTX 4050 6GB: batch 8 about 10ms/image encoder-only, peak allocated ~1.03GB. Report `report/experiments/clip_l14_preflight.json`. These are throughput numbers, NOT detector accuracy.
-- **Started** `.venv/Scripts/python -u model/train_clip_l14.py > tmp/clip_l14_training.log 2>&1` in Codex exec session **81619**. Check log tail and GPU/process activity first. Do not start a competing GPU job.
-- If the process was terminated by session/quota end, rerun that command. It resumes completed identity-checked feature caches. Do not rerun if `report/experiments/clip_l14_development_v1/results.json` exists: completed experiment is intentionally immutable.
-- Progress/cache directory: `data/processed/clip_l14_development_v1`. Logs print each 400 images, with duration. Reports/declared protocol: `report/experiments/clip_l14_development_v1/`.
+**Claude Code is actively editing `src/signalscope/evidence.py` and its tests** to add a
+CLIP explanation path. Do not edit that file or `tests/test_explanation*` until the
+commit lands. Everything else listed under "available in parallel" is free.
 
-## What the experiment actually does
+## What Codex asked for, and what happened
 
-Two predeclared own-head candidates on frozen L/14: original-format equal-domain mix; original+matched-format two-view training weighted 90% GenImage/10% CIFAKE. Same audited 6,239 GenImage + 8,000 CIFAKE training images. C=.1/1/10 selected on internal validation mean AUC across both formats/domains. CIFAKE validation uses fixed 4,000 subset; calibration uses all calibration rows. Calibrate on calibration labels only, then strictest original-validation threshold satisfying <=5% FPR in each source. External guided/LDM development is scored only after all fitting.
+- **`train_clip_coco.py` was complete but never ran** (no report directory, GPU idle).
+  Claude ran it: 68.6 s, and it **failed the same single check a third time**. External
+  development mean AUC 0.764 as distributed and 0.783 matched, with as-distributed
+  LDM/LAION real FPR 23.4% against balanced_v1's 22.0%. The COCO real-only threshold
+  guard landed at 0.4966 against the CIFAKE-driven 0.8085, so COCO photographs were easy
+  for the head and applied little corrective pressure. `report/experiments/
+  mixed_clip_l14_coco_real_v1/results.json`. **Do not attempt a fourth variant against
+  that check**; three independent attempts is where further search becomes fitting to
+  development labels.
+- **The float32/float64 serialization question Codex flagged is closed.** The serialized
+  float32 head reproduces the recorded float64 validation AUC exactly and external scores
+  match the archived CSVs to 0.0 (`clip_l14_threshold_policy_v2/results.json`).
+- **A train/serve dtype mismatch Codex's plan did not cover was found and measured.**
+  Training encoded on CUDA, where CLIP keeps fp16 weights; the app serves on CPU in fp32.
+  On 400 development images per protocol: minimum cosine similarity 0.997, zero label
+  disagreements, AUC 0.750275 to 0.750100 and 0.768125 to 0.767675.
+  `clip_l14_threshold_policy_v2/serving_parity.json`.
 
-Gate: >=.03 mean AUC gain on BOTH external formats; no generator AUC loss >.02; >=.03 mean macro-F1 gain on both; no generator FPR increase >.05. Among passing candidates choose highest minimum of two mean AUCs. These are engineering acceptance checks on REUSED dev, not new blind claims. Neither candidate is guaranteed to win.
+## Deployment decision in force
 
-**Critical next check:** reports use sklearn float64 coefficients but serialized head uses float32. Before release, recalibrate/recheck thresholds using exact serialized production inference on internal calibration/validation only; verify direct/raw-image vs cached score/decision parity, especially nextafter threshold boundaries. Independent read-only audit found no leakage/cache/gate blockers.
+The user's goal is the scored submission. Section 9 weights 25 points primarily on
+held-out AUC toward the unseen split and section 10 makes unseen-split AUC the first
+tie-break, so **`mixed_clip_l14_balanced_v1` is being prepared for release** even though
+it failed the declared FPR equivalence check. The failure is published, not hidden: the
+gate result, the threshold-policy retry and the equal-FPR comparison all stay in
+`docs/POST_RELEASE_EXPERIMENTS.md`. Do not restate the gate as passed, and do not
+quietly reword the FPR numbers.
 
-## Code changes already made (verification status below)
+## Already built and verified (commits 87fa1ce, 9df38c0, 16477dc)
 
-- Batch CLI `model/predict.py`: `--images-dir` recursive sorted files or `--image-list` list-relative paths; resident Detector, per-file JSONL, continue errors, exit 1 mixed failures. Existing single-image API retained.
-- Upload limits now shared in `src/signalscope/limits.py`: 25MiB encoded, 40MP decoded. Backend/frontend/predict guard updated. Native 24MP canvases allowed; pathological upscales still capped at 20MP.
-- Shared `simulated_screenshot` transform: synthetic display resampling/window borders/PNG, explicitly NOT actual device screenshots. Added to app/benchmark, robustness variants and full-image masking probes scored sequentially for memory.
-- Benchmark adds `--device`, `--output` and refuses overwriting old measured reports.
-- Tests added for actual >10MiB valid PNG, 24MP JPEG, >40MP rejection, actual CPU batch parity/error continuation, deterministic screenshot transformation. README/API updated.
+- `model/export_clip_visual.py` exports the frozen CLIP ViT-L/14 image tower as
+  TorchScript at `model/checkpoints/clip_vitl14_visual/visual_fp16.ts`, 608,352,029
+  bytes, sha256 `12403c44d349dee827e7d0fe016c2f255ec51ccf2750d5b4260ab9c878bf7989`.
+  Stored fp16, upcast to fp32 at load. Verified on 120 images: minimum cosine similarity
+  0.9999983, zero label disagreements. This exists so the evaluator runtime needs **torch
+  only** - no `clip` git install, no torchvision, ftfy or regex. Keep it that way;
+  reproducibility is a scored gate.
+- `signalscope.preprocessing.clip_array` reproduces the official CLIP transform
+  bit-exactly: 0.0 maximum absolute difference on thirteen shapes including 1x1, 1600x97
+  and 4000x3000, plus sixty development images. `model/verify_clip_preprocessing.py`
+  re-checks it and exits non-zero on any difference.
+- `signalscope.clipmodel` plus a `clip_vitl14_linear` branch in `Detector` serve the
+  candidate through the existing scoring, batching, calibration and threshold code. A
+  mismatched tower digest is refused at load. Scores reproduce the development CSVs to
+  within 0.0097. CPU cost 0.38 s per image against roughly 64 ms for the ResNet.
+- `model/score_user_images_clip.py` scores a local `ai`/`real` folder pair as a veto
+  check. Per-image output stays under `tmp/`; the photographs are private.
+- 43 tests pass, Ruff passes across the tree, and `model/manifest.json` **still names the
+  frozen v0.2.0 ResNet**, so nothing served is half-built.
 
-## Required continuation
+## Remaining work
 
-1. Inspect latest log/results; if successful candidate, review ALL per-generator FPR/recall and gate checks.
-2. CLIP integration is NOT implemented yet: Detector accepts ResNet only; Grad-CAM relies on ResNet.layer4. Add exact normalized CLIP encoder+our head support, justified/validated attribution and calibration parity; dependency/weight setup/download/CPU latency need verification. Never silently label B-Free weights as ours.
-3. If no candidate passes, preserve negative results and report honestly; do not flip outputs or lower the gate after seeing results. Discuss next evidence-led attempt within deadline.
-4. Screenshot benchmark **completed**: `report/experiments/screenshot_robustness_v1/metrics.json` and `degradation.png`, all 783 GenImage validation images, unchanged release model. Simulation AUC .893497 (original .956325), accuracy .781609, FPR .054201; bounded seven-transform search flips 203/703 initially correct (.288762). Old six-transform reports remain unchanged. Simulation is not real screen-capture coverage.
-5. Validate actual local user photos through fixed app pipeline after freeze for diagnosis; never train on them or claim the known 29 images as blind evidence. **At latest check `tmp/user_eval` is EMPTY** (PowerShell and Python agree; it held the original photos earlier). No deletion was done by Codex. Batch recheck could not run on them. Locate authorized originals or obtain them again; do not claim those actual photos were retested.
-6. **Never reuse old final reserved/test labels for tuning or rerun final evaluation.** Old 0.565/0.643 reserved results belong to v0.2.0. Fresh independent evaluation is still needed for a new broad performance claim.
-7. Update report/demo/README/setup only for actual chosen model; run tests + frontend build, app CPU smoke, clean reproduction before publishing. Existing v0.2.0 release stays reproducible.
-8. Human explanation review still requires actual people. Final portal submission belongs to user. Do not fabricate reviews/organizer scores.
+1. **Claude is doing this now:** CLIP explanation. The head is linear on the embedding, so
+   one backward pass gives input-gradient saliency at about 0.8 s, and the existing causal
+   masking diagnostic is kept unchanged. Grad-CAM on `layer4` cannot apply.
+2. Re-run the 40-image explanation audit against the new model once (1) lands.
+3. Declare the deployed operating point, switch `model/manifest.json`, and publish the
+   tower and head as release assets with recorded digests.
+4. **One** reserved evaluation after freeze, disclosed as a second use of that split,
+   selection having been made on development data only. The COCO reserve (354 real
+   photographs) is still untouched and is the natural real-FPR check.
+5. README, one-page model report, API contract, submission checklist: measured latency,
+   the 608 MB download, the published gate failure, and the new operating point.
+6. App CPU smoke on desktop and mobile, then a demo-video note.
 
-## Verification status (updated by Codex below)
+## Available in parallel, no collision with (1)
 
-- **34 tests passed** in 21.61s: `.venv/Scripts/python -m pytest -q -p no:cacheprovider --basetemp=tmp/codexqa_20260913b`. Two dependency deprecation warnings only. Sandbox Windows temp-directory permission blocked initial attempts; normal-permission rerun passed. Use a fresh task-owned temp directory for reruns.
-- **Frontend production build passed**, `npm run build`, 7.54s Vite compile (normal permissions needed for esbuild subprocess).
-- **Actual non-flat 6000x4000 CPU upload with BOTH explanation+robustness passed HTTP 200 in 6.52s**, original-score parity confirmed, seven robustness rows. Record: `report/reproducibility/phone_upload_24mp_v1.json`. Command: `.venv/Scripts/python scripts/check_phone_upload.py`. Synthetic transport/memory fixture, not accuracy evidence.
-- No CLIP accuracy result or model replacement claimed yet. Current extraction finished GenImage and CIFAKE training features and is in CIFAKE validation/calibration. Check current log for newer progress.
-- Verified interface fixes committed locally as **4798f4c**. No pushes made during this continuation yet. Preserve unrelated untracked Claude B-Free/dense-coverage files.
+- Step 3's release packaging and manifest work, and the reserved-evaluation script for
+  step 4 (write it, do not run it before the freeze).
+- README, model report, API contract and checklist drafting for everything already
+  measured above.
+
+## Standing constraints
+
+- Never modify v0.2.0's checkpoint, archived scores or release; it stays reproducible.
+- One GPU job at a time. Check GPU and processes before launching.
+- The user's 11 ChatGPT images and 18 phone photographs are **absent** from
+  `tmp/user_eval` (folders exist, empty). Aggregate diagnostics are in
+  POST_RELEASE_EXPERIMENTS.md; per-image detail was never committed. Ask the user to
+  re-supply them, never train or threshold on them, and never claim they were retested.
+- Human explanation review still needs actual people. Do not fabricate reviews or
+  organizer scores.
