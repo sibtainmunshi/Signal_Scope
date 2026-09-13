@@ -63,6 +63,13 @@ may instead contain a list of objects with `loc`, `msg` and `type`. Clients shou
 handle both. EXIF fields are limited to Make, Model, Software, DateTime and
 DateTimeOriginal; GPS and serial numbers are not exposed.
 
+`metadata.c2pa_status` is one of `no_marker_found`, `marker_found_unverified` or
+`not_checked` (only when the caller did not supply raw upload bytes; the API always
+supplies them). This is a bounded ASCII substring scan for known C2PA (Content
+Credentials) identifiers, never a JUMBF box parser or a manifest/signature validator.
+`marker_found_unverified` means the scan found a plausible marker, not that a manifest
+was decoded, validated or trusted; clients must not present it as verified provenance.
+
 Nearly flat images (maximum channel standard deviation below 1 pixel level on a
 64px RGB thumbnail) retain their binary label and score but recommend review with
 a low-information limitation. This is a usability heuristic, not evidence of

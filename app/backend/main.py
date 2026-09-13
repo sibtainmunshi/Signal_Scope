@@ -131,7 +131,7 @@ def analyse(content: bytes, explain: bool, robustness: bool) -> dict:
             if uploaded.width*uploaded.height > MAX_IMAGE_PIXELS:
                 raise HTTPException(413, "Image exceeds the 40 megapixel limit.")
             uploaded.load()
-            metadata = metadata_evidence(uploaded)
+            metadata = metadata_evidence(uploaded, content)
             image = uploaded.copy()
     except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError) as error:
         raise HTTPException(400, "The upload could not be decoded as a supported image.") from error

@@ -65,7 +65,7 @@ def test_explanation_and_robustness_preserve_core_result(client):
     assert original["ai_score"] == pytest.approx(result["prediction"]["ai_score"], abs=1e-5)
     assert len(result["robustness"]["results"]) == 7
     assert result["robustness"]["results"][-1]["transformation"] == "simulated_screenshot"
-    assert result["metadata"]["c2pa_status"] == "not_checked"
+    assert result["metadata"]["c2pa_status"] == "no_marker_found"
 
 
 def test_corrupt_and_oversized_uploads_return_clear_errors(client):

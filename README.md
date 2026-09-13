@@ -18,7 +18,7 @@ Real-versus-AI image classification with a **frozen CLIP ViT-L/14 image tower an
 | A. Faithful explanation | Input-gradient influence map on a 14px patch grid and masking diagnostic. Only 17/40 audit images satisfy the localisation-support rule; no verified defect localisation. |
 | B. Generator attribution | Not implemented. |
 | C. Robustness | Per-upload JPEG/resize/blur/simulated-screenshot stability checks. v0.3.0 degradation benchmark pending; old results are not new-model evidence. |
-| D. Provenance/metadata | Partial: EXIF shown separately, never changing the visual score. C2PA not checked. |
+| D. Provenance/metadata | EXIF shown separately, never changing the visual score. C2PA presence is checked via a bounded ASCII substring scan for known identifiers (`metadata.c2pa_status`) - a heuristic hit, never a JUMBF box parse or signature verification. No image in our test corpora carries a manifest. |
 | E. Image-caption consistency | Not implemented. |
 | F. Deployable interface | Local drag-and-drop app, batch CLI, JSON export, CPU inference and likelihood wording. Public v0.3.0 installation verification pending. |
 | G. Active defence | Bounded transformation/flip diagnostic; a general defence or mitigation benefit is not established. |

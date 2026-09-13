@@ -25,7 +25,29 @@ def png_data_url(image: Image.Image) -> str:
     return "data:image/png;base64," + base64.b64encode(stream.getvalue()).decode("ascii")
 
 
-def metadata_evidence(image: Image.Image) -> dict:
+# Case-insensitive substrings that indicate C2PA (Content Credentials) data is likely
+# present: the JUMBF box embedded by JPEG/PNG encoders identifies itself with a 'c2pa'
+# content-type string, and XMP references the C2PA namespace URI when a manifest exists.
+C2PA_MARKERS = (b"c2pa", b"C2PA.org".lower())
+
+
+def detect_c2pa(content: bytes) -> dict:
+    """Heuristic presence check for C2PA (Content Credentials) data.
+
+    This is a bounded substring scan, not a JUMBF box parser or a manifest validator:
+    it never decodes, verifies or trusts a manifest's claims, and cannot detect a
+    manifest that avoids these literal byte sequences. A hit means "worth a proper
+    C2PA tool"; a miss does not prove a manifest is absent, only that this scan found
+    no marker.
+    """
+    lowered = content.lower()
+    found = any(marker in lowered for marker in C2PA_MARKERS)
+    return {"marker_found": found,
+            "method": "ASCII substring scan for C2PA JUMBF/XMP identifiers; not a JUMBF "
+                      "box parser or signature verifier"}
+
+
+def metadata_evidence(image: Image.Image, content: bytes | None = None) -> dict:
     # Deliberately return a small useful field list, not GPS/serial-number metadata.
     fields = {}
     allowed = {"Make", "Model", "Software", "DateTime", "DateTimeOriginal"}
@@ -36,11 +58,16 @@ def metadata_evidence(image: Image.Image) -> dict:
                 fields[name] = str(value)[:250]
     except (ValueError, OSError, TypeError):
         pass
+    if content is None:
+        c2pa_status = "not_checked"
+    else:
+        c2pa_status = "marker_found_unverified" if detect_c2pa(content)["marker_found"] else "no_marker_found"
     return {
         "format": image.format or "unknown", "exif_present": bool(image.info.get("exif")),
-        "fields": fields, "c2pa_status": "not_checked",
+        "fields": fields, "c2pa_status": c2pa_status,
         "fusion_policy": "Metadata is displayed separately and does not change the visual score.",
-        "note": "EXIF can be edited. Missing metadata does not indicate whether an image is real or generated.",
+        "note": "EXIF can be edited. Missing metadata does not indicate whether an image is real or generated. "
+                "A found C2PA marker is an unverified heuristic hit, not a validated manifest or provenance proof.",
     }
 
 
