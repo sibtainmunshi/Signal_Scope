@@ -8,15 +8,18 @@ Problem Statement 2.
 data. The organizers supplied no dataset, baseline or hidden test; no organizer
 score is claimed or estimated.
 
-**13 September release preparation:** CLIP ViT-L/14 with our trained linear head is
-packaged locally as v0.3.0; the default manifest and public release remain v0.2.0.
-External development mean AUC improves from 0.653 to 0.789 under format matching,
-but the candidate **failed** the declared real-photo false-positive gate (22.0%
-versus 12.8% on as-distributed LDM/LAION). Its 608.36 MB CPU package and setup checks
-pass; explanation integration, final evaluation, publication and fresh-download
-verification remain pending. See the [release handoff](docs/RELEASE_V030.md) and
-[one-page draft](report/releases/v0.3.0/model_report.pdf). The module table and
-published demo below describe v0.2.0 until activation is verified.
+**Submitted model: v0.2.0.** A CLIP ViT-L/14 candidate with our trained linear head was
+built, measured and packaged as v0.3.0, then **not released**. It ranks better on
+development data (external mean AUC 0.789 against 0.653 under format matching) but
+**failed** the declared real-photo false-positive gate three times (22.0% against an
+allowed 17.8% on as-distributed LDM/LAION), and activating it would have required
+republishing a 608 MB asset and re-verifying setup timing, the app flow, the
+explanation audit and the demo close to the deadline. Everything about it - the
+package, the prepared manifest, the gain and the gate failure - stays in the
+repository as a measured negative result: [release record](docs/RELEASE_V030.md),
+[experiments](docs/POST_RELEASE_EXPERIMENTS.md),
+[one-page draft](report/releases/v0.3.0/model_report.pdf). The module table, metrics
+and demo below all describe the released v0.2.0 ResNet.
 
 - Explanation examples (including a failure): [reviewed samples](report/explanation_samples/README.md)
 - One-page model report: [`report/model_report.pdf`](report/model_report.pdf)
@@ -99,8 +102,11 @@ import predict` style use is available via `predict(image_path)`. API: `POST
    resizing and blur, and EXIF fields. None of these change the score.
 
 Why this design: public real photos are usually JPEG while generated images are
-usually PNG, and our first datasets had exactly that split. A detector can learn compression and geometry shortcuts from decoded pixels. We found a frozen-CLIP head whose unseen-generator AUC of 0.708
-fell to 0.542 once both labels were given the same crop, resize and JPEG. Our
+usually PNG, and our first datasets had exactly that split. A detector can learn compression and geometry shortcuts from decoded pixels. An early frozen-CLIP B/32 head made the point: its unseen-generator AUC of 0.708
+fell to 0.542 once both labels were given the same crop, resize and JPEG. (The later
+ViT-L/14 candidate behaved oppositely, improving from 0.771 to 0.789 under matching,
+so its ranking gain is not a format artifact; it was held back for the false-positive
+reason given above, not this one.) Our
 detector is trained with JPEG-balanced data and evaluated both as distributed and
 format-matched; its **development** AUC is about 0.65 in both protocols. The separate final
 reserved results are lower, as reported below. Matching changes compression and

@@ -3,20 +3,38 @@
 from __future__ import annotations
 
 import base64
+import copy
 import io
 import time
 
 import numpy as np
 import torch
 from PIL import ExifTags, Image, ImageOps
+from torch import nn
 from torch.nn import functional as F
 
+from .clipmodel import ClipLinearModel
 from .inference import Detector
-from .preprocessing import native_crop_boxes, native_crops, native_region
+from .preprocessing import (
+    CLIP_MEAN,
+    clip_resize_box,
+    native_crop_boxes,
+    native_crops,
+    native_region,
+)
 from .robustness import SCREENSHOT_PROTOCOL, transform_image
 
 # ImageNet channel means as RGB pixels: masking to these equals zero normalized input.
 MEAN_PIXEL = (124, 116, 104)
+# The same idea for CLIP's own normalization statistics.
+CLIP_MEAN_PIXEL = tuple(round(255*channel) for channel in CLIP_MEAN)
+# ViT-L/14 consumes 14 px patches; attribution is reported at that granularity.
+CLIP_PATCH = 14
+
+
+def mask_pixel(detector: Detector) -> tuple[int, int, int]:
+    """Channel-mean fill for the backbone in use, so a mask is zero normalized input."""
+    return CLIP_MEAN_PIXEL if detector.preprocessing == "clip_center_crop_v1" else MEAN_PIXEL
 
 
 def png_data_url(image: Image.Image) -> str:
@@ -90,27 +108,86 @@ def _resnet_attribution(detector: Detector, tensor: torch.Tensor) -> tuple:
     return heatmap, peak, ai_score, target_ai, "Grad-CAM",         "Grad-CAM on ResNet-18 layer4; model-influence visualization"
 
 
-def _clip_attribution(detector: Detector, tensor: torch.Tensor) -> tuple:
-    """Input-gradient attribution, pooled to the vision transformer's patch grid.
+def _clip_patch_map(detector: Detector, tensor: torch.Tensor, model=None,
+                    target_ai: bool | None = None) -> tuple:
+    """Returned-class gradient-times-input for one CLIP crop, pooled to the patch grid.
 
     Grad-CAM needs a convolutional stage that this backbone does not have. The head is
     linear on the embedding, so one backward pass gives an exact input gradient; taking
     gradient times input and pooling to the 14 px patch grid keeps the map at the
     granularity the model actually consumes instead of implying per-pixel precision.
+
+    `model` may substitute another network with the same architecture (randomization
+    checks). `target_ai` fixes the explained class; None uses the returned class.
     """
-    patch = 14
+    model = model or detector.model
     probe = tensor.clone().requires_grad_(True)
     with torch.enable_grad():
-        logits = detector.model(probe).flatten()/detector.temperature
+        logits = model(probe).flatten()/detector.temperature
         ai_score = float(torch.sigmoid(logits.detach()).item())
-        target_ai = ai_score >= detector.threshold
+        if target_ai is None:
+            target_ai = ai_score >= detector.threshold
         target = logits[0] if target_ai else -logits[0]
         gradients = torch.autograd.grad(target, probe)[0]
         signed = (gradients*probe.detach()).sum(dim=1, keepdim=True).relu().detach()
-        pooled = F.avg_pool2d(signed, patch, stride=patch)
-        heatmap, peak = _normalize_map(pooled, detector.image_size)
+    return F.avg_pool2d(signed, CLIP_PATCH, stride=CLIP_PATCH), ai_score, target_ai
+
+
+def _clip_attribution(detector: Detector, tensor: torch.Tensor) -> tuple:
+    """Input-gradient attribution for the returned class, as `explain_prediction` needs it."""
+    pooled, ai_score, target_ai = _clip_patch_map(detector, tensor)
+    heatmap, peak = _normalize_map(pooled, detector.image_size)
     return heatmap, peak, ai_score, target_ai, "input-gradient attribution",         ("Input-gradient attribution on the frozen CLIP ViT-L/14 embedding with our linear "
-         f"head, pooled to the {patch} px patch grid; model-influence visualization")
+         f"head, pooled to the {CLIP_PATCH} px patch grid; model-influence visualization")
+
+
+def clip_attribution(detector: Detector, image: Image.Image, model=None, *,
+                     target_ai: bool | None = None) -> dict:
+    """Attribution on the CLIP analysis crop, shaped like `native_attribution`'s result.
+
+    The canvas is the exact square the model consumes, so masking a window on it and
+    re-scoring measures the same pixels the attribution map describes.
+    """
+    image = ImageOps.exif_transpose(image).convert("RGB")
+    size = detector.image_size
+    resized, box = clip_resize_box(image.width, image.height, size)
+    canvas = image.resize(resized, Image.Resampling.BICUBIC).crop(box)
+    pooled, ai_score, target_ai = _clip_patch_map(detector, detector.tensor(image), model, target_ai)
+    heat = F.interpolate(pooled, size=(size, size), mode="bilinear",
+                         align_corners=False)[0, 0].cpu().numpy()
+    peak = float(heat.max())
+    heat = heat/peak if peak > 1e-12 else np.zeros_like(heat)
+    return {"canvas": canvas, "boxes": [(0, 0, size, size)], "heat": heat,
+            "covered": np.ones((size, size), dtype=bool), "peak": peak,
+            "ai_score": ai_score, "target_ai": target_ai}
+
+
+def attribution_for(detector: Detector):
+    """The canvas-and-heatmap attribution function matching the detector's backbone."""
+    if detector.preprocessing == "native_multicrop_v1":
+        return native_attribution
+    if detector.architecture == "clip_vitl14_linear":
+        return clip_attribution
+    raise ValueError(f"No audit attribution is defined for {detector.architecture}.")
+
+
+def randomized_reference(detector: Detector):
+    """A copy of the served model with our trained weights re-initialized.
+
+    Sanity control for attribution: maps that survive this do not depend on what the
+    model learned. For CLIP only our linear head is re-initialized - the frozen generic
+    image tower is shared unchanged, so this is a weaker control than the ResNet one.
+    """
+    if detector.architecture == "clip_vitl14_linear":
+        head = nn.Linear(detector.model.weight.shape[1], 1)
+        randomized = ClipLinearModel(detector.model.tower, head.weight.detach(),
+                                     head.bias.detach())
+        return randomized.to(detector.device).eval()
+    randomized = copy.deepcopy(detector.model)
+    for module in list(randomized.layer4.modules()) + [randomized.fc]:
+        if hasattr(module, "reset_parameters"):
+            module.reset_parameters()
+    return randomized.eval()
 
 
 def explain_prediction(detector: Detector, image: Image.Image) -> dict:
@@ -195,7 +272,7 @@ def explain_prediction(detector: Detector, image: Image.Image) -> dict:
         "statements": statements,
         "masking_diagnostic": {"ai_score_before": ai_score, "ai_score_after_top_patch": score_after,
                                "ai_score_after_corner_patches_mean": comparison_mean,
-                               "mask_baseline": "ImageNet channel means",
+                               "mask_baseline": f"{'CLIP' if detector.preprocessing == 'clip_center_crop_v1' else 'ImageNet'} channel means",
                                "limitation": "Masking creates altered inputs; this is not causal proof or artifact ground truth."},
         "semantic_artifact_verified": False,
         "elapsed_ms": round((time.perf_counter()-start)*1000,2),

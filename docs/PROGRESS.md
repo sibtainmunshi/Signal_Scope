@@ -138,3 +138,50 @@ with formats equalised). Those user files are no longer in the working tree.
 Ruff passes across model, src, app, tests and scripts after fixing loop-variable
 binding, an unused import and two import blocks. 34 tests pass. v0.2.0 remains the
 released model and no reserved or test data was touched.
+
+## 13 September - v0.2.0 confirmed as the submission; CLIP audit unblocked
+
+User decision after a status review: **ship v0.2.0**, keep the CLIP ViT-L/14 candidate
+as a published research result rather than the release. This reverses the release
+preparation direction recorded earlier the same day in RELEASE_V030.md. Nothing about
+the frozen ResNet, its threshold, its reports or its v0.2.0 release assets changed;
+`model/manifest.json` still names it. No v0.3.0 asset was published, no reserved image
+was scored, and no freeze was written.
+
+Reasoning recorded in RELEASE_V030.md: the candidate's ranking advantage is real
+(development mean AUC 0.771/0.789 against 0.647/0.653) but it failed the predeclared
+real-photo false-positive gate three times at 22.0% against an allowed 17.8%, and
+activation inside the remaining time would have put already-passing rows at risk -
+the 204.81 s clean-setup gate (a 608 MB download replaces a 44.8 MB one), the verified
+app flow, the completed explanation audit and the recorded demo.
+
+Work done in this session, so the candidate stays revivable rather than half-built:
+
+- `model/explanation_audit.py` no longer refuses non-native detectors. It dispatches
+  attribution and the randomization control by backbone, so the same 40-image protocol,
+  sample and statistics run against either model. It has **not** been executed against
+  the CLIP head - that needs the local development archive and the 608 MB tower.
+- `src/signalscope/evidence.py` gained `clip_attribution` (audit-shaped canvas, heat,
+  covered and boxes), `attribution_for`, `randomized_reference` and `mask_pixel`.
+  `_clip_attribution` and the new path now share one `_clip_patch_map` core, so the
+  served explanation and the audited explanation cannot drift apart.
+- The CLIP randomization control re-initializes our linear head only; the frozen
+  generic tower is shared unchanged. That is a weaker control than the ResNet one and
+  is now stated in the audit report and its limitations, not left implicit.
+- Masking baselines are per-backbone: CLIP fills with its own channel means
+  (123, 117, 104) rather than ImageNet's, so "masking equals zero normalized input"
+  stays true. The API's `mask_baseline` disclosure now names the right statistics
+  instead of always saying ImageNet.
+- `tests/test_explanation_clip.py` adds 8 tests covering the CLIP explanation path,
+  including that the audit canvas re-scores to the served score. They build a tiny
+  traced tower, so they run in any checkout without the 608 MB download.
+
+Measured here: 33 passed, 21 skipped (the skips need checkpoints and data absent from
+this environment), and Ruff passes on the changed files. The ResNet branch of the
+refactor was checked separately against a stand-in module, because torchvision is not
+installed in this environment. The full suite including checkpoint-backed tests must be
+re-run on the development machine.
+
+Still outstanding for submission, unchanged by this session: two independent human
+reviewers for explanation usefulness, a demo-video pass against the submitted build,
+and a final public-link check.

@@ -1,4 +1,8 @@
-"""Fixed-sample explanation audit for the native multi-crop detector.
+"""Fixed-sample explanation audit for the detector named by `--checkpoint`.
+
+Runs against either released backbone: stitched Grad-CAM for the native multi-crop
+ResNet, input-gradient attribution for the CLIP ViT-L/14 head. Both are reduced to
+one canvas and one heatmap, so the protocol, sample and statistics are identical.
 
 Checks whether highlighted regions influence the detector (deletion versus
 matched-size random masks, two fill baselines), whether maps depend on learned
@@ -9,7 +13,6 @@ Development images only; reserved final data are never read.
 
 import argparse
 import base64
-import copy
 import csv
 import hashlib
 import io
@@ -26,10 +29,11 @@ from PIL import Image, ImageDraw, ImageFilter, ImageOps
 from scipy.stats import spearmanr, wilcoxon
 
 from signalscope.evidence import (
-    MEAN_PIXEL,
     _box_mean,
+    attribution_for,
     explain_prediction,
-    native_attribution,
+    mask_pixel,
+    randomized_reference,
     top_window,
 )
 from signalscope.inference import Detector
@@ -69,10 +73,10 @@ def load(kind, row, archive):
         return ImageOps.exif_transpose(image).convert("RGB")
 
 
-def fill(canvas, box, baseline):
+def fill(canvas, box, baseline, pixel):
     probe = canvas.copy()
     if baseline == "mean":
-        probe.paste(MEAN_PIXEL, box)
+        probe.paste(pixel, box)
     else:
         probe.paste(canvas.crop(box).filter(ImageFilter.GaussianBlur(4)), box[:2])
     return probe
@@ -102,14 +106,10 @@ def main():
     args = parser.parse_args()
     torch.manual_seed(2026)
     detector = Detector(args.checkpoint)
-    if detector.preprocessing != "native_multicrop_v1":
-        raise ValueError("This audit targets the native multi-crop detector")
+    attribution_of = attribution_for(detector)
+    pixel = mask_pixel(detector)
     side = max(1, detector.image_size//3)
-    randomized = copy.deepcopy(detector.model)
-    for module in list(randomized.layer4.modules()) + [randomized.fc]:
-        if hasattr(module, "reset_parameters"):
-            module.reset_parameters()
-    randomized.eval()
+    randomized = randomized_reference(detector)
     records, tiles = [], []
     with zipfile.ZipFile(ROOT / "data/downloads/universalfakedetect_diffusion.zip") as archive:
         for stratum in STRATA:
@@ -126,7 +126,7 @@ def main():
                 image, row, score = images[i], rows[i], scores[i]
                 key = audit_key(row["path"])
                 rng = np.random.default_rng(int(key[:16], 16))
-                attribution = native_attribution(detector, image)
+                attribution = attribution_of(detector, image)
                 canvas, heat, covered = attribution["canvas"], attribution["heat"], attribution["covered"]
                 target_ai = attribution["target_ai"]
                 top = top_window(heat, covered, side)
@@ -142,17 +142,17 @@ def main():
                                                  (top[0]+side)/canvas.width, (top[1]+side)/canvas.height]}
                 for baseline in ("mean", "blur"):
                     measured = np.array(detector.score_images(
-                        [fill(canvas, (x, y, x+side, y+side), baseline) for x, y in positions]))
+                        [fill(canvas, (x, y, x+side, y+side), baseline, pixel) for x, y in positions]))
                     effects = (score - measured) if target_ai else (measured - score)
                     record[f"{baseline}_effect_top"] = float(effects[0])
                     record[f"{baseline}_effect_random_median"] = float(np.median(effects[1:]))
                     record[f"{baseline}_top_percentile"] = float(np.mean(effects[1:] < effects[0]))
-                jpeg = native_attribution(detector, transform_image(image, "jpeg_q70"))
+                jpeg = attribution_of(detector, transform_image(image, "jpeg_q70"))
                 record["jpeg_q70_spearman"] = correlation(heat, jpeg["heat"])
                 record["jpeg_q70_top_iou"] = iou(top, top_window(jpeg["heat"], jpeg["covered"], side), side)
                 if len([r for r in records if r.get("randomization_spearman") is not None]) < RANDOMIZATION_IMAGES:
                     record["randomization_spearman"] = correlation(
-                        heat, native_attribution(detector, image, model=randomized)["heat"])
+                        heat, attribution_of(detector, image, model=randomized)["heat"])
                 else:
                     record["randomization_spearman"] = None
                 records.append(record)
@@ -177,10 +177,31 @@ def main():
             "median_top_percentile_among_random": float(np.median([r[f"{baseline}_top_percentile"] for r in records])),
             "wilcoxon_top_vs_random_p": float(wilcoxon(top, random).pvalue) if np.any(top != random) else None,
         }
+    clip = detector.architecture == "clip_vitl14_linear"
+    randomization = ("our linear head re-initialized; the frozen generic CLIP tower is shared "
+                     "unchanged, so this tests dependence on what we trained only"
+                     if clip else
+                     "layer4 and classifier weights re-initialized; low correlation means maps "
+                     "depend on learned weights")
+    limitations = [
+        "Masked inputs are out of distribution; score changes are diagnostics, not causal proof.",
+        "No ground-truth artifact annotations exist; this does not verify that any visible defect is present.",
+        "Small fixed sample from development data; external domains were used during model selection.",
+    ]
+    if clip:
+        limitations.append(
+            "The randomization control re-initializes our linear head only; a map surviving it "
+            "may still be driven by the pretrained tower rather than by anything we trained.")
+        limitations.append(
+            "Attribution is pooled to 14 px patches on the 224 px crop, so it is coarser in "
+            "source pixels than the native-resolution ResNet audit and the two are not comparable "
+            "map for map.")
     report = {
         "model_version": detector.model_version, "checkpoint_sha256": detector.checkpoint_hash,
+        "architecture": detector.architecture,
+        "attribution": "input-gradient, 14 px patch grid" if clip else "Grad-CAM, stitched native crops",
         "threshold": detector.threshold, "images": len(records),
-        "strata": {f"{k}:{s}:{l}": n for (k, s, l), n in Counter((r["kind"], r["source"], r["label"]) for r in records).items()},
+        "strata": {f"{k}:{s}:{lab}": n for (k, s, lab), n in Counter((r["kind"], r["source"], r["label"]) for r in records).items()},
         "correct": int(sum(r["correct"] for r in records)),
         "selection": f"Per stratum: first {args.correct} correct and {args.incorrect} incorrect of 40 hash-ordered development images",
         "effect_definition": "Drop in the score of the returned class after masking a side x side window (positive = window supported the verdict)",
@@ -189,12 +210,9 @@ def main():
         "jpeg_q70_spearman": summary([r["jpeg_q70_spearman"] for r in records]),
         "jpeg_q70_top_window_iou": summary([r["jpeg_q70_top_iou"] for r in records]),
         "randomization_spearman": summary([r["randomization_spearman"] for r in records]),
-        "randomization": "layer4 and classifier weights re-initialized; low correlation means maps depend on learned weights",
-        "limitations": [
-            "Masked inputs are out of distribution; score changes are diagnostics, not causal proof.",
-            "No ground-truth artifact annotations exist; this does not verify that any visible defect is present.",
-            "Small fixed sample from development data; external domains were used during model selection.",
-        ],
+        "randomization": randomization,
+        "mask_baseline_pixel": list(pixel),
+        "limitations": limitations,
     }
     output = ROOT / "report/explanation_audit" / detector.model_version
     output.mkdir(parents=True, exist_ok=True)

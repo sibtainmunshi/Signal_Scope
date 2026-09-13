@@ -1,4 +1,22 @@
-# v0.3.0 preparation and Claude Code handoff
+# v0.3.0 preparation - prepared, measured, NOT released
+
+> **Outcome, 13 September 2026 (user decision): v0.3.0 is not activated and v0.2.0 is
+> submitted.** Everything below is preserved as the record of what was built and
+> measured. Steps 2-5 of "Finish in this order" were deliberately not carried out.
+> Do not read this page as a live plan, and do not activate the prepared manifest
+> without a new explicit decision.
+>
+> Why: the candidate ranks better (development mean AUC 0.771/0.789 against
+> 0.647/0.653) but failed its predeclared real-photo false-positive gate three times,
+> at 22.0% against an allowed 17.8%. Activating it inside the remaining time also
+> required publishing a 608 MB asset, re-timing the clean-setup gate that v0.2.0
+> currently passes at 204.81 s with a 44.8 MB download, re-verifying the app flow,
+> re-running the explanation audit and re-recording the demo video. That put rows we
+> already pass at risk to improve one metric, on a model that flags roughly one real
+> web photograph in four and a half as AI.
+>
+> This is a deadline decision, not a measurement claim. The candidate's advantage is
+> real and published; see [POST_RELEASE_EXPERIMENTS.md](POST_RELEASE_EXPERIMENTS.md).
 
 13 September 2026. This is the current release status, supplementing
 [CLAUDE_NEXT.md](CLAUDE_NEXT.md). The active `model/manifest.json` remains v0.2.0.
@@ -69,8 +87,16 @@ about 0.38 s/image; the 608.36 MB download needs a new timed setup check.
 
 ## Finish in this order
 
-1. Claude completes and commits CLIP explanation. Run its 40-image audit; actual
-   people must perform the human usefulness review. Never invent artifact annotations.
+*Status: step 1's code is complete; steps 2-5 were not carried out, by the decision
+recorded at the top of this page.*
+
+1. **Code done, audit not run.** CLIP explanation is committed (input-gradient
+   attribution, `_clip_patch_map` in `src/signalscope/evidence.py`) and
+   `model/explanation_audit.py` now accepts either backbone, so the 40-image audit is
+   no longer blocked on a ResNet-only assumption. The audit itself has **not** been
+   executed against the CLIP head - it needs the local development archive and the
+   608 MB tower. Run it only if the candidate is revived; actual people must perform
+   the human usefulness review. Never invent artifact annotations.
 2. Verify packaged CLIP through CPU CLI/API and desktop/mobile app, including
    explanation, robustness and large-photo handling. Rerun the minimal-runtime
    import check through the full app. Measure new-model degradation/flip behavior;

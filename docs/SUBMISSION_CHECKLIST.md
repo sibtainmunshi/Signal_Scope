@@ -1,13 +1,22 @@
 # Submission acceptance checklist
 
-13 September release preparation: training experiments have finished. Balanced
-L/14 is selected for release preparation despite its published FPR gate failure;
-the COCO follow-up did not resolve it. No fourth variant is planned. Default
-serving and public assets remain v0.2.0. [Current release handoff](RELEASE_V030.md)
-lists the prepared package, completed checks, and remaining integration work.
-The historical acceptance evidence below belongs to v0.2.0 and must not be reused
-as evidence for the new model. In particular its 6.52s 24MP full-flow measurement,
-783-image screenshot AUC .8935, explanation audit and setup timing are not CLIP results.
+**Decision, 13 September: v0.2.0 is the submitted model.** This reverses the
+preparation direction recorded earlier the same day. The CLIP L/14 candidate is not
+activated and its assets are not published; `model/manifest.json` keeps the frozen
+`mixed_resnet18_native_v1_calibrated` ResNet, which is the model every verified
+acceptance row below was measured on. The reasoning is recorded in
+[RELEASE_V030.md](RELEASE_V030.md): the candidate ranks better but failed its own
+predeclared real-photo false-positive gate three times, and completing its
+integration, publication, timed setup and demo rebuild inside the remaining time
+would have put already-passing reproducibility and deployability rows at risk.
+
+The CLIP work stays published as a measured research result, not as the release.
+Its development advantage and its gate failure are both in
+[POST_RELEASE_EXPERIMENTS.md](POST_RELEASE_EXPERIMENTS.md); the prepared package,
+manifest and draft report remain in the repository, unactivated. No CLIP numbers
+may be presented as v0.2.0 evidence, and no v0.2.0 measurement below - the 6.52s
+24MP full-flow timing, the 783-image screenshot AUC .8935, the explanation audit or
+the setup timing - is evidence for the CLIP candidate.
 
 Updated 13 September 2026. Deadline: 15 September, 17:00 IST; target 14:00 IST.
 Mapped against all nine pages of the supplied SignalScope problem statement.
@@ -62,8 +71,9 @@ simulated-screenshot degradation is measured (GenImage validation AUC 0.893 agai
 
 Frozen CLIP ViT-L/14 with our own head measured far better development ranking
 (format-matched mean AUC 0.789 against 0.653) but failed one predeclared
-false-positive check, twice, including under a stricter threshold policy applied to
-both models. It is not released. A diagnostic spot check on user-supplied ChatGPT
+false-positive check three times: as trained, under a stricter threshold policy
+applied to both models, and with filtered COCO real photographs added to training.
+It is not released. A diagnostic spot check on user-supplied ChatGPT
 images and phone photographs found the released model's ranking inverted on that
 small set. Both outcomes are recorded in POST_RELEASE_EXPERIMENTS.md. The headline
 limitation is unchanged and understated by the CIFAKE numbers: unseen-generator

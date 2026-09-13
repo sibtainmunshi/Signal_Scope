@@ -1,5 +1,23 @@
 # SignalScope handoff - 12 September 2026
 
+> **Current state, 13 September evening: v0.2.0 is the submission. The CLIP L/14
+> candidate is finished as a research result and is not being activated.** Read this
+> box, then [RELEASE_V030.md](RELEASE_V030.md) for why, then
+> [SUBMISSION_CHECKLIST.md](SUBMISSION_CHECKLIST.md) for what is left. Sections below
+> written before this decision describe a v0.3.0 release path that was not taken.
+>
+> - `model/manifest.json` names the frozen ResNet and must stay that way without a new
+>   explicit user decision. No v0.3.0 asset is published; no reserved image was scored;
+>   `report/releases/v0.3.0/freeze.json` does not exist and must not be written.
+> - `model/explanation_audit.py` now runs against either backbone; it was previously
+>   hard-coded to refuse anything but the native multi-crop ResNet. The CLIP audit has
+>   **not** been run - it needs the development archive and the 608 MB tower.
+> - `tests/test_explanation_clip.py` covers the CLIP explanation path without the
+>   download. Verified here: 33 passed, 21 skipped (skips need absent checkpoints/data);
+>   Ruff clean on changed files. Re-run the full suite on the development machine.
+> - Remaining human work, in priority order: two independent explanation reviewers,
+>   a demo-video pass against the submitted build, a final public-link check.
+
 **13 September active continuation:** Read [CLAUDE_NEXT.md](CLAUDE_NEXT.md) first.
 User authorized urgent L/14 experiment plus batch/upload/screenshot work, and asks
 for Claude Code to take over if Codex quota ends. Training log is
