@@ -1,17 +1,28 @@
 {
-  "schema_version": 1,
-  "release": "v0.2.0",
-  "model_version": "mixed_resnet18_native_v1_calibrated",
-  "path": "model/checkpoints/mixed_resnet18_native_v1_calibrated/best.pt",
-  "url": "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.2.0/signalscope-resnet18-native-v1-calibrated.pt",
-  "bytes": 44782411,
-  "sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303",
-  "status": "Frozen v0.2.0 research model. Public reserved AUC 0.565 as distributed / 0.643 format-matched; substantial unseen-generator errors. Organizer hidden result unavailable.",
-  "architecture": "resnet18",
-  "preprocessing": "native_multicrop_v1",
-  "image_size": 128,
-  "threshold": 0.4553663730621338,
+  "schema_version": 2,
+  "release": "v0.3.0",
+  "model_version": "mixed_clip_l14_balanced_v1_release",
+  "path": "model/checkpoints/mixed_clip_l14_balanced_v1_release/head.pt",
+  "url": "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.3.0/signalscope-clip-l14-balanced-head.pt",
+  "bytes": 7949,
+  "sha256": "51e1e07d9b0fed13895b7f7a7fe7b207133cae68eca585582fb3c9c05606613f",
+  "architecture": "clip_vitl14_linear",
+  "preprocessing": "clip_center_crop_v1",
+  "image_size": 224,
+  "threshold": 0.8214277320372911,
+  "temperature": 0.9469072146104929,
   "calibrated": true,
-  "training_data": "CIFAKE (8,000) + GenImage BigGAN/SD1.5 train-only subset (6,239)",
-  "license_note": "Weights are derived from GenImage (CC BY-NC-SA 4.0 with additional noncommercial terms); treat as a noncommercial research artifact."
+  "artifacts": [
+    {
+      "name": "frozen_generic_clip_image_tower",
+      "path": "model/checkpoints/clip_vitl14_visual/visual_fp16.ts",
+      "url": "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.3.0/signalscope-clip-vitl14-visual-fp16.ts",
+      "bytes": 608352029,
+      "sha256": "12403c44d349dee827e7d0fe016c2f255ec51ccf2750d5b4260ab9c878bf7989"
+    }
+  ],
+  "training_data": "Our head: CIFAKE8000 + GenImageBigGAN/SD1.5 6239; original and matched views,90% GenImage weight. Generic CLIP tower is pretrained, not ours.",
+  "status": "Active v0.3.0 release. Development mean AUC 0.771 as distributed / 0.789 format-matched versus v0.2.0's 0.647/0.653, a large unseen-generator gain, but the declared advancement gate FAILED: as-distributed LDM/LAION real-photo FPR 22.0% against 12.8% allowed +5 points, confirmed under a stricter threshold policy and a COCO real-data augmentation attempt. Deployed anyway because ROC-AUC on the unseen-generator split is the organizers' primary scored metric. Explanation quality is measurably weaker than v0.2.0's (see docs/EXPLANATION_AUDIT.md): the app discloses an unsupported heatmap as 'not localised' rather than presenting it as the reason for a verdict.",
+  "license_note": "Generic CLIP image tower attribution applies. GenImage-derived head is a noncommercial research artifact.",
+  "parent_checkpoint_sha256": "dc889807cd6183c6cbf0859acd37784d6f28b0be6db297003079ad46671a0ebc"
 }
