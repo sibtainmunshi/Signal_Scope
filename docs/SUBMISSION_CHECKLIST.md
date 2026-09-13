@@ -1,71 +1,48 @@
-# Submission acceptance checklist
+# Submission acceptance checklist - v0.3.0
 
-13 September release preparation: training experiments have finished. Balanced
-L/14 is selected for release preparation despite its published FPR gate failure;
-the COCO follow-up did not resolve it. No fourth variant is planned. Default
-serving and public assets remain v0.2.0. [Current release handoff](RELEASE_V030.md)
-lists the prepared package, completed checks, and remaining integration work.
-The historical acceptance evidence below belongs to v0.2.0 and must not be reused
-as evidence for the new model. In particular its 6.52s 24MP full-flow measurement,
-783-image screenshot AUC .8935, explanation audit and setup timing are not CLIP results.
+Active CLIP model: activation `c211c68`, freeze `b8d8d93`. Deadline 15 September 17:00 IST; target 14:00 IST. Checkmarks denote verified implementation/evidence, not organizer points, universal accuracy or a successful advancement gate.
 
-Updated 13 September 2026. Deadline: 15 September, 17:00 IST; target 14:00 IST.
-Mapped against all nine pages of the supplied SignalScope problem statement.
-No estimated selection score or organizer test result is claimed.
+## Core and evaluation
 
-| Requirement | Verified evidence / remaining work |
-|---|---|
-| Single-image real/AI label and continuous score | Trained ResNet-18; shared app/API/CLI; CPU prediction verified |
-| Documented training and independent partitions | CIFAKE + source-train GenImage subset; grouped hashes, overlap screening; configs and histories retained |
-| Overall and unseen AUC, macro-F1, accuracy, FPR, confusion matrix | Frozen public final measurements in report/final; 20,000 CIFAKE test and 4,500 unique GLIDE/DALLE images; organizer data/results were not supplied |
-| Calibration and operating threshold | Temperature 1.65, threshold 0.455; validation FPR <=5% on each source; external FPR higher and calibration does not universally transfer |
-| A: Faithful explanation | Native crop Grad-CAM + masking; automated 40-image audit plus fixed-target supplement complete; two human reviewers pending; artifact annotations unavailable |
-| C: Robustness | Final model CIFAKE/GenImage JPEG, resize and blur benchmarks saved |
-| F: Deployable interface | Desktop/mobile CPU upload, heatmap, stability, EXIF, JSON; final-results page checked |
-| D: Metadata | EXIF separate from score; C2PA not implemented |
-| G: Active defence | Bounded six-transformation search measured; no general adversarial guarantee |
-| B/E optional modules | Not implemented; no generator-family or caption-consistency claims |
-| Public repository / weights | v0.2.0 tag/release published; unauthenticated 44.8 MB download hash verified; main manifest pushed |
-| Fresh clone under about 10 minutes | v0.2.0 fresh public clone: 204.81 s setup, warm pip cache, independent CPU venv; CLI/API and mobile/desktop checks passed |
-| README and dependencies | Updated v0.2.0 instructions, sources/licences, modules, limitations and measured results |
-| One-page model report | report/model_report.pdf generated from saved reports and visually checked |
-| Explanation samples under report | Three reviewed animal examples with exact source hashes, actual CPU results and overlays; includes a false negative |
-| 3-5 minute recorded demo | 4m15s actual CPU video, subtitles and report published/hash-verified; review alongside the later UI fixes before submission |
-| Genuine development history / originality | Real commits in 10-15 September window; AI assistance, libraries and datasets acknowledged |
-| Scope | No identity, face-swap or political-claim features; benchmark data are not entirely person-free; public assets must be individually reviewed |
-| Submission link | Verify public GitHub, weights, report and video; then user submits repo link on the portal |
+- [x] Trained binary model, label and score; shared CPU single-image/batch CLI/API/app.
+- [x] Training sources/split counts, fixed threshold and calibration documented.
+- [x] Development AUC, macro-F1, accuracy, FPR and confusion matrix reported.
+- [x] Head/tower identities and operating point frozen and committed before reserved scoring.
+- [x] Failed `as_distributed_ldm_200_fpr` gate disclosed across original, stricter-policy and COCO attempts.
+- [x] Private 11 ChatGPT + 18 phone-image diagnostic recorded as aggregates; no accuracy percentage claim or fitting.
+- [ ] **[PENDING - reserved evaluation in progress, will be filled before submission]** Overall and per-generator AUC/macro-F1/accuracy/FPR/confusion matrices for both frozen protocols. Claude owns the running evaluation and its JSONL files.
+- [ ] COCO 354 reserved real-photo FPR and Wilson 95% intervals, compared with unchanged v0.2.0.
+- [x] Public reserve's second use disclosed; COCO check is real-only; no organizer hidden-score claim. Organizer data/baseline unavailable per records.
+- [ ] Populate final README/report/API-linked measurements from completed results, with matching model identity. No post-result retuning.
 
-Model quality remains the main limitation: reserved unseen AUC 0.565/0.643
-(as distributed/format-matched), with low AI recall at the fixed threshold.
-Matching changes encoding and geometry together. Seed replication and development
-bootstrap intervals support these observed comparisons, not universal detection.
+## Explanations, robustness and interface
 
-The model and threshold were frozen before final evaluation; do not reuse final
-labels for model selection. `scripts/verify_frozen_results.py` checks the archived
-score arithmetic without generating new predictions. Human review must be performed
-by people; an assistant review is not a substitute for two independent reviewers.
+- [x] CLIP input-gradient explanation and masking diagnostic implemented; 40-image audit recorded.
+- [x] Weak localisation disclosed: only 17/40 satisfy support rule; deletion p=0.29/0.82. No verified-defect or AI-object localisation claim.
+- [ ] Actual human usefulness review and annotated-defect correctness/localisation evidence. Automated checks cannot substitute for these.
+- [x] JPEG, resize, blur and labelled simulated-screenshot stability interface works.
+- [ ] v0.3.0 aggregate degradation/flip measurements; archived ResNet results are not CLIP evidence.
+- [x] 25 MiB/40 MP uploads, extreme-aspect-ratio safeguards and CPU-only tower guard.
+- [x] EXIF separate from visual score; C2PA not checked; optional B/E absent and disclosed.
+- [x] Latest Claude handoff records 48 passing tests and CPU prediction/explanation/robustness/API checks. Not rerun during reserved evaluation.
+- [x] Component timings documented: prediction ~0.38s, explanation ~5.5s, robustness ~5.1s; not whole-request or universal guarantees.
+- [ ] Final desktop/mobile browser inspection of submitted UI and completed results page.
+- [ ] Public demo/example assets individually checked for scope. Category filtering does not establish every benchmark photo is person-free.
 
+## Packaging and submission
 
-Latest QA: backend regression suite has 31 passing tests. Claude completed the
-frontend fixes; independent CPU integration smoke, regression and settled-state contrast checks pass. Details and remaining
-measurement limits are in CLAUDE_QA_FIXES.md and CODEX_QA_FIXES.md.
+- [x] Required repository structure, dependencies, setup and predict instructions present.
+- [x] Head 7,949 bytes and tower 608,352,029 bytes verified locally with `--manifest model/manifest.json` and `--manifest model/releases/v0.3.0.json`.
+- [x] CLIP model runtime uses torch without clip/torchvision/ftfy/regex; ordinary application dependencies remain pinned. CPU-only serving stated.
+- [x] README rewritten around v0.3.0, with development failures and limitations.
+- [x] One-page report draft updated and visually verified; final-results placeholder retained.
+- [x] Exact release names/sizes/digests and description prepared in `docs/RELEASE_V030_DRAFT.md`. Not published by this task.
+- [ ] Publish reviewed v0.3.0 assets; verify unauthenticated downloads and digests.
+- [ ] Fresh public checkout/CPU setup and prediction under ~10 minutes, measured with the 608 MB tower. Old warm-cache timing is historical only.
+- [ ] Updated 3-5 minute v0.3.0 demo showing actual prediction, explanation uncertainty, robustness and a failure. Existing 4m15s v0.2.0 demo is labelled historical.
+- [x] v0.2.0 checkpoint/results/release preserved; separate-tag fallback documented.
+- [x] Sources/licences, pretrained-backbone credit and AI-assistance declaration included.
+- [ ] Public repo/report/weights/demo links checked; final-results placeholders resolved.
+- [ ] User submits the repository link on the portal before the deadline.
 
-Post-release development probes did not replace the frozen model. The CIFAKE-1k
-candidate improved mean development AUC but reduced calibrated AI recall; the
-tradeoff is recorded in POST_RELEASE_EXPERIMENTS.md. No new blind-test claim.
-
-Interface gaps found against the problem statement are now closed: `model/predict.py`
-accepts `--images-dir`/`--image-list` for the organizers' batch scoring, uploads allow
-25 MiB and 40 MP so ordinary phone photographs are accepted, and a declared
-simulated-screenshot degradation is measured (GenImage validation AUC 0.893 against
-0.956 original). The simulation is synthetic resampling, not real device capture.
-
-Frozen CLIP ViT-L/14 with our own head measured far better development ranking
-(format-matched mean AUC 0.789 against 0.653) but failed one predeclared
-false-positive check, twice, including under a stricter threshold policy applied to
-both models. It is not released. A diagnostic spot check on user-supplied ChatGPT
-images and phone photographs found the released model's ranking inverted on that
-small set. Both outcomes are recorded in POST_RELEASE_EXPERIMENTS.md. The headline
-limitation is unchanged and understated by the CIFAKE numbers: unseen-generator
-performance is weak, and the published B-Free reference reaches 0.945-0.970 on the
-same development images that v0.2.0 scores 0.647-0.653 on.
+Protected during this documentation task: active manifest, freeze, weights, evaluation code and JSONL outputs. No new experiment or evaluation run is launched.
