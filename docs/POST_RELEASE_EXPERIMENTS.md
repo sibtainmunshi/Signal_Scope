@@ -100,3 +100,17 @@ Comparing the two models at equal measured real-photo false-positive rates remov
 | format-matched, ldm_200 | 10% | 34.4% | **40.8%** |
 
 The candidate is two to three times better on the guided/ImageNet domain at every budget, and roughly level on LDM/LAION: clearly better format-matched, clearly worse as distributed. Its mean AUC advantage is therefore concentrated in one of the two domains, and part of the LDM AUC gain sits in a false-positive region too loose to operate in. Both domains remain reused development data, and one is related to the Stable Diffusion training family. [Comparison](../report/experiments/clip_l14_threshold_policy_v2/equal_fpr_comparison.json).
+
+### Adding diverse real photographs did not fix the false positives
+
+The remaining failure was a real-photo false-positive rate on LAION-style web imagery, and the candidates' training negatives were only CIFAKE (32 px) and GenImage reals. One fixed augmentation therefore added filtered COCO val2017 photographs as extra real training data, at a declared 10% of the loss mass, with the threshold additionally guarded by a COCO validation real-only 5% false-positive rule. Of 5,000 COCO images, 2,693 carrying a person annotation were excluded and near-duplicate groups were split whole; 1,603 went to training and 354 are reserved and still untouched. Licences are recorded and no raw image is redistributed.
+
+| External development | Released v0.2.0 | balanced_v1 | COCO-augmented |
+|---|---:|---:|---:|
+| Mean AUC, as distributed | 0.647 | 0.771 | 0.764 |
+| Mean AUC, format-matched | 0.653 | 0.789 | 0.783 |
+| ldm_200 real FPR, as distributed | 12.8% | 22.0% | 23.4% |
+
+**The hypothesis is not supported.** The same single check failed a third time, the LAION false-positive rate did not improve, and mean AUC moved slightly down. The COCO real-only threshold guard landed at 0.4966 against the CIFAKE-driven 0.8085, so COCO photographs were easy for the head and applied little corrective pressure. The weakness is specific to LAION-style web imagery rather than to real photography in general. [Protocol](../report/experiments/mixed_clip_l14_coco_real_v1/protocol.json) | [Results](../report/experiments/mixed_clip_l14_coco_real_v1/results.json).
+
+Three independent attempts — the original pair of candidates, a stricter threshold policy applied to both models, and this training-data augmentation — all fail the same predeclared check. That consistency is itself the finding: a frozen CLIP ViT-L/14 linear head trained on this data ranks unseen generators far better than the released model while flagging noticeably more LAION-style real photographs at its own operating point. Further attempts aimed at that one check would begin fitting to development labels, so the measurement stops here and the decision is recorded as an explicit tradeoff rather than resolved by further search.

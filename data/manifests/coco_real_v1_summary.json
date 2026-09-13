@@ -1,0 +1,75 @@
+{
+  "created_utc": "2026-09-13T05:41:19.594526+00:00",
+  "dataset": "COCO val2017 additional real-source experiment",
+  "source": "https://cocodataset.org/#download",
+  "total_images": 5000,
+  "person_annotation_exclusions": 2693,
+  "annotation_eligible": 2307,
+  "retained_counts": {
+    "train": 1603,
+    "reserved_real": 354,
+    "val": 350
+  },
+  "overlap_exclusions": {},
+  "duplicate_groups": 0,
+  "manifest_sha256": "0dbe25fd6455976bb2323e939e237329c090336ecf5d83cb4ca952daa3fc34b1",
+  "images_archive_sha256": "4f7e2ccb2866ec5041993c9cf2a952bbed69647b115d0f74da7ce8f4bef82f05",
+  "annotations_archive_sha256": "113a836d90195ee1f884e704da6304dfaaecff1f023f49b6ca93c4aaae470268",
+  "protected_manifests": {
+    "cifake": "b1bddb1d857b3d6926a9a39796d437256fc02536ff2af772e47adae88f686f3d",
+    "external": "8149884f168b1db3093fd8632516539f085dfef0c1d458b191eef9b88c1e2335",
+    "genimage": "6cc079dccf326403e4507c039420874eba091cf984266bd2fd0e3b476a91e636",
+    "genimage_vqdm": "66bb0cba36b1e5d7b8892ac75e112127372ae2344b32f8a39e10590117f1b433",
+    "genimage_midjourney": "3414cfc2c36c7433f893670d3e747a103a0b9305cd8903f014283ccb44118d4d"
+  },
+  "licenses": [
+    {
+      "url": "http://creativecommons.org/licenses/by-nc-sa/2.0/",
+      "id": 1,
+      "name": "Attribution-NonCommercial-ShareAlike License"
+    },
+    {
+      "url": "http://creativecommons.org/licenses/by-nc/2.0/",
+      "id": 2,
+      "name": "Attribution-NonCommercial License"
+    },
+    {
+      "url": "http://creativecommons.org/licenses/by-nc-nd/2.0/",
+      "id": 3,
+      "name": "Attribution-NonCommercial-NoDerivs License"
+    },
+    {
+      "url": "http://creativecommons.org/licenses/by/2.0/",
+      "id": 4,
+      "name": "Attribution License"
+    },
+    {
+      "url": "http://creativecommons.org/licenses/by-sa/2.0/",
+      "id": 5,
+      "name": "Attribution-ShareAlike License"
+    },
+    {
+      "url": "http://creativecommons.org/licenses/by-nd/2.0/",
+      "id": 6,
+      "name": "Attribution-NoDerivs License"
+    },
+    {
+      "url": "http://flickr.com/commons/usage/",
+      "id": 7,
+      "name": "No known copyright restrictions"
+    },
+    {
+      "url": "http://www.usa.gov/copyright.shtml",
+      "id": 8,
+      "name": "United States Government Work"
+    }
+  ],
+  "split_rule": "70/15/15 hash split of whole exact/pHash<=4 duplicate groups; reserved_real is untouched until model freeze",
+  "limits": [
+    "No person annotation is not proof that no person appears.",
+    "COCO treated as real photographs; not individually forensically authenticated.",
+    "pHash is heuristic; exact and near overlap cannot be exhaustively ruled out.",
+    "Additional source contains only real labels; source/content shortcuts remain possible.",
+    "Original image-specific licences apply; raw images are not redistributed."
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "run": "mixed_clip_l14_coco_real_v1",
+  "hypothesis": "Additional diverse real-source negatives may reduce false positives; cause is not established",
+  "followup": "Motivated by known v1 and policy-v2 external-development errors; not an independent discovery",
+  "parent_protocol_sha256": "4c162b16c08ed4260247ab557b02300851a2847ed4117a240260a74c2fb8ebdf",
+  "coco_manifest_sha256": "0dbe25fd6455976bb2323e939e237329c090336ecf5d83cb4ca952daa3fc34b1",
+  "candidate_count": 1,
+  "training_views": [
+    "as_distributed",
+    "matched"
+  ],
+  "loss_mass": {
+    "genimage_real": 0.35,
+    "genimage_ai": 0.45,
+    "cifake_real": 0.05,
+    "cifake_ai": 0.05,
+    "coco_real": 0.1
+  },
+  "C_grid": [
+    0.1,
+    1.0,
+    10.0
+  ],
+  "C_selection": "Mean AUC over original GenImage/CIFAKE validation and both formats; no COCO/external scoring for C choice",
+  "temperature": "New head temperature refit on unchanged complete GenImage/CIFAKE calibration, equal domain BCE",
+  "threshold": "Maximum of original domain validation thresholds at5% FPR and COCO-val original real-only5% FPR guard",
+  "comparison": "Original v1 12-check gate versus immutable released v0.2.0 operating point; no threshold-policy retry",
+  "gate": {
+    "minimum_mean_auc_gain_each_protocol": 0.03,
+    "maximum_generator_auc_loss": 0.02,
+    "minimum_mean_macro_f1_gain_each_protocol": 0.03,
+    "maximum_generator_fpr_increase": 0.05
+  },
+  "reserve": "COCO reserved_real untouched unless dev gate passes and head/temperature/threshold freeze; then real FPR only, both formats, release comparison with Wilson95% intervals",
+  "limits": [
+    "Reused external development is not blind performance evidence",
+    "COCO negatives create possible source/content shortcuts",
+    "This changes training negatives AND adds a validation threshold guard",
+    "No person annotation is not absence-of-person verification",
+    "No original reserved/test/user-image fitting or evaluation"
+  ],
+  "created_utc": "2026-09-13T06:00:56.444205+00:00"
+}

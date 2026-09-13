@@ -135,3 +135,12 @@ validation examples, not new accuracy evidence. A demonstrated failure must rema
   training (the training reals are CIFAKE 32 px and GenImage only, while the failing
   domain is LAION-style web photography).
 - Ruff passes across model, src, app, tests and scripts; 34 tests pass.
+
+- **Third attempt also failed the same check.** `mixed_clip_l14_coco_real_v1` added filtered
+  COCO real photographs (1,603 train, person annotations excluded, 354 reserved and
+  untouched) at 10% loss mass with a COCO real-only threshold guard. Mean AUC 0.764 as
+  distributed and 0.783 matched; as-distributed LDM/LAION FPR 23.4%, slightly worse than
+  balanced_v1's 22.0%. Do not keep iterating against that check: three attempts is the
+  point where further search becomes fitting to development labels.
+- The COCO reserved split (354 real photographs) is still untouched and remains available
+  for a single post-freeze real-FPR check if any CLIP candidate is ever deployed.
