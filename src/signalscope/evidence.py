@@ -70,6 +70,43 @@ def _normalize_map(coarse: torch.Tensor, size: int) -> tuple[torch.Tensor, float
     return (heatmap/peak if peak > 1e-12 else torch.zeros_like(heatmap)), peak
 
 
+def _display_map(values: np.ndarray) -> np.ndarray:
+    """Legible version of an attribution map, for rendering only.
+
+    The analysis map is peak normalized. Gradient attributions are strongly peaked, so
+    one patch takes the whole range and the overlay renders almost entirely black.
+    Rescaling to a high percentile and applying a mild gamma makes the rest of the
+    distribution visible. Nothing measured changes: the top window, the masking
+    diagnostic and the audit all keep using the unmodified map.
+    """
+    reference = float(np.percentile(values, 99.0))
+    if reference <= 1e-12:
+        return np.zeros_like(values)
+    return np.clip(values/reference, 0.0, 1.0)**.65
+
+
+def _localisation_evidence(ai_score, score_after, comparison_mean, target_ai, peak) -> dict:
+    """Whether the highlighted region measurably carries this verdict.
+
+    The returned class is what matters: for an AI verdict masking should lower the AI
+    score, for a real verdict it should raise it. Localisation counts as supported only
+    when the highlighted patch moves the verdict's own score by at least one percentage
+    point and moves it further than equally sized corner patches. The rule is fixed here
+    rather than chosen per image, and the numbers behind it are returned for audit.
+    """
+    if peak <= 1e-12 or score_after is None or comparison_mean is None:
+        return {"supported": False, "returned_class_drop": 0.0, "comparison_drop": 0.0,
+                "minimum_drop": .01, "reason": "no positive attribution region"}
+    sign = 1.0 if target_ai else -1.0
+    drop = sign*(ai_score-score_after)
+    comparison = sign*(ai_score-comparison_mean)
+    supported = bool(drop >= .01 and drop > comparison)
+    return {"supported": supported, "returned_class_drop": float(drop),
+            "comparison_drop": float(comparison), "minimum_drop": .01,
+            "reason": ("highlighted region moves the verdict more than corner patches" if supported
+                       else "highlighted region does not measurably carry the verdict")}
+
+
 def _resnet_attribution(detector: Detector, tensor: torch.Tensor) -> tuple:
     """Grad-CAM at the last convolutional stage of the ResNet backbone."""
     captured = []
@@ -150,7 +187,7 @@ def explain_prediction(detector: Detector, image: Image.Image) -> dict:
     display.thumbnail((768,768))
     left, top = round(region[0]*display.width), round(region[1]*display.height)
     right, bottom = round(region[2]*display.width), round(region[3]*display.height)
-    heat = Image.fromarray((values*255).astype(np.uint8)).resize(
+    heat = Image.fromarray((_display_map(values)*255).astype(np.uint8)).resize(
         (max(1, right-left), max(1, bottom-top)), Image.Resampling.BILINEAR)
     mask = Image.new("L", display.size, 0)
     mask.paste(heat, (left, top))
@@ -160,23 +197,30 @@ def explain_prediction(detector: Detector, image: Image.Image) -> dict:
         # Dim borders outside the analysed square so the overlay does not imply they were inspected.
         inside = np.zeros(mask_array.shape, dtype=bool)
         inside[top:bottom, left:right] = True
-        original[~inside] *= .45
+        original[~inside] *= .62
     color = np.zeros_like(original)
     color[:,:,0] = 255*mask_array
     color[:,:,1] = 150*mask_array+60*(1-mask_array)
     color[:,:,2] = 70*(1-mask_array)
     alpha = (.45*mask_array)[...,None]
     overlay = Image.fromarray(np.uint8(np.clip(original*(1-alpha)+color*alpha,0,255)))
+    localisation = _localisation_evidence(ai_score, score_after, comparison_mean, target_ai, peak)
     statements = []
     if peak <= 1e-12:
         statements.append(f"No positive {attribution_label} region was identified for this verdict.")
-    else:
+    elif localisation["supported"]:
         statements.append(f"The overlay highlights regions of positive {attribution_label} for this verdict.")
-        delta = 100 * (score_after - ai_score)
-        if abs(delta) < .1:
-            statements.append("Masking the highlighted patch changed the AI score by less than 0.1 percentage points; this diagnostic provides little evidence of a probability-level effect.")
-        else:
-            statements.append(f"Masking the highlighted patch changed the AI score by {delta:+.1f} percentage points ({100*ai_score:.1f}% to {100*score_after:.1f}%).")
+        statements.append(
+            f"Masking the highlighted patch moved the verdict's own score by "
+            f"{100*localisation['returned_class_drop']:+.1f} percentage points, against "
+            f"{100*localisation['comparison_drop']:+.1f} for corner patches of the same size.")
+    else:
+        # Measured, not assumed: this verdict does not rest on the highlighted region.
+        statements.append(
+            f"This verdict is not localised. Masking the strongest {attribution_label} region moved "
+            f"the verdict's own score by only {100*localisation['returned_class_drop']:+.1f} percentage "
+            f"points, so the evidence is spread across the image rather than concentrated in one place.")
+        statements.append("The overlay is shown as model influence only, and no region should be read as the reason for this verdict.")
     statements.append("This analysis has not established a specific visible defect such as malformed text or inconsistent lighting.")
     if cropped:
         statements.append("The detector analyses only the central square region; dimmed borders were not analysed.")
@@ -197,6 +241,7 @@ def explain_prediction(detector: Detector, image: Image.Image) -> dict:
                                "ai_score_after_corner_patches_mean": comparison_mean,
                                "mask_baseline": "ImageNet channel means",
                                "limitation": "Masking creates altered inputs; this is not causal proof or artifact ground truth."},
+        "localisation": localisation,
         "semantic_artifact_verified": False,
         "elapsed_ms": round((time.perf_counter()-start)*1000,2),
     }
@@ -288,15 +333,21 @@ def _explain_multicrop(detector: Detector, image: Image.Image, start: float) -> 
     color[:, :, 2] = 70*(1-mask_array)
     alpha = (.45*mask_array)[..., None]
     overlay = Image.fromarray(np.uint8(np.clip(original*(1-alpha)+color*alpha, 0, 255)))
+    localisation = _localisation_evidence(ai_score, score_after, comparison_mean, target_ai, peak)
     statements = [f"The verdict averages {len(boxes)} native-resolution crop(s); the overlay combines Grad-CAM attribution for each crop."]
     if peak <= 1e-12:
         statements.append("No positive Grad-CAM region was identified for this verdict.")
+    elif localisation["supported"]:
+        statements.append(
+            f"Masking the highlighted patch moved the verdict's own score by "
+            f"{100*localisation['returned_class_drop']:+.1f} percentage points, against "
+            f"{100*localisation['comparison_drop']:+.1f} for corner patches of the same size.")
     else:
-        delta = 100*(score_after-ai_score)
-        if abs(delta) < .1:
-            statements.append("Masking the highlighted patch changed the AI score by less than 0.1 percentage points; this diagnostic provides little evidence of a probability-level effect.")
-        else:
-            statements.append(f"Masking the highlighted patch changed the AI score by {delta:+.1f} percentage points ({100*ai_score:.1f}% to {100*score_after:.1f}%).")
+        statements.append(
+            f"This verdict is not localised. Masking the strongest Grad-CAM region moved the verdict's "
+            f"own score by only {100*localisation['returned_class_drop']:+.1f} percentage points, so the "
+            f"evidence is spread across the analysed crops rather than concentrated in one place.")
+        statements.append("The overlay is shown as model influence only, and no region should be read as the reason for this verdict.")
     statements.append("This analysis has not established a specific visible defect such as malformed text or inconsistent lighting.")
     if not covered.all():
         statements.append("Dimmed areas lie outside the analysed crops and did not influence the score.")
@@ -316,6 +367,7 @@ def _explain_multicrop(detector: Detector, image: Image.Image, start: float) -> 
                                "ai_score_after_corner_patches_mean": comparison_mean,
                                "mask_baseline": "ImageNet channel-mean pixels in the analysed image",
                                "limitation": "Masking creates altered inputs; this is not causal proof or artifact ground truth."},
+        "localisation": localisation,
         "semantic_artifact_verified": False,
         "elapsed_ms": round((time.perf_counter()-start)*1000, 2),
     }

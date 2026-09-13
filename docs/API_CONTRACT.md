@@ -31,6 +31,17 @@ additional product hint and never removes an image from binary evaluation.
 
 Explanation fields describe model influence and measured interventions. A
 heatmap must never be presented as ground-truth artifact segmentation.
+
+`explanation.localisation` reports whether the highlighted region measurably carries
+the verdict: `supported` is true only when masking that region moves the returned
+class's own score by at least one percentage point and moves it further than equally
+sized corner patches. `returned_class_drop` and `comparison_drop` carry the measured
+values behind that decision. When `supported` is false the statements say the verdict
+is not localised and the overlay is presented as model influence only. Clients must
+not describe an unsupported overlay as the reason for a verdict. The rule is fixed in
+code, not chosen per image, and the CLIP backbone frequently returns false because its
+evidence is distributed: masking any single region typically moves the score by less
+than one percentage point.
 Metadata evidence is separate from, and never overrides, the image-only score.
 
 `GET /api/model` includes `external_reserved`, `external_reserved_matched` and
