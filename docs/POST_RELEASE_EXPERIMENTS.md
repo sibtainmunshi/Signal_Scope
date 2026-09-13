@@ -114,3 +114,31 @@ The remaining failure was a real-photo false-positive rate on LAION-style web im
 **The hypothesis is not supported.** The same single check failed a third time, the LAION false-positive rate did not improve, and mean AUC moved slightly down. The COCO real-only threshold guard landed at 0.4966 against the CIFAKE-driven 0.8085, so COCO photographs were easy for the head and applied little corrective pressure. The weakness is specific to LAION-style web imagery rather than to real photography in general. [Protocol](../report/experiments/mixed_clip_l14_coco_real_v1/protocol.json) | [Results](../report/experiments/mixed_clip_l14_coco_real_v1/results.json).
 
 Three independent attempts — the original pair of candidates, a stricter threshold policy applied to both models, and this training-data augmentation — all fail the same predeclared check. That consistency is itself the finding: a frozen CLIP ViT-L/14 linear head trained on this data ranks unseen generators far better than the released model while flagging noticeably more LAION-style real photographs at its own operating point. Further attempts aimed at that one check would begin fitting to development labels, so the measurement stops here and the decision is recorded as an explicit tradeoff rather than resolved by further search.
+
+## Veto check: both models on the same user-supplied images
+
+The user re-supplied 11 ChatGPT-generated images and 18 photographs from their own phone
+camera. Both checkpoints scored every image through their own preprocessing, temperature
+and threshold, read directly from disk so no upload limit could skip one. Aggregate
+counts only are recorded here; the photographs are private and nothing was fitted on them.
+
+| Model and protocol | AI images detected | Real photos flagged | Small-sample AUC |
+|---|---:|---:|---:|
+| Released v0.2.0, as uploaded | 0 of 11 | 8 of 18 | 0.101 |
+| Released v0.2.0, format-matched | 2 of 11 | 2 of 18 | 0.429 |
+| CLIP L/14 candidate, as uploaded | **9 of 11** | 9 of 18 | **0.732** |
+| CLIP L/14 candidate, format-matched | **9 of 11** | 4 of 18 | **0.788** |
+
+The released model's ranking on these images is inverted: at 0.101 it orders generated
+images below real photographs. The candidate is no longer inverted, and the exchange is
+favourable on both protocols: as uploaded it detects nine more generated images for one
+additional real-photo false positive, and format-matched it detects seven more for two.
+
+Two generated images are still missed by the candidate, one decisively (0.050 as
+uploaded, 0.005 format-matched). Real-photo false positives remain high in absolute
+terms, which is the same weakness the advancement gate identified on LAION-style
+development imagery, now visible on ordinary high-resolution phone photographs.
+
+**With 11 and 18 images, no accuracy, precision or recall figure may be quoted from this
+table.** It answers one question only: does the candidate behave sensibly on modern
+generated images where the released model does not. It does.
