@@ -1,0 +1,27 @@
+{
+  "purpose": "Self-contained TorchScript export of the frozen CLIP ViT-L/14 image tower, so the evaluator runtime needs torch only.",
+  "backbone": "Official OpenAI CLIP ViT-L/14 image tower; not trained by SignalScope",
+  "backbone_source_sha256": "b8cca3fd41ae0c99ba7e8951adf17d267cdb84cd88be6f7c2e0eca1737a03836",
+  "exported_file": "model\\checkpoints\\clip_vitl14_visual\\visual_fp16.ts",
+  "exported_bytes": 608352029,
+  "exported_sha256": "12403c44d349dee827e7d0fe016c2f255ec51ccf2750d5b4260ab9c878bf7989",
+  "stored_dtype": "float16, upcast to float32 at load",
+  "image_tower_parameters": 303966208,
+  "verification": {
+    "images": 120,
+    "head": "model/checkpoints/mixed_clip_l14_balanced_v1/head.pt",
+    "threshold": 0.8214277320372911,
+    "feature_max_abs_difference": 0.0006998330354690552,
+    "cosine_similarity_min": 0.9999983310699463,
+    "score_max_abs_difference": 0.003392368370807697,
+    "score_mean_abs_difference": 0.0003035208786870785,
+    "label_disagreements": 0,
+    "cpu_seconds_per_image_original": 0.3731180599999789,
+    "cpu_seconds_per_image_exported": 0.3820880399999927
+  },
+  "limits": [
+    "Verified on development images only; agreement is not an accuracy claim.",
+    "The export covers the image tower; the unused text tower is discarded.",
+    "Original CLIP licence and attribution continue to apply."
+  ]
+}
