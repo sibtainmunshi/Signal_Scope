@@ -3,6 +3,16 @@
 The model CLI and API use the same Detector and preprocessing. The positive class
 is always AI-generated. API calls do not retrain the model or update thresholds.
 
+Release preparation (13 September): the active default remains v0.2.0. The prepared
+v0.3.0 CLIP manifest is separate at `model/releases/v0.3.0.json`; it fixes threshold
+0.8214277320372911 and temperature 0.9469072146104929. Its setup/run commands and
+remaining integration checks are in [RELEASE_V030.md](RELEASE_V030.md).
+`GET /api/model` reports the loaded architecture and `visual_sha256` (null for
+ResNet). CLIP uses the official 224px centre-crop transform, rather than ResNet's
+native crops. A CLIP public-reserve result, once recorded, will explicitly disclose
+the split's previous use for v0.2.0. Metrics are never transferred between checkpoint
+hashes; absent results remain absent.
+
 `GET /api/health`: readiness, model version, device, and actual model status. A
 missing checkpoint is reported as unavailable; no placeholder prediction occurs.
 
@@ -27,7 +37,7 @@ Metadata evidence is separate from, and never overrides, the image-only score.
 `cifake_test` when saved results match the loaded checkpoint SHA-256. These public
 reserved results are distinct from the unavailable organizer hidden test.
 
-Native crop preprocessing limits a canvas requiring upscaling to 20 million pixels.
+The v0.2.0 native crop preprocessing limits a canvas requiring upscaling to 20 million pixels.
 Native images such as 6000 x 4000 phone photos retain their original resolution.
 Extremely narrow images that exceed this limit return HTTP 413 before allocation.
 

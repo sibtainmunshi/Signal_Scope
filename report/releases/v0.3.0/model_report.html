@@ -1,0 +1,37 @@
+<!doctype html><html><head><meta charset="utf-8"><title>SignalScope v0.3.0 model report</title><style>
+@page {size:A4; margin:11mm 12mm;}
+* {box-sizing:border-box;} body {font:9pt/1.35 "Segoe UI",Arial,sans-serif;color:#182b30;margin:0;}
+h1 {font-size:21pt;letter-spacing:-.5px;margin:0;color:#154a43;} .subtitle {color:#546865;margin:3px 0 9px;}
+.status {background:#fff4db;border-left:3px solid #aa7b24;padding:7px 9px;font-weight:600;margin-bottom:9px;}
+h2 {font-size:10pt;margin:10px 0 4px;color:#154a43;border-bottom:1px solid #c8dbd5;padding-bottom:3px;}
+p {margin:3px 0 6px;} table {border-collapse:collapse;width:100%;font-size:8.6pt;}
+th {background:#eaf2ee;text-align:left;} th,td {padding:4px 5px;border-bottom:1px solid #dae5e0;}
+.grid {display:grid;grid-template-columns:1.1fr 1fr;gap:15px;} .small {font-size:8pt;color:#4b5e59;}
+.warning {border:1px solid #d3b87c;background:#fff9eb;padding:7px 9px;margin:9px 0;}
+.hash {font:7.2pt Consolas,monospace;overflow-wrap:anywhere;} .footer {border-top:1px solid #c8dbd5;padding-top:6px;margin-top:10px;}
+</style></head><body>
+<h1>SignalScope</h1><div class="subtitle">SIH 2026 internal selection - Problem Statement 2 - v0.3.0 model report</div>
+<div class="status">Prepared release draft - activation and final checks pending</div>
+<p>Real versus AI-generated image classification with an AI-positive score, local CPU inference, batch JSONL and a web interface. Results below are self-evaluated public-data measurements. Organizer hidden scores and qualifying rank are unknown.</p>
+<div class="grid"><section><h2>Model, data and operating point</h2>
+<p>Frozen generic <b>CLIP ViT-L/14</b> image tower plus our trained logistic head. Training: <b>8,000 CIFAKE + 6,239 GenImage BigGAN/SD1.5</b> images; original and identical crop/JPEG views, 90% GenImage loss weight. C=10 selected on internal validation. The pretrained tower is credited to OpenAI; we trained the head.</p>
+<p>Inference: EXIF orientation, official 224px CLIP centre crop, L2-normalized embedding, linear logit and temperature scaling. Temperature <b>0.946907</b>; AI threshold <b>0.821428</b>. Temperature uses separate calibration data; threshold uses internal validation, not external labels.</p>
+<p class="small">Calibration: 9,969 CIFAKE + 781 GenImage; validation sizes below. Exact/perceptual overlap screening and grouped splits are heuristic. Backbone pretraining overlap is unknown. GenImage-derived head: noncommercial research use.</p>
+</section><section><h2>Runnable interface and attribution</h2>
+<p>Shared CPU CLI/API; single image or batch with one loaded model. JPEG/PNG/WebP uploads up to <b>25 MiB / 40 MP</b>. EXIF is separate and does not alter predictions; C2PA is not checked.</p>
+<p>Packaged image tower + head: <b>608.36 MB</b>, verified by SHA-256. CLIP inference requires torch and the application dependencies, with no CLIP/torchvision/ftfy/regex install. Measured CPU scoring: approximately <b>0.38 seconds/image</b>; fresh-download setup timing is pending.</p>
+<p>CLIP explanation integration and its 40-image audit are pending. The planned input-gradient saliency and masking check describe model influence, not verified visual defects. Human usefulness review remains pending.</p>
+</section></div>
+<h2>Measured development performance at the stated operating point</h2>
+<table><tr><th>Evaluation</th><th>AUC</th><th>Macro-F1</th><th>Accuracy</th><th>Real FPR</th><th>AI recall</th></tr><tr><td>GenImage validation (783)</td><td>0.991</td><td>0.950</td><td>95.0%</td><td>1.9%</td><td>92.3%</td></tr><tr><td>CIFAKE validation subset (4,000)</td><td>0.910</td><td>0.759</td><td>76.7%</td><td>5.0%</td><td>58.4%</td></tr><tr><td>External dev - original</td><td>0.771</td><td>0.604</td><td>63.5%</td><td>11.7%</td><td>38.8%</td></tr><tr><td>External dev - format matched</td><td>0.789</td><td>0.608</td><td>64.2%</td><td>10.0%</td><td>38.5%</td></tr><tr><td>GLIDE/DALLE - second use</td><td colspan="5">Pending; no score claimed</td></tr><tr><td>GLIDE/DALLE matched - second use</td><td colspan="5">Pending; no score claimed</td></tr></table>
+<p class="small">External rows average generator/source pairs (2,000 unique dev images per format). Development numbers use the training encoder. CPU dtype/export checks found zero label disagreements on measured samples, score drift up to 0.0097; parity evidence, not another accuracy claim. Organizer data and baseline were not supplied.</p>
+<div class="warning"><b>Published acceptance failure:</b> balanced L/14 passed 11 of 12 internal checks, but as-distributed LDM/LAION real FPR was <b>22.0%</b>, versus v0.2.0's <b>12.8%</b> (allowed increase: 5 points). The gate <b>failed</b>. Release preparation prioritizes mean AUC improvement <b>0.647 to 0.771</b> original and <b>0.653 to 0.789</b> matched, accepting this disclosed tradeoff. Threshold retry and COCO augmentation did not fix the failed check.</div>
+<div class="grid"><section><h2>Confusion matrix and evaluation integrity</h2>
+<p>GenImage validation; rows actual real/AI, columns predicted real/AI: <b>[[362, 7], [32, 382]]</b>.</p>
+<p>354 COCO reserved real photographs remain unscored; a first-use false-positive check follows freeze. It measures real-photo FPR only.</p><p>GLIDE/DALLE was already evaluated for v0.2.0. Any new result is a disclosed second use after freeze, never described as a fresh blind test. Old release scores and weights remain unchanged.</p>
+</section><section><h2>Limitations and submission checks</h2>
+<p>False alarms and missed unseen AI images remain material. Scores are not guarantees of origin or event truth. Per-domain calibration may not transfer; centre cropping omits image borders. Private user images are unavailable and were not retested.</p>
+<p>The robustness interface includes JPEG, resizing, blur and a clearly labelled screenshot simulation. <b>New-model robustness measurements are pending</b>; the old ResNet's results are not attributed to CLIP. Generator attribution and caption consistency are not implemented.</p>
+</section></div>
+<div class="footer small">Sources: github.com/WisconsinAIVision/UniversalFakeDetect (method/evaluation); github.com/openai/CLIP (backbone); github.com/GenImage-Dataset/GenImage; CIFAKE (Bird &amp; Lotfi). Code and full experiments: github.com/sibtainmunshi/Signal_Scope.<br>Head SHA-256: <span class="hash">51e1e07d9b0fed13895b7f7a7fe7b207133cae68eca585582fb3c9c05606613f</span></div>
+</body></html>

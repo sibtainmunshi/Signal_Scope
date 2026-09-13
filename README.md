@@ -8,6 +8,16 @@ Problem Statement 2.
 data. The organizers supplied no dataset, baseline or hidden test; no organizer
 score is claimed or estimated.
 
+**13 September release preparation:** CLIP ViT-L/14 with our trained linear head is
+packaged locally as v0.3.0; the default manifest and public release remain v0.2.0.
+External development mean AUC improves from 0.653 to 0.789 under format matching,
+but the candidate **failed** the declared real-photo false-positive gate (22.0%
+versus 12.8% on as-distributed LDM/LAION). Its 608.36 MB CPU package and setup checks
+pass; explanation integration, final evaluation, publication and fresh-download
+verification remain pending. See the [release handoff](docs/RELEASE_V030.md) and
+[one-page draft](report/releases/v0.3.0/model_report.pdf). The module table and
+published demo below describe v0.2.0 until activation is verified.
+
 - Explanation examples (including a failure): [reviewed samples](report/explanation_samples/README.md)
 - One-page model report: [`report/model_report.pdf`](report/model_report.pdf)
 - Demo video: [4m15s actual CPU demonstration](https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.2.0/signalscope-demo-v0.2.0.mp4) ([English subtitles](https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.2.0/signalscope-demo-en.srt)); computer narration, includes a failure. This v0.2.0 recording predates the later accessibility fixes.

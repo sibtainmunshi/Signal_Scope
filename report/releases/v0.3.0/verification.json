@@ -1,0 +1,14 @@
+{
+  "status": "prepared_not_activated",
+  "active_default": "v0.2.0",
+  "full_regression": {"passed": 46, "seconds": 27.49, "deprecation_warnings": 3},
+  "ruff_changed_python_files": "passed",
+  "prepared_local_artifact_setup": "passed with --skip-install; not a fresh download",
+  "cpu_backend_prediction_and_seven_stability_variants": "passed",
+  "training_only_imports_blocked": ["clip", "torchvision", "ftfy", "regex"],
+  "new_model_explanation_verified": false,
+  "new_model_full_browser_flow_verified": false,
+  "reserved_images_scored_during_packaging": 0,
+  "release_assets_published": false,
+  "pdf_draft": "one page; actual PDF rendered and visually inspected"
+}

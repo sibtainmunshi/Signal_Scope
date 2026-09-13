@@ -1,13 +1,15 @@
 # Submission acceptance checklist
 
-13 September continuation in progress: `docs/CLAUDE_NEXT.md` has the running L/14
-experiment and remaining verification. Batch CLI, phone upload support and
-simulated screenshot processing are implemented; 34 tests and frontend build pass.
-24MP CPU upload with explanation+robustness passed in 6.52s. Supplemental synthetic
-screenshot benchmark completed on 783 GenImage validation images (AUC .8935);
-real device capture remains untested. L/14 candidate still running.
+13 September release preparation: training experiments have finished. Balanced
+L/14 is selected for release preparation despite its published FPR gate failure;
+the COCO follow-up did not resolve it. No fourth variant is planned. Default
+serving and public assets remain v0.2.0. [Current release handoff](RELEASE_V030.md)
+lists the prepared package, completed checks, and remaining integration work.
+The historical acceptance evidence below belongs to v0.2.0 and must not be reused
+as evidence for the new model. In particular its 6.52s 24MP full-flow measurement,
+783-image screenshot AUC .8935, explanation audit and setup timing are not CLIP results.
 
-Updated 12 September 2026. Deadline: 15 September, 17:00 IST; target 14:00 IST.
+Updated 13 September 2026. Deadline: 15 September, 17:00 IST; target 14:00 IST.
 Mapped against all nine pages of the supplied SignalScope problem statement.
 No estimated selection score or organizer test result is claimed.
 

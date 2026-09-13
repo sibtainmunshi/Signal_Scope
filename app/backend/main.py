@@ -94,13 +94,17 @@ def model_report():
     reserved = measured(detector, "external_reserved")
     test = measured(detector, "test")
     if reserved:
-        unseen_status = "Frozen public reserved GLIDE/DALLE evaluation completed; organizer hidden result unavailable"
+        unseen_status = ("GLIDE/DALLE evaluation completed; disclosed second use of the public reserve; organizer hidden result unavailable"
+                         if reserved.get("prior_reserve_use") else
+                         "Frozen public reserved GLIDE/DALLE evaluation completed; organizer hidden result unavailable")
     elif external:
         unseen_status = "External development measured; reserved final generators not evaluated"
     else:
         unseen_status = "Not evaluated yet"
     return {"ready": True, "model_version": detector.model_version,
-            "checkpoint_sha256": detector.checkpoint_hash, "architecture": "ResNet-18",
+            "checkpoint_sha256": detector.checkpoint_hash,
+            "architecture": "CLIP ViT-L/14 + trained linear head" if detector.architecture == "clip_vitl14_linear" else "ResNet-18",
+            "visual_sha256": detector.visual_hash,
             "image_size": detector.image_size, "preprocessing": detector.preprocessing,
             **training_description(detector),
             "threshold": detector.threshold, "calibrated": detector.calibrated,

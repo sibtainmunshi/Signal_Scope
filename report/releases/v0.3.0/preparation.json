@@ -1,0 +1,162 @@
+{
+  "prepared_utc": "2026-09-13T12:19:45.393097+00:00",
+  "manifest_sha256": "69fb8d518343bfa39e5ac8d2eaf4ac1f720dd1a81d8dc0ee34cff18730f4db13",
+  "checkpoint_sha256": "51e1e07d9b0fed13895b7f7a7fe7b207133cae68eca585582fb3c9c05606613f",
+  "visual_sha256": "12403c44d349dee827e7d0fe016c2f255ec51ccf2750d5b4260ab9c878bf7989",
+  "operating_point": {
+    "threshold": 0.8214277320372911,
+    "temperature": 0.9469072146104929
+  },
+  "parent_development_report_sha256": "f45d423c4dc6bb05f595219f2ebd3dc78c43dd6389df7ce4bd5a7f67ddf82639",
+  "development_results": {
+    "as_distributed": {
+      "protocol": "as_distributed",
+      "per_generator": [
+        {
+          "generator": "guided",
+          "real_source": "imagenet",
+          "count": 1000,
+          "real_count": 500,
+          "ai_count": 500,
+          "roc_auc": 0.8211600000000001,
+          "macro_f1": 0.5688064216797232,
+          "accuracy": 0.625,
+          "false_positive_rate": 0.014,
+          "true_positive_rate": 0.264,
+          "brier_score": 0.2591269677070147,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              493,
+              7
+            ],
+            [
+              368,
+              132
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "ldm_200",
+          "real_source": "laion",
+          "count": 1000,
+          "real_count": 500,
+          "ai_count": 500,
+          "roc_auc": 0.721188,
+          "macro_f1": 0.6395273531532192,
+          "accuracy": 0.646,
+          "false_positive_rate": 0.22,
+          "true_positive_rate": 0.512,
+          "brier_score": 0.2654809221943947,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              390,
+              110
+            ],
+            [
+              244,
+              256
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        }
+      ],
+      "mean_auc": 0.771174,
+      "mean_macro_f1": 0.6041668874164712
+    },
+    "matched": {
+      "protocol": "matched",
+      "per_generator": [
+        {
+          "generator": "guided",
+          "real_source": "imagenet",
+          "count": 1000,
+          "real_count": 500,
+          "ai_count": 500,
+          "roc_auc": 0.8081119999999999,
+          "macro_f1": 0.5435167240448809,
+          "accuracy": 0.605,
+          "false_positive_rate": 0.028,
+          "true_positive_rate": 0.238,
+          "brier_score": 0.24749814680522605,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              486,
+              14
+            ],
+            [
+              381,
+              119
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        },
+        {
+          "generator": "ldm_200",
+          "real_source": "laion",
+          "count": 1000,
+          "real_count": 500,
+          "ai_count": 500,
+          "roc_auc": 0.769092,
+          "macro_f1": 0.6728337504703015,
+          "accuracy": 0.68,
+          "false_positive_rate": 0.172,
+          "true_positive_rate": 0.532,
+          "brier_score": 0.23822610074379638,
+          "threshold": 0.8214277320372911,
+          "positive_class": "ai_generated",
+          "confusion_matrix": [
+            [
+              414,
+              86
+            ],
+            [
+              234,
+              266
+            ]
+          ],
+          "confusion_matrix_order": [
+            "real",
+            "ai_generated"
+          ]
+        }
+      ],
+      "mean_auc": 0.788602,
+      "mean_macro_f1": 0.6081752372575913
+    }
+  },
+  "gate_checks": {
+    "as_distributed_mean_auc": true,
+    "as_distributed_mean_f1": true,
+    "as_distributed_guided_auc": true,
+    "as_distributed_guided_fpr": true,
+    "as_distributed_ldm_200_auc": true,
+    "as_distributed_ldm_200_fpr": false,
+    "matched_mean_auc": true,
+    "matched_mean_f1": true,
+    "matched_guided_auc": true,
+    "matched_guided_fpr": true,
+    "matched_ldm_200_auc": true,
+    "matched_ldm_200_fpr": true
+  },
+  "gate_passed": false,
+  "decision": "User-directed submission preparation prioritizing AUC despite failed FPR-equivalence gate; no fourth model variant or threshold tuning",
+  "evaluation_limits": "Known development results only; actual TorchScript CPU parity measured separately; no new reserved result yet",
+  "active_manifest_changed": false,
+  "published": false
+}
