@@ -22,6 +22,12 @@ def clip_resize_box(width, height, size=224):
         raise ValueError("Image dimensions must be positive.")
     short, long = (width, height) if width <= height else (height, width)
     new_short, new_long = size, int(size * long / short)
+    if new_short * new_long > MAX_UPSCALED_PIXELS:
+        # An extreme aspect ratio blows up the short-side resize before any crop; reject
+        # it here, before allocation, the same way native_canvas_size guards the ResNet path.
+        raise ValueError(
+            "Image aspect ratio requires more than 20 megapixels for CLIP preprocessing; "
+            "use a less narrow image.")
     resized = (new_short, new_long) if width <= height else (new_long, new_short)
     left = round((resized[0] - size) / 2.0)
     top = round((resized[1] - size) / 2.0)

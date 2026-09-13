@@ -89,3 +89,29 @@ def test_clip_detector_rejects_a_tampered_tower_digest():
             Detector(tampered, "cpu")
     finally:
         tampered.unlink(missing_ok=True)
+
+
+def test_clip_resize_box_rejects_extreme_aspect_ratio():
+    """The pre-crop resize would otherwise allocate an unbounded canvas.
+
+    A short-side resize with no upper bound on the long side can blow up to billions of
+    pixels for a pathologically narrow image (e.g. 100,000x1), well before any crop
+    happens. This mirrors the guard native_canvas_size already applies to the ResNet path.
+    """
+    with pytest.raises(ValueError, match="aspect ratio"):
+        clip_resize_box(100_000, 1, 224)
+    # A merely wide panorama must still work normally.
+    resized, _box = clip_resize_box(4000, 200, 224)
+    assert min(resized) == 224
+
+
+@needs_artifacts
+def test_clip_checkpoint_rejects_explicit_cuda_device():
+    """The exported tower bakes a CPU-literal tensor at trace time (see export_clip_visual.py)
+    and crashes with a cross-device RuntimeError under CUDA; 'auto' must fall back to CPU
+    silently, but an explicit non-CPU request must fail clearly instead of crashing later."""
+    with pytest.raises(ValueError, match="only support device='cpu'"):
+        Detector(HEAD, "cuda")
+    # 'auto' must resolve to CPU for this architecture regardless of GPU availability.
+    detector = Detector(HEAD, "auto")
+    assert str(detector.device) == "cpu"

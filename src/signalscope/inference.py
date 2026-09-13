@@ -51,15 +51,27 @@ class Detector:
         self.path = root_path(checkpoint)
         if not self.path.is_file():
             raise FileNotFoundError(f"Trained checkpoint missing: {self.path}. Train or download documented weights first.")
-        self.device = torch.device("cuda" if device == "auto" and torch.cuda.is_available()
-                                   else "cpu" if device == "auto" else device)
+        requested = torch.device("cuda" if device == "auto" and torch.cuda.is_available()
+                                 else "cpu" if device == "auto" else device)
         payload = torch.load(self.path, map_location="cpu", weights_only=True)
         self.architecture = payload.get("architecture")
         if self.architecture == "resnet18":
+            self.device = requested
             self.model = build_model(pretrained=False)
             self.model.load_state_dict(payload["state_dict"], strict=True)
             self.visual_hash = None
         elif self.architecture == "clip_vitl14_linear":
+            # The exported image tower bakes a CPU-literal tensor into its traced graph
+            # (CLIP's class-embedding zero-pad reads x.device at trace time, which
+            # torch.jit.trace records as a constant rather than a dynamic op), so running
+            # it on CUDA raises a cross-device RuntimeError. CPU is what has been
+            # benchmarked and verified for this checkpoint, so "auto" silently resolves
+            # there; an explicit non-CPU request fails loudly instead of crashing later.
+            if device not in {"auto", "cpu"}:
+                raise ValueError(
+                    f"CLIP checkpoints only support device='cpu' (requested '{device}'); "
+                    "the exported image tower cannot run on other devices.")
+            self.device = torch.device("cpu")
             tower, self.visual_hash = load_visual(payload, self.device)
             self.model = ClipLinearModel(tower, payload["weight"], payload["bias"])
         else:

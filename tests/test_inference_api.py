@@ -9,6 +9,10 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 CHECKPOINT = ROOT / json.loads((ROOT / "model/manifest.json").read_text(encoding="utf-8"))["path"]
+# Some tests validate behaviour specific to the frozen v0.2.0 ResNet (its own archived
+# final-evaluation counts, and native multi-crop Grad-CAM), independent of whichever
+# checkpoint model/manifest.json currently points the app at.
+RESNET_CHECKPOINT = ROOT / "model/checkpoints/mixed_resnet18_native_v1_calibrated/best.pt"
 pytestmark = pytest.mark.skipif(not CHECKPOINT.exists(), reason="Train/download the baseline checkpoint first")
 
 
@@ -99,14 +103,27 @@ def test_unsupported_format_is_rejected(client):
 
 
 def test_model_report_shows_frozen_results_only_for_loaded_checkpoint(client):
-    from app.backend.main import app, measured
-    model = client.get("/api/model").json()
+    """The v0.2.0 ResNet's own archived final counts, regardless of the active manifest.
+
+    Calls model_report() directly with app.state.detector swapped in place, rather than
+    a nested TestClient: entering a second TestClient on the same shared `app` re-runs
+    its lifespan startup and would overwrite app.state.detector for every other test in
+    this module, since the `client` fixture is module-scoped.
+    """
+    from app.backend.main import app, measured, model_report
+    from signalscope.inference import Detector
+    original_detector = app.state.detector
+    try:
+        app.state.detector = Detector(RESNET_CHECKPOINT, "cpu")
+        model = model_report()
+    finally:
+        app.state.detector = original_detector
     assert model["external_reserved"]["checkpoint_sha256"] == model["checkpoint_sha256"]
     assert model["external_reserved"]["unique_images_evaluated"] == 4500
     assert model["external_reserved_matched"]["checkpoint_sha256"] == model["checkpoint_sha256"]
     assert model["cifake_test"]["count"] == 20000
     assert "completed" in model["unseen_generator_status"]
-    detector = app.state.detector
+    detector = Detector(RESNET_CHECKPOINT, "cpu")
     original = detector.checkpoint_hash
     try:
         detector.checkpoint_hash = "different-checkpoint"
@@ -171,12 +188,13 @@ def test_flat_input_preserves_binary_score_but_recommends_review(client):
 
 
 def test_fixed_target_attribution_preserves_default_and_does_not_change_score():
+    """Native multi-crop Grad-CAM, which only the ResNet architecture supports."""
     import numpy as np
 
     from signalscope.evidence import native_attribution
     from signalscope.inference import Detector
 
-    detector = Detector(CHECKPOINT, "cpu")
+    detector = Detector(RESNET_CHECKPOINT, "cpu")
     with Image.open(io.BytesIO(next(sample_images()))) as image:
         default = native_attribution(detector, image)
         fixed = native_attribution(detector, image, target_ai=default["target_ai"])
