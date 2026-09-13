@@ -144,3 +144,39 @@ validation examples, not new accuracy evidence. A demonstrated failure must rema
   point where further search becomes fitting to development labels.
 - The COCO reserved split (354 real photographs) is still untouched and remains available
   for a single post-freeze real-FPR check if any CLIP candidate is ever deployed.
+
+## 13 September, late evening - CLIP deployed, reserved evaluation running
+
+The section above is now stale. Current state:
+
+- **v0.3.0 is active and served.** `model/manifest.json` points at
+  `mixed_clip_l14_balanced_v1_release` (CLIP ViT-L/14 + our linear head), not the
+  v0.2.0 ResNet. Explanation, robustness, batch predict and the full API all work
+  against it. 48 tests pass.
+- **The gate never passed.** It failed the same real-FPR check three independent
+  times (original candidates, stricter threshold retry, COCO augmentation). Deployed
+  anyway because unseen-generator ROC-AUC is the organizers' primary scored metric
+  and first tie-break; the manifest `status` field and README must say this plainly.
+- **Two crash-class bugs were found and fixed** while smoke-testing before
+  activation: CUDA crashes for the exported CLIP tower (now CPU-only, enforced at
+  load), and unbounded memory on extreme aspect-ratio images (now guarded like the
+  ResNet path). Both have regression tests.
+- **Explanation is implemented for CLIP** (input-gradient attribution, 14 px patch
+  grid) but is measurably weaker than the ResNet's on the 40-image audit: deletion
+  test not significant (p=0.29/0.82), localisation gate supported on only 17/40
+  (42.5%). This is disclosed, not hidden - see `docs/EXPLANATION_AUDIT.md`.
+- **Freeze committed** (`b8d8d93`, following activation commit `c211c68`). No further
+  weight/threshold change is permitted on this checkpoint.
+- **Reserved evaluation is running now** (`scripts/evaluate_clip_release.py --run`),
+  scoring GLIDE/DALLE (disclosed second use) and 354 COCO reserved reals (first use,
+  both candidate and v0.2.0 for comparison) on CPU, resumable via
+  `report/releases/v0.3.0/*.jsonl`. Do not rerun or touch those files; do not touch
+  `model/manifest.json` or `report/releases/v0.3.0/freeze.json` until results land in
+  `report/releases/v0.3.0/reserved_summary.json`.
+- The user's 11 ChatGPT images and 18 phone photographs **were restored and tested**
+  (`docs/POST_RELEASE_EXPERIMENTS.md`, "Veto check" section): v0.2.0 detected 0/11
+  with an inverted ranking (AUC 0.101); the CLIP candidate detected 9/11 (AUC 0.732
+  as uploaded / 0.788 matched). Per-image detail stays private under `tmp/`.
+- Next after the reserved run completes: read `reserved_summary.json`, report the
+  actual numbers (good or bad) in README/model report/checklist, no retuning
+  regardless of outcome.
