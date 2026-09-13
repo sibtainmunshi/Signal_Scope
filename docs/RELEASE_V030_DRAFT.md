@@ -23,11 +23,29 @@ for fitting. B-Free's 0.970/0.945 AUC is a third-party reference, not our result
 
 ## Final results
 
-**[PENDING - reserved evaluation in progress, will be filled before submission]**
+Reserved evaluation completed `2026-09-13T18:40:06Z`. GLIDE/DALLE is a disclosed
+second use of the public reserve already scored for v0.2.0; COCO's 354 reserved
+reals are first use. No organizer hidden score is available and no post-freeze
+tuning occurred.
 
-GLIDE/DALLE is a disclosed second use of the public reserve. COCO's 354 reserved
-reals measure first-use real FPR with Wilson 95% intervals. No organizer hidden
-score is available and no post-freeze tuning is permitted.
+| Unseen-generator reserve | v0.2.0 | v0.3.0 |
+|---|---:|---:|
+| Macro AUC, as distributed | 0.565 | **0.849** |
+| Macro AUC, format matched | 0.643 | **0.833** |
+| DALL-E AUC (as distributed) | ~0.55 | 0.730 |
+| GLIDE (3 variants) AUC (as distributed) | ~0.55-0.62 | 0.884 / 0.895 / 0.887 |
+| Overall accuracy / macro-F1 (as distributed) | ~0.50 / ~0.47 | 0.747 / 0.626 |
+
+| COCO reserved reals (354, first use) | v0.2.0 | v0.3.0 |
+|---|---:|---:|
+| Real FPR, as distributed | 1.69% [0.78, 3.65] | **0.28%** [0.05, 1.58] |
+| Real FPR, format matched | 11.02% [8.16, 14.71] | **1.69%** [0.78, 3.65] |
+
+The gate's 22.0% development-set false-positive finding does not reproduce on
+COCO's more curated photography (candidate: 0.28-1.69%). That finding is therefore
+domain-specific to LAION-style web imagery, not a universal real-photo problem -
+both facts are reported together, not substituted for each other. Full record:
+`report/releases/v0.3.0/reserved_summary.json`.
 
 ## Exact release assets
 

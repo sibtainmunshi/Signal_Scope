@@ -2,9 +2,9 @@
 
 Real-versus-AI image classification with a **frozen CLIP ViT-L/14 image tower and our trained linear head**, a local CPU app, batch prediction and measured model-influence explanations. SIH 2026 internal selection, Problem Statement 2.
 
-**v0.3.0 is active and frozen at `b8d8d93`; public release assets are pending publication.** Reserved evaluation is running. Development ranking improved over v0.2.0, but the declared real-photo FPR gate **FAILED** and explanation localisation is weaker. This is a research detector, not proof of image origin. No organizer hidden-test score is claimed.
+**v0.3.0 is active and frozen at `b8d8d93`; public release assets are pending publication.** Reserved evaluation is complete: unseen-generator macro AUC rose from v0.2.0's 0.565/0.643 to **0.849/0.833** (as distributed/matched). Development ranking also improved, but the declared real-photo FPR gate **FAILED** on LAION-style development images and explanation localisation is weaker. This is a research detector, not proof of image origin. No organizer hidden-test score is claimed.
 
-- [One-page v0.3.0 report](report/releases/v0.3.0/model_report.pdf) (final metrics pending)
+- [One-page v0.3.0 report](report/releases/v0.3.0/model_report.pdf) (reserved metrics filled; public download verification pending)
 - [Submission checklist](docs/SUBMISSION_CHECKLIST.md), [API contract](docs/API_CONTRACT.md)
 - [Development comparisons and user-image diagnostic](docs/POST_RELEASE_EXPERIMENTS.md)
 - [Explanation audit](docs/EXPLANATION_AUDIT.md)
@@ -14,7 +14,7 @@ Real-versus-AI image classification with a **frozen CLIP ViT-L/14 image tower an
 
 | Module | Implemented scope and limits |
 |---|---|
-| Core classification | Trained head, real/AI label, AI-positive score, fixed calibrated operating point; shared CLI/API/app. Final public metrics pending. |
+| Core classification | Trained head, real/AI label, AI-positive score, fixed calibrated operating point; shared CLI/API/app. Reserved metrics measured (see below); public release-asset verification pending. |
 | A. Faithful explanation | Input-gradient influence map on a 14px patch grid and masking diagnostic. Only 17/40 audit images satisfy the localisation-support rule; no verified defect localisation. |
 | B. Generator attribution | Not implemented. |
 | C. Robustness | Per-upload JPEG/resize/blur/simulated-screenshot stability checks. v0.3.0 degradation benchmark pending; old results are not new-model evidence. |
@@ -110,9 +110,29 @@ GenImage validation confusion matrix, rows actual real/AI and columns predicted 
 
 ### Reserved/final results
 
-**[PENDING - reserved evaluation in progress, will be filled before submission]**
+**Reserved evaluation completed** (committed [freeze](report/releases/v0.3.0/freeze.json), `report/releases/v0.3.0/reserved_summary.json`). This is a **second use** of the public GLIDE/DALLE reserve already evaluated for v0.2.0, not a fresh blind test; model selection used development data only. COCO's 354 reserved real photos are a **first use**, real-FPR only, with Wilson 95% intervals.
 
-Overall/per-generator AUC, macro-F1, accuracy, FPR and confusion matrices will be reported for the public GLIDE/DALLE evaluation. The [committed freeze](report/releases/v0.3.0/freeze.json) declares as-distributed and matched protocols. This is a **second use** of the public reserve already evaluated for v0.2.0, not a fresh blind test. Model selection used development data; private user images were a veto diagnostic, never fitting data. COCO's 354 reserved real photos provide first-use real FPR with Wilson 95% intervals, not AI accuracy. Organizer hidden results are unavailable. No post-result retuning.
+| Unseen-generator reserved set | v0.2.0 (previous) | v0.3.0 (this release) |
+|---|---:|---:|
+| Macro AUC, as distributed | 0.565 | **0.849** |
+| Macro AUC, format matched | 0.643 | **0.833** |
+| DALL-E AUC, as distributed | ~0.55 | **0.730** |
+| glide_100_27 AUC, as distributed | ~0.55-0.62 | **0.884** |
+| glide_50_27 AUC, as distributed | ~0.55-0.62 | **0.895** |
+| glide_100_10 AUC, as distributed | ~0.55-0.62 | **0.887** |
+| Overall accuracy, as distributed | ~0.50 | 0.747 |
+| Overall macro-F1, as distributed | ~0.47 | 0.626 |
+
+As-distributed confusion matrix (real/AI rows, real/AI columns), pooled over all four reserved generators sharing 500 real photos: **`[[399, 101], [1036, 2964]]`**. Format-matched: **`[[426, 74], [1447, 2553]]`**.
+
+| COCO reserved real photos (354, first use) | v0.2.0 | v0.3.0 candidate |
+|---|---:|---:|
+| Real-photo FPR, as distributed | 1.69% (95% CI 0.78-3.65%) | **0.28%** (95% CI 0.05-1.58%) |
+| Real-photo FPR, format matched | 11.02% (95% CI 8.16-14.71%) | **1.69%** (95% CI 0.78-3.65%) |
+
+This is a materially better result than the LAION-style development images that failed the advancement gate: the earlier 22.0% false-positive concern does not reproduce on COCO's more curated photography, so the gate's finding was **domain-specific to LAION-style web imagery**, not a universal real-photo problem. Both facts are true and are reported together: the gate failed on its declared development check, and the deployed model's actual reserved-set behaviour improved substantially over v0.2.0 on every measured axis, including real photos.
+
+No organizer hidden-test score is available or claimed. AUC measures ranking ability, not classification accuracy. These datasets are 2021-2023 vintage generators (GLIDE, DALL-E, ADM, LDM); the organizer's own held-out set may contain newer or different generators, and this reserved result is evidence of generalisation capacity, not a guarantee of the organizer's exact score. The private user-image veto diagnostic below used genuinely 2026-era generated images as a second, independent check in the same direction.
 
 ### Private user-image veto diagnostic
 

@@ -10,10 +10,10 @@ Active CLIP model: activation `c211c68`, freeze `b8d8d93`. Deadline 15 September
 - [x] Head/tower identities and operating point frozen and committed before reserved scoring.
 - [x] Failed `as_distributed_ldm_200_fpr` gate disclosed across original, stricter-policy and COCO attempts.
 - [x] Private 11 ChatGPT + 18 phone-image diagnostic recorded as aggregates; no accuracy percentage claim or fitting.
-- [ ] **[PENDING - reserved evaluation in progress, will be filled before submission]** Overall and per-generator AUC/macro-F1/accuracy/FPR/confusion matrices for both frozen protocols. Claude owns the running evaluation and its JSONL files.
-- [ ] COCO 354 reserved real-photo FPR and Wilson 95% intervals, compared with unchanged v0.2.0.
+- [x] Reserved evaluation complete (`report/releases/v0.3.0/reserved_summary.json`): macro AUC 0.565->0.849 as distributed, 0.643->0.833 matched (GLIDE/DALLE, 4,500 images). Per-generator, macro-F1, accuracy, FPR and confusion matrices recorded.
+- [x] COCO 354 reserved real-photo FPR and Wilson 95% intervals recorded: candidate 0.28%/1.69% (as distributed/matched) versus v0.2.0's 1.69%/11.02%. Domain-specific nature of the development gate's 22.0% finding noted (does not reproduce on COCO).
 - [x] Public reserve's second use disclosed; COCO check is real-only; no organizer hidden-score claim. Organizer data/baseline unavailable per records.
-- [ ] Populate final README/report/API-linked measurements from completed results, with matching model identity. No post-result retuning.
+- [x] README, one-page report and this checklist updated with completed reserved measurements, matching model identity (checkpoint/tower SHA-256). No post-result retuning occurred.
 
 ## Explanations, robustness and interface
 
@@ -35,7 +35,7 @@ Active CLIP model: activation `c211c68`, freeze `b8d8d93`. Deadline 15 September
 - [x] Head 7,949 bytes and tower 608,352,029 bytes verified locally with `--manifest model/manifest.json` and `--manifest model/releases/v0.3.0.json`.
 - [x] CLIP model runtime uses torch without clip/torchvision/ftfy/regex; ordinary application dependencies remain pinned. CPU-only serving stated.
 - [x] README rewritten around v0.3.0, with development failures and limitations.
-- [x] One-page report draft updated and visually verified; final-results placeholder retained.
+- [x] One-page report rebuilt with completed reserved results (verified single page, text extraction checked).
 - [x] Exact release names/sizes/digests and description prepared in `docs/RELEASE_V030_DRAFT.md`. Not published by this task.
 - [ ] Publish reviewed v0.3.0 assets; verify unauthenticated downloads and digests.
 - [ ] Fresh public checkout/CPU setup and prediction under ~10 minutes, measured with the 608 MB tower. Old warm-cache timing is historical only.
