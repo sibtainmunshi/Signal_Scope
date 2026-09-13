@@ -1,0 +1,35 @@
+{
+  "identity": {
+    "manifest_sha256": "ef649bc34825b346a37a0f7b1823d80844e832da73f9e1b7326692b4266cd324",
+    "checkpoint_sha256": "51e1e07d9b0fed13895b7f7a7fe7b207133cae68eca585582fb3c9c05606613f",
+    "artifacts": [
+      {
+        "path": "model/checkpoints/mixed_clip_l14_balanced_v1_release/head.pt",
+        "bytes": 7949,
+        "sha256": "51e1e07d9b0fed13895b7f7a7fe7b207133cae68eca585582fb3c9c05606613f"
+      },
+      {
+        "path": "model/checkpoints/clip_vitl14_visual/visual_fp16.ts",
+        "bytes": 608352029,
+        "sha256": "12403c44d349dee827e7d0fe016c2f255ec51ccf2750d5b4260ab9c878bf7989"
+      }
+    ],
+    "threshold": 0.8214277320372911,
+    "temperature": 0.9469072146104929,
+    "preprocessing": "clip_center_crop_v1",
+    "device": "cpu",
+    "external_manifest_sha256": "8149884f168b1db3093fd8632516539f085dfef0c1d458b191eef9b88c1e2335",
+    "coco_manifest_sha256": "0dbe25fd6455976bb2323e939e237329c090336ecf5d83cb4ca952daa3fc34b1",
+    "legacy_checkpoint_sha256": "eab7d9d82c8250bd0dfbbb7beb4d8e271dca4ca61ebbcd777819b89c53e6b303"
+  },
+  "frozen_utc": "2026-09-13T17:25:26.542507+00:00",
+  "commit_before_freeze": "c211c6870047e6e9096a6e8d9bf7c2289e3161ef",
+  "model_version": "mixed_clip_l14_balanced_v1_release",
+  "protocols": [
+    "as_distributed",
+    "matched"
+  ],
+  "external_disclosure": "GLIDE/DALLE public reserve was already scored for v0.2.0. This is a disclosed second use, not a new blind set; no subsequent model/threshold selection permitted.",
+  "coco_disclosure": "354 annotation-filtered COCO reserved real images; first score after freeze, real FPR only, not AI accuracy. Compare unchanged v0.2.0 on the same inputs.",
+  "organizer_hidden_result": null
+}
