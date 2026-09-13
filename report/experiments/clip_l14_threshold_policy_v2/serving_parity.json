@@ -1,0 +1,39 @@
+{
+  "purpose": "Quantify CUDA-fp16 training features against CPU-fp32 serving features before any deployment decision.",
+  "head": "model/checkpoints/mixed_clip_l14_balanced_v1/head.pt",
+  "head_sha256": "dc889807cd6183c6cbf0859acd37784d6f28b0be6db297003079ad46671a0ebc",
+  "threshold": 0.8214277320372911,
+  "training_encoder": "clip.load(device='cuda'), OpenAI fp16 visual weights",
+  "serving_encoder": "clip.load(device='cpu'), parameter dtype torch.float32",
+  "protocols": {
+    "as_distributed": {
+      "images": 400,
+      "cosine_similarity_min": 0.9980801343917847,
+      "feature_max_abs_difference": 0.00962752290070057,
+      "score_max_abs_difference": 0.028573967886572793,
+      "score_mean_abs_difference": 0.0013790142889604966,
+      "label_disagreements": 0,
+      "label_disagreement_rate": 0.0,
+      "roc_auc_training_features": 0.750275,
+      "roc_auc_serving_features": 0.7501,
+      "cpu_seconds_per_image": 0.3795179989999997
+    },
+    "matched": {
+      "images": 400,
+      "cosine_similarity_min": 0.9971258044242859,
+      "feature_max_abs_difference": 0.014745542779564857,
+      "score_max_abs_difference": 0.04181200893993753,
+      "score_mean_abs_difference": 0.0017704000265958452,
+      "label_disagreements": 0,
+      "label_disagreement_rate": 0.0,
+      "roc_auc_training_features": 0.7681250000000001,
+      "roc_auc_serving_features": 0.767675,
+      "cpu_seconds_per_image": 0.3871265194999978
+    }
+  },
+  "limits": [
+    "A subset of development images, evenly spaced across the manifest order.",
+    "Agreement here does not establish accuracy; it only checks that serving reproduces the measured development scores.",
+    "No reserved, test or user image is involved and nothing is fitted."
+  ]
+}
