@@ -1,0 +1,90 @@
+{
+  "created_utc": "2026-09-14T06:29:51.078981+00:00",
+  "dataset": "CommunityForensics-Eval, strided sample (28/413 shards) - evaluation, current+historical generators",
+  "source": "https://huggingface.co/datasets/OwensLab/CommunityForensics-Eval",
+  "paper": "Park et al., Community Forensics: Using Thousands of Generators to Train Fake Image Detectors, CVPR 2025 (arXiv:2411.04125)",
+  "licence": "CC BY-NC-SA 4.0",
+  "total_images": 3516,
+  "retained": 3496,
+  "excluded": {
+    "possible_overlap_with_existing_or_protected_data_phash_le_4": 15,
+    "within_dataset_exact_duplicate": 5
+  },
+  "label_counts": {
+    "0": 1396,
+    "1": 2100
+  },
+  "model_counts": {
+    "DFGAN": 122,
+    "MidjourneyV6_1": 341,
+    "stable_cascade": 7,
+    "MidjourneyV5_2": 125,
+    "GALIP": 132,
+    "LCM_lora_sdxl": 111,
+    "kvikontent_midjourney_v6": 124,
+    "Hourglass": 106,
+    "IdeogramV2": 11,
+    "kandinsky_2_2": 127,
+    "Firefly_Image2": 232,
+    "LCM_lora_ssd1b": 125,
+    "Dalle3": 71,
+    "FLUX-dev": 124,
+    "DeciDiffusionV2": 68,
+    "Firefly_Image3": 30,
+    "LCM_lora_sdv15": 122,
+    "IdeogramV1": 122
+  },
+  "real_source_counts": {
+    "coco": 3,
+    "LAION": 657,
+    "RAISE": 625,
+    "ffhq": 111
+  },
+  "manifest_sha256": "aba7d059f12f2ff9c8548e2c95bf1925c30d937aac3c3f094a32041a5d81cdcc",
+  "shard_sha256": {
+    "shard_00000.parquet": "36890ac36a544708a1d5a272c9427d49a116d2a8e6ab99129d78b6ea1c6561bd",
+    "shard_00015.parquet": "f540103d18566752b73b9611d0d613640e57f954dde7e52859914d79afda8a6e",
+    "shard_00030.parquet": "17a5121151d8ba8d4760d02ee7b64308b965a3ab52d798f115df29bf5c6df696",
+    "shard_00045.parquet": "f281943e864caf583b6b9b8c5dd8818e72990c4fc7972417524cba2711e6c745",
+    "shard_00060.parquet": "2f1774293488e38c3cf2eba16f41a8b2f76256ba8bc5b0510adacce3c98da6e4",
+    "shard_00075.parquet": "e62adc45ebc8e5d89e0b4c032587bb98fa7e6d06c449ee90c230390f7c635fc2",
+    "shard_00090.parquet": "05cc36a28f48fd4ca1afe29e6a87baef7c1840b1e84cd9b834c650a5e8ffc1a0",
+    "shard_00105.parquet": "5db2fa6f692c5c8f22b2d9176f857af4a97137ef8f42367cefa9b84260d2b6f4",
+    "shard_00120.parquet": "6a7da946a1c8a4c2a560febbb2506f143f7dfb40b460799720251fe699d4954a",
+    "shard_00135.parquet": "6b5b432f9cc3cf5a50be275f5b44a6c856e5c21118390cfd7c09e4a8a11ee81e",
+    "shard_00150.parquet": "fa3e86721028fc5bf8bc8e2f3733557b283fecca7a96270997d9c33f838d29f3",
+    "shard_00165.parquet": "6d8d5b064fb86334be5fbc6c13e38e69d0a365cea6eb23584ced5196c487d4ac",
+    "shard_00180.parquet": "5b7ed9d06ccc588b57441e40347769cc1f102f424b7fe5a6beb073f308ee109d",
+    "shard_00195.parquet": "720c1f00203dcbfce038a50aa0afe1301cd15e4f34a3798a48fd098db6b2bc68",
+    "shard_00210.parquet": "a72c2ccda2ad5305b4f96be30e92c58c54e66a0a3212ead6aec932dace564292",
+    "shard_00225.parquet": "97da8cfeb2b1ab284f6ec1baf2150254bdb5f887b06fcdd9ea17fc6fce3f19fe",
+    "shard_00240.parquet": "e1e51cb45520b483076a7dc3cea919e42ffb04fe756686d672a4bded4c470925",
+    "shard_00255.parquet": "dadb1cbe6a5494be9a957772d564af25eb54020e9f17562167877c2ddcd0b62a",
+    "shard_00270.parquet": "1c0a562b0206fcfca3a09428dff905f87f11f66e1ef1228bbc9ac6d4a8a492b7",
+    "shard_00285.parquet": "d188f2bef2eeefe1cd08b4db947f05c12516c0ba6026c83f001dd70279fa53fd",
+    "shard_00300.parquet": "194223473ee4747267515e5a3df460f8ab82dd84f8c5619947e7851e103bba2c",
+    "shard_00315.parquet": "2c7d6f323064cb9afb5b6c7da606949e80c36bce758655276d6ee9a35a8de82b",
+    "shard_00330.parquet": "5c55c6547e6b4bc738abcae13dc6246a8074595648a4b6358f37f80ef3d7cf24",
+    "shard_00345.parquet": "91c5b4034ac244efaa5bc85fed48fa3e044ed3b1d9882193b3bcef7159bc6d9b",
+    "shard_00360.parquet": "ad52ad314170be6967660ca7225482d768a2715d29e332e309bdac66484b5519",
+    "shard_00375.parquet": "ab514a2ca6610837c753bf0365166c22453aaf543081a72002de0ef5e220e36e",
+    "shard_00390.parquet": "08c9fe79b2742d2c057eef061c13833e7b91c235d90174ef975719745d5c08b0",
+    "shard_00405.parquet": "d4e2717e73b493f7efdb0f46cebb55da31f46b9e13bb3ffab593c96f958ebc04"
+  },
+  "protected_manifests": {
+    "cifake": "b1bddb1d857b3d6926a9a39796d437256fc02536ff2af772e47adae88f686f3d",
+    "external": "8149884f168b1db3093fd8632516539f085dfef0c1d458b191eef9b88c1e2335",
+    "genimage": "6cc079dccf326403e4507c039420874eba091cf984266bd2fd0e3b476a91e636",
+    "genimage_vqdm": "66bb0cba36b1e5d7b8892ac75e112127372ae2344b32f8a39e10590117f1b433",
+    "genimage_midjourney": "3414cfc2c36c7433f893670d3e747a103a0b9305cd8903f014283ccb44118d4d",
+    "coco_real_v1": "0dbe25fd6455976bb2323e939e237329c090336ecf5d83cb4ca952daa3fc34b1",
+    "aidetectarena_v01": "4b5ab6e3fa3199ecfba797625ae4795fb6732fdc44324c4e2dfb84152f45e520"
+  },
+  "role": "Evaluation only. No train/holdout split is assigned here.",
+  "limits": [
+    "A strided sample of one shard grouping in a 413-shard academic benchmark, not the full set.",
+    "pHash overlap check is heuristic; exact and near overlap cannot be exhaustively ruled out.",
+    "CC BY-NC-SA 4.0: noncommercial research use only, matching this project's own licence posture.",
+    "Not the organizers' held-out set; a third-party academic benchmark used as an additional check."
+  ]
+}
