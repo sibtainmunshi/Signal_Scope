@@ -1,0 +1,45 @@
+{
+  "model_version": "mixed_clip_mlp_v2_release",
+  "checkpoint_sha256": "174ef56251011a7d5618d32759768807ebe02cc679c014e434906bbb81be5fdd",
+  "attribution": "Input-gradient attribution on the frozen CLIP ViT-L/14 embedding with our trained MLP head",
+  "sample": "40 fixed development images across 8 strata, hash-ordered, failures included by design",
+  "correct_predictions": 29,
+  "localisation_supported_count": 17,
+  "localisation_rule": "masking the highlighted region moves the returned class's own score by at least one percentage point and further than equally sized corner patches",
+  "randomization": "our MLP head re-initialized layer by layer (weights redrawn at each layer's own trained std, biases zeroed); the frozen public backbone is unchanged, so a high correlation means the map follows image structure rather than anything we trained",
+  "limits": [
+    "Model-influence diagnostics only; no visible artifact is verified.",
+    "Masked inputs are out of distribution.",
+    "Development images, some of which were seen during model selection.",
+    "Forty images is a small sample and no reserved data is read."
+  ],
+  "mean": {
+    "top_beats_random_median_count": 16,
+    "median_top_percentile": 0.34375,
+    "mean_effect_top_points": 4.766905870346818,
+    "mean_effect_random_points": 3.710062503814697,
+    "wilcoxon_p": 0.8057269839482615
+  },
+  "blur": {
+    "top_beats_random_median_count": 19,
+    "median_top_percentile": 0.4375,
+    "mean_effect_top_points": 2.6885276252869517,
+    "mean_effect_random_points": 3.347421060316265,
+    "wilcoxon_p": 0.7749952346202917
+  },
+  "jpeg_q70_spearman": {
+    "n": 40,
+    "median": 0.8057318512647952,
+    "mean": 0.7915890894252309
+  },
+  "jpeg_q70_top_iou": {
+    "n": 40,
+    "median": 0.3249179177233915,
+    "mean": 0.41120996842162005
+  },
+  "randomization_spearman": {
+    "n": 10,
+    "median": 0.8314025420163293,
+    "mean": 0.7806478780250152
+  }
+}

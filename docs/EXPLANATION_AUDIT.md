@@ -118,3 +118,32 @@ the verdict is not localised and shows the overlay as model influence only.
 unseen-generator images (see `docs/POST_RELEASE_EXPERIMENTS.md`) but its explanations
 are honestly weaker and more often disclosed as unlocalised. Reporting should state
 both facts together rather than only the AUC gain.
+
+## MLP head audit (v0.4.0, same 40-image protocol)
+
+Model: `mixed_clip_mlp_v2_release` (checkpoint SHA-256 prefix `174ef562`). Script:
+`model/explanation_audit_mlp.py`. Outputs: `report/explanation_audit/
+mixed_clip_mlp_v2_release/` (`summary.json`, `per_image.csv`). Identical 40 images,
+strata and localisation rule as the linear-head audit above; only the head-
+randomization baseline differs (the MLP has two linear layers to re-initialize
+instead of one, each redrawn at its own trained weight standard deviation).
+
+| Check | CLIP linear (v0.3.0) | CLIP MLP (v0.4.0) | Reading |
+|---|---|---|---|
+| Deletion beats random, mean fill | 16/40 (40%), p=0.29 | 16/40 (40%), p=0.81 | Not significant on either head |
+| Deletion beats random, blur fill | - | 19/40 (47.5%), p=0.77 | Not significant |
+| JPEG q70 map stability (Spearman) | median 0.79 | median 0.81 | Comparable |
+| Weight randomization (Spearman) | median 0.84 | median 0.83 | Comparable: both heads' maps depend mostly on the frozen backbone |
+| Deployed localisation gate | 17/40 (42.5%) | **17/40 (42.5%)** | Identical count on this sample |
+
+**Finding: the MLP head's explanation is statistically indistinguishable from the
+linear head's on this audit** - same localisation count, same non-significant
+deletion test, comparable JPEG stability and randomization dependence. This is not
+surprising: both heads sit on the same frozen CLIP tower, and the randomization test
+on both architectures shows the attribution map depends mostly on that shared,
+untrained backbone rather than on either trained head. Switching architectures (v0.3.0
+linear to v0.4.0 MLP) changed detection accuracy substantially but did not change
+explanation quality - it was already backbone-limited, not head-limited. The same
+disclosed caveat applies: this measures model influence, not verified visible
+artifacts, and the app states a verdict as "not localised" for the majority of images
+on either head.

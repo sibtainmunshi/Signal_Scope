@@ -17,7 +17,7 @@ Active model: `mixed_clip_mlp_v2_release`, activation `b201d0c`, freeze `6f25326
 ## Explanations, robustness and interface
 
 - [x] Input-gradient explanation and masking diagnostic work for both the linear and MLP heads (architecture-agnostic dispatch, verified live).
-- [ ] **40-image explanation audit specifically for the v0.4.0 MLP head.** The 17/40-localised, p=0.29/0.82 numbers in README/docs are from the v0.3.0 linear head and are disclosed as not yet re-measured for this architecture.
+- [x] **40-image explanation audit for the v0.4.0 MLP head complete.** Statistically indistinguishable from the v0.3.0 linear head: identical 17/40 (42.5%) localisation count, deletion test not significant on either head (p=0.81/0.77 vs 0.29/0.82), comparable JPEG stability and backbone-dependence. `report/explanation_audit/mixed_clip_mlp_v2_release/summary.json`.
 - [ ] Actual human usefulness review and annotated-defect correctness/localisation evidence. Automated checks cannot substitute for these.
 - [x] JPEG, resize, blur and labelled simulated-screenshot stability interface works (architecture-agnostic).
 - [x] v0.4.0-specific aggregate degradation/flip measurement (Module G) complete: `report/experiments/robustness_v040` (GenImage validation, n=783). Real-photo FPR stays low under every transform (0-3.3%), but AI recall degrades sharply under compression/resize/screenshot (52.7% original -> 25-29% at jpeg_q50/q30/half_resolution -> 17.9% simulated_screenshot); mild_blur held up best (49.3% recall). Bounded 7-transform search flips 196/585 (33.5%) of initially-correct predictions to wrong -- disclosed as a real, not adversarially-robust, weakness.

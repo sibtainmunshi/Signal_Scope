@@ -6,7 +6,7 @@ Real-versus-AI image classification with a **frozen CLIP ViT-L/14 image tower an
 
 - [Submission checklist](docs/SUBMISSION_CHECKLIST.md), [API contract](docs/API_CONTRACT.md)
 - [Full experiment history: gate failures, four independent evaluations, the deployment decision](docs/POST_RELEASE_EXPERIMENTS.md)
-- [Explanation audit](docs/EXPLANATION_AUDIT.md) (measured on the v0.3.0 linear head; **not yet re-run for the v0.4.0 MLP head** - a disclosed gap)
+- [Explanation audit](docs/EXPLANATION_AUDIT.md) (measured on both the v0.3.0 linear head and the v0.4.0 MLP head: statistically indistinguishable, same 17/40 localisation count)
 - Demo: [4m15s actual CPU demonstration of v0.2.0](https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.2.0/signalscope-demo-v0.2.0.mp4), [English subtitles](https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.2.0/signalscope-demo-en.srt). **Updated v0.4.0 demo pending**; the historical video shows neither the current model's outputs nor its UI.
 
 ## Core and bonus modules
@@ -14,7 +14,7 @@ Real-versus-AI image classification with a **frozen CLIP ViT-L/14 image tower an
 | Module | Implemented scope and limits |
 |---|---|
 | Core classification | Trained head, real/AI label, AI-positive score, fixed calibrated operating point; shared CLI/API/app. Holdout metrics measured (see below); no organizer or reserved-set number for this release. |
-| A. Faithful explanation | Input-gradient influence map on a 14px patch grid and masking diagnostic, architecture-agnostic (linear or MLP head). Audit numbers below are from the v0.3.0 linear head; the v0.4.0 MLP head has not had its own 40-image audit yet. |
+| A. Faithful explanation | Input-gradient influence map on a 14px patch grid and masking diagnostic, architecture-agnostic (linear or MLP head). 40-image audit re-run on the deployed v0.4.0 MLP head: statistically indistinguishable from the v0.3.0 linear head (same 17/40 localisation count). |
 | B. Generator attribution | Not implemented. |
 | C. Robustness | Per-upload JPEG/resize/blur/simulated-screenshot stability checks. v0.4.0 degradation benchmark (GenImage validation, n=783): real-photo false positives stay low under every transform (0-3.3%), but AI recall drops sharply under compression/resize/screenshot - 52.7% at original, falling to 25-29% at jpeg_q50/q30/half_resolution and 17.9% at simulated_screenshot; mild_blur held up best at 49.3%. See `report/experiments/robustness_v040/metrics.json`. |
 | D. Provenance/metadata | EXIF shown separately, never changing the visual score. C2PA presence is checked via a bounded ASCII substring scan for known identifiers (`metadata.c2pa_status`) - a heuristic hit, never a JUMBF box parse or signature verification. No image in our test corpora carries a manifest. |
@@ -148,7 +148,7 @@ Official **B-Free** weights measured **0.970 original / 0.945 matched mean AUC**
 
 Input-gradient saliency is pooled to a 14px patch grid, architecture-agnostic (works for both the linear and MLP heads). The masking support rule requires the highlighted patch to lower the returned-class score by at least one percentage point and more than equally sized corner patches; when it does not, the app discloses the verdict as **not localised** rather than showing an unsupported overlay.
 
-**The numbers below are from the v0.3.0 linear head's 40-image audit and have not been re-run for the v0.4.0 MLP head** - a disclosed gap, not a claim that the MLP head's explanation quality is the same. On the linear head: only 17/40 images satisfied the localisation rule, deletion tests showed no significant advantage over random regions (p=0.29/0.82), and maps depended substantially on the generic frozen backbone rather than the trained head. [Full audit](docs/EXPLANATION_AUDIT.md).
+**Re-run on the deployed v0.4.0 MLP head with the identical 40-image protocol: statistically indistinguishable from the v0.3.0 linear head.** On both heads, only 17/40 images satisfy the localisation rule (42.5%), deletion tests show no significant advantage over random regions (linear p=0.29/0.82; MLP p=0.81/0.77), and maps depend substantially on the shared frozen backbone rather than either trained head (randomization Spearman ~0.83-0.84 on both). Switching architectures changed detection accuracy but not explanation quality - the limitation is in the frozen CLIP backbone, not the trained head. [Full audit](docs/EXPLANATION_AUDIT.md).
 
 New generators/camera pipelines can still fail; centre cropping omits borders and calibration may not transfer. A simulated screenshot is not a real device capture. No reliable localisation of AI-added objects, generator attribution, caption consistency or C2PA signature verification is claimed. The app does not identify people or adjudicate political/event claims.
 
