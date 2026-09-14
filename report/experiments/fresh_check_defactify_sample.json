@@ -1,0 +1,32 @@
+{
+  "checkpoint": "model/checkpoints/mixed_clip_mlp_v2_release/head.pt",
+  "sample_size": 400,
+  "real_source": "MS COCO photographs (via Defactify_Image_Dataset)",
+  "ai_source": "Midjourney v6 (via Defactify_Image_Dataset, 2026)",
+  "seed": 2026,
+  "threshold": 0.8388091705052073,
+  "count": 400,
+  "real_count": 200,
+  "ai_count": 200,
+  "roc_auc": 0.9882749999999999,
+  "macro_f1": 0.8602278286393179,
+  "accuracy": 0.8625,
+  "false_positive_rate": 0.01,
+  "true_positive_rate": 0.735,
+  "brier_score": 0.04938287215954222,
+  "positive_class": "ai_generated",
+  "confusion_matrix": [
+    [
+      198,
+      2
+    ],
+    [
+      53,
+      147
+    ]
+  ],
+  "confusion_matrix_order": [
+    "real",
+    "ai_generated"
+  ]
+}
