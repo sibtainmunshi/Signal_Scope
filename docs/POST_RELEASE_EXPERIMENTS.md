@@ -259,3 +259,27 @@ Fixing it properly would need substantially more paired data across both
 distributions, or fine-tuning the backbone itself rather than only a head - both
 out of scope for the remaining time.
 [Protocol/results](../report/experiments/mixed_clip_mlp_v2/results.json).
+
+## Deployment decision: v0.4.0 ships the failed-gate MLP candidate
+
+Both remediation attempts above failed their own declared gates. Neither result was
+retried further, per each protocol's own stopping rule. That is where the measured
+evidence ends and a product decision begins.
+
+The user reviewed the second attempt's actual holdout numbers - 85.2%/71.8% accuracy
+and 7.3%/2.2% real-photo FPR on the AIDA and CommunityForensics holdouts, against
+v0.3.0's measured ~55-60% accuracy and 66-68% FPR on the same two benchmarks - and
+explicitly chose to deploy `mixed_clip_mlp_v2_release` as v0.4.0 anyway, because the
+stated goal is practical current-generator accuracy (a ~80% target), not preserving
+the 2021-2023-vintage development benchmark v0.3.0 was selected against. That
+benchmark's mean AUC regresses from 0.771/0.789 to 0.637/0.658 as a direct,
+measured, disclosed consequence of this choice.
+
+This is recorded here explicitly so the distinction stays clear for any later
+reader: **v0.4.0 was not selected because a gate passed. It was deployed because a
+person weighed a real, measured tradeoff and decided which side of it mattered
+more for the actual use case.** Both sides of that tradeoff are reported in full
+above, not summarised into a single misleading headline number. No further
+weight or threshold change occurred after the freeze (`report/releases/v0.4.0/
+freeze.json`); GLIDE/DALLE and COCO reserved evaluation was deliberately not
+re-run for v0.4.0, so no reserved-set number exists for this release.
