@@ -1,0 +1,270 @@
+{
+  "aida": [
+    {
+      "group": "real:animal",
+      "count": 54,
+      "miss_rate_old": 0.2037037037037037,
+      "miss_rate_new": 0.24074074074074073
+    },
+    {
+      "group": "real:art",
+      "count": 67,
+      "miss_rate_old": 0.08955223880597014,
+      "miss_rate_new": 0.13432835820895522
+    },
+    {
+      "group": "Sd",
+      "count": 28,
+      "miss_rate_old": 0.39285714285714285,
+      "miss_rate_new": 0.25
+    },
+    {
+      "group": "Gemini 3 Pro",
+      "count": 28,
+      "miss_rate_old": 0.25,
+      "miss_rate_new": 0.25
+    },
+    {
+      "group": "real:portrait",
+      "count": 68,
+      "miss_rate_old": 0.058823529411764705,
+      "miss_rate_new": 0.10294117647058823
+    },
+    {
+      "group": "real:product",
+      "count": 59,
+      "miss_rate_old": 0.05084745762711865,
+      "miss_rate_new": 0.11864406779661017
+    },
+    {
+      "group": "Seedream",
+      "count": 41,
+      "miss_rate_old": 0.2682926829268293,
+      "miss_rate_new": 0.14634146341463414
+    },
+    {
+      "group": "Grok Aurora",
+      "count": 26,
+      "miss_rate_old": 0.2692307692307692,
+      "miss_rate_new": 0.23076923076923078
+    },
+    {
+      "group": "Leonardo Phoenix",
+      "count": 26,
+      "miss_rate_old": 0.23076923076923078,
+      "miss_rate_new": 0.23076923076923078
+    },
+    {
+      "group": "Gpt",
+      "count": 25,
+      "miss_rate_old": 0.28,
+      "miss_rate_new": 0.2
+    },
+    {
+      "group": "Hunyuan v3",
+      "count": 20,
+      "miss_rate_old": 0.2,
+      "miss_rate_new": 0.2
+    },
+    {
+      "group": "Ideogram v3",
+      "count": 32,
+      "miss_rate_old": 0.1875,
+      "miss_rate_new": 0.125
+    },
+    {
+      "group": "Flux Pro v1.1",
+      "count": 23,
+      "miss_rate_old": 0.17391304347826086,
+      "miss_rate_new": 0.13043478260869565
+    },
+    {
+      "group": "Recraft v3",
+      "count": 22,
+      "miss_rate_old": 0.3181818181818182,
+      "miss_rate_new": 0.13636363636363635
+    },
+    {
+      "group": "Z",
+      "count": 24,
+      "miss_rate_old": 0.25,
+      "miss_rate_new": 0.125
+    },
+    {
+      "group": "real:food",
+      "count": 59,
+      "miss_rate_old": 0.03389830508474576,
+      "miss_rate_new": 0.05084745762711865
+    },
+    {
+      "group": "Qwen 2512",
+      "count": 18,
+      "miss_rate_old": 0.1111111111111111,
+      "miss_rate_new": 0.1111111111111111
+    },
+    {
+      "group": "Wan v2.6",
+      "count": 20,
+      "miss_rate_old": 0.05,
+      "miss_rate_new": 0.05
+    },
+    {
+      "group": "Flux",
+      "count": 29,
+      "miss_rate_old": 0.13793103448275862,
+      "miss_rate_new": 0.034482758620689655
+    },
+    {
+      "group": "GLM Image",
+      "count": 22,
+      "miss_rate_old": 0.09090909090909091,
+      "miss_rate_new": 0.0
+    },
+    {
+      "group": "Flux Schnell",
+      "count": 16,
+      "miss_rate_old": 0.0625,
+      "miss_rate_new": 0.0
+    },
+    {
+      "group": "real:landscape",
+      "count": 48,
+      "miss_rate_old": 0.0,
+      "miss_rate_new": 0.0
+    }
+  ],
+  "communityforensics": [
+    {
+      "group": "MidjourneyV6_1",
+      "count": 134,
+      "miss_rate_old": 0.3880597014925373,
+      "miss_rate_new": 0.3208955223880597
+    },
+    {
+      "group": "Hourglass",
+      "count": 44,
+      "miss_rate_old": 1.0,
+      "miss_rate_new": 0.9772727272727273
+    },
+    {
+      "group": "GALIP",
+      "count": 46,
+      "miss_rate_old": 0.6956521739130435,
+      "miss_rate_new": 0.5434782608695652
+    },
+    {
+      "group": "LCM_lora_ssd1b",
+      "count": 54,
+      "miss_rate_old": 0.5925925925925926,
+      "miss_rate_new": 0.46296296296296297
+    },
+    {
+      "group": "kvikontent_midjourney_v6",
+      "count": 48,
+      "miss_rate_old": 0.6666666666666666,
+      "miss_rate_new": 0.5
+    },
+    {
+      "group": "Firefly_Image2",
+      "count": 84,
+      "miss_rate_old": 0.32142857142857145,
+      "miss_rate_new": 0.2619047619047619
+    },
+    {
+      "group": "kandinsky_2_2",
+      "count": 51,
+      "miss_rate_old": 0.5490196078431373,
+      "miss_rate_new": 0.43137254901960786
+    },
+    {
+      "group": "real:LAION",
+      "count": 260,
+      "miss_rate_old": 0.03076923076923077,
+      "miss_rate_new": 0.07307692307692308
+    },
+    {
+      "group": "FLUX-dev",
+      "count": 44,
+      "miss_rate_old": 0.4772727272727273,
+      "miss_rate_new": 0.36363636363636365
+    },
+    {
+      "group": "IdeogramV1",
+      "count": 51,
+      "miss_rate_old": 0.45098039215686275,
+      "miss_rate_new": 0.3137254901960784
+    },
+    {
+      "group": "LCM_lora_sdxl",
+      "count": 45,
+      "miss_rate_old": 0.4,
+      "miss_rate_new": 0.28888888888888886
+    },
+    {
+      "group": "LCM_lora_sdv15",
+      "count": 54,
+      "miss_rate_old": 0.2962962962962963,
+      "miss_rate_new": 0.24074074074074073
+    },
+    {
+      "group": "DFGAN",
+      "count": 51,
+      "miss_rate_old": 0.3333333333333333,
+      "miss_rate_new": 0.19607843137254902
+    },
+    {
+      "group": "DeciDiffusionV2",
+      "count": 24,
+      "miss_rate_old": 0.5,
+      "miss_rate_new": 0.3333333333333333
+    },
+    {
+      "group": "MidjourneyV5_2",
+      "count": 43,
+      "miss_rate_old": 0.23255813953488372,
+      "miss_rate_new": 0.13953488372093023
+    },
+    {
+      "group": "real:ffhq",
+      "count": 47,
+      "miss_rate_old": 0.0851063829787234,
+      "miss_rate_new": 0.10638297872340426
+    },
+    {
+      "group": "Dalle3",
+      "count": 32,
+      "miss_rate_old": 0.21875,
+      "miss_rate_new": 0.15625
+    },
+    {
+      "group": "IdeogramV2",
+      "count": 4,
+      "miss_rate_old": 0.75,
+      "miss_rate_new": 0.25
+    },
+    {
+      "group": "real:coco",
+      "count": 2,
+      "miss_rate_old": 0.0,
+      "miss_rate_new": 0.0
+    },
+    {
+      "group": "real:RAISE",
+      "count": 242,
+      "miss_rate_old": 0.0,
+      "miss_rate_new": 0.0
+    },
+    {
+      "group": "stable_cascade",
+      "count": 3,
+      "miss_rate_old": 0.0,
+      "miss_rate_new": 0.0
+    },
+    {
+      "group": "Firefly_Image3",
+      "count": 11,
+      "miss_rate_old": 0.09090909090909091,
+      "miss_rate_new": 0.0
+    }
+  ]
+}
