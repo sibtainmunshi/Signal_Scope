@@ -1,0 +1,16 @@
+{
+  "identity": {
+    "manifest_sha256": "087bf26806d0e590d63dda860b54b8e1410dd011d25e7edd41ee7f893c98a54b",
+    "checkpoint_sha256": "174ef56251011a7d5618d32759768807ebe02cc679c014e434906bbb81be5fdd",
+    "tower_sha256": "12403c44d349dee827e7d0fe016c2f255ec51ccf2750d5b4260ab9c878bf7989",
+    "threshold": 0.8388091705052073,
+    "temperature": 0.2264166552312184,
+    "architecture": "clip_vitl14_mlp"
+  },
+  "frozen_utc": "2026-09-14T08:36:58.624393+00:00",
+  "commit_before_freeze": "b201d0cb0759eabc5713d1a62dd9c358066ade74",
+  "model_version": "mixed_clip_mlp_v2_release",
+  "decision_basis": "User decision after reviewing measured AIDA/CommunityForensics holdout accuracy (85.2%/71.8%) against v0.3.0 (~55-60%); not a gate pass. Both AIDA-mixture attempts failed the declared external-dev-regression gate.",
+  "reserved_evaluation": "Deliberately NOT re-run for v0.4.0. GLIDE/DALLE reserved and COCO reserved were evaluated for v0.2.0/v0.3.0 and are not reused here; no reserved-set number is claimed for this checkpoint. This is a disclosed gap.",
+  "no_further_change": "No weight, temperature or threshold change is permitted on this checkpoint after this point."
+}
