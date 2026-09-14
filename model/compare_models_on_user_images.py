@@ -1,8 +1,9 @@
-"""Side-by-side diagnostic of the released model and the CLIP candidate on local images.
+"""Side-by-side diagnostic of the v0.3.0 and v0.4.0 released heads on local images.
 
-Purpose: check whether the candidate behaves sensibly on the kind of images the user
-actually cares about, before any deployment decision. This is a veto check on a handful
-of photographs, not a benchmark, and no accuracy figure may be quoted from it.
+Purpose: re-check whether the now-deployed v0.4.0 head behaves sensibly on the kind of
+images the user actually cares about, alongside v0.3.0 for comparison. This is a veto
+check on a handful of photographs, not a benchmark, and no accuracy figure may be
+quoted from it.
 
 Nothing is fitted here. Every image is scored through the detectors' own preprocessing
 and each checkpoint's own frozen temperature and threshold. Images are read directly, so
@@ -27,8 +28,8 @@ from signalscope.robustness import matched_format
 
 EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 MODELS = {
-    "released_v020_resnet": "model/checkpoints/mixed_resnet18_native_v1_calibrated/best.pt",
-    "candidate_clip_l14": "model/checkpoints/mixed_clip_l14_balanced_v1/head.pt",
+    "released_v030_clip_linear": "model/checkpoints/mixed_clip_l14_balanced_v1_release/head.pt",
+    "released_v040_clip_mlp": "model/checkpoints/mixed_clip_mlp_v2_release/head.pt",
 }
 
 

@@ -180,3 +180,28 @@ automatically. Re-pointed `scripts/timing_test_v040.sh` at `main` instead
 prediction 4.98s = **243.75s total**, well under the 10-minute target.
 Predicted checkpoint SHA-256 matched the frozen identity exactly. Result at
 `report/reproducibility/v0.4.0_windows_cpu.json`.
+
+## 14 September - closed the two remaining v0.4.0 verification gaps
+
+Re-ran the 40-image explanation audit for the deployed MLP head
+(`model/explanation_audit_mlp.py`, adapted from the linear-head script with
+only the head-randomization baseline changed). Result: statistically
+indistinguishable from the v0.3.0 linear head - identical 17/40 (42.5%)
+localisation count, deletion test not significant on either head, comparable
+JPEG stability and backbone-dependence. Switching architectures changed
+detection accuracy but not explanation quality, which is backbone-limited.
+
+Re-ran the private user-image veto check (`model/compare_models_on_user_images.py`,
+updated to compare the v0.3.0 and v0.4.0 released heads) against the same 11
+ChatGPT + 18 phone-camera images. Real-photo false positives dropped sharply:
+9/18 -> 4/18 as-uploaded, 4/18 -> 1/18 matched-format. AI-image catch rate is
+comparable on this small sample (9/11 -> 8/11 / 6/11). No accuracy figure is
+quoted as a benchmark result per the script's own rule; per-image detail
+stays under `tmp/` (private, not committed).
+
+Both were the last two disclosed gaps on the submission checklist besides
+human-only tasks (usefulness review, browser inspection, demo video, UI
+polish). Also found and fixed two stale checkbox entries left over from
+earlier work: the v0.4.0 one-page model report already existed
+(`report/releases/v0.4.0/model_report.pdf`) and the `v0.4.0` git tag was
+already force-moved by the user to the corrected-URL commit.

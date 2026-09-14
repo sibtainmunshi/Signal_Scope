@@ -11,7 +11,7 @@ Active model: `mixed_clip_mlp_v2_release`, activation `b201d0c`, freeze `6f25326
 - [x] Deployment decision recorded as the user's explicit choice against measured holdout numbers, not as a gate pass. `report/releases/v0.4.0/freeze.json` states this plainly.
 - [x] Real-world "AI called AI, real called real" rates reported directly (92.7%/97.8% real-photo accuracy, 78.5%/54.4% AI recall on the two untouched holdouts), not just aggregate accuracy or AUC.
 - [ ] GLIDE/DALLE or COCO reserved-set number for v0.4.0. Deliberately not re-run (third use of the same reserve); v0.2.0/v0.3.0 numbers remain on record but are not v0.4.0 evidence.
-- [x] Private 11 ChatGPT + 18 phone-image diagnostic recorded as aggregates for v0.2.0/v0.3.0; no accuracy percentage claim or fitting. **Not yet re-run against v0.4.0.**
+- [x] Private 11 ChatGPT + 18 phone-image diagnostic re-run against v0.4.0 (aggregates only, no fitting): real-photo false positives dropped sharply versus v0.3.0 (9/18 -> 4/18 as-uploaded, 4/18 -> 1/18 matched-format); AI-image catch rate is comparable on this small sample (9/11 -> 8/11 as-uploaded, 9/11 -> 6/11 matched). Small-sample AUC improved (0.73/0.79 -> 0.84/0.80). No accuracy figure is quoted as a benchmark result; per-image detail stays under `tmp/` (private).
 - [x] Head/tower identities and operating point frozen and committed (`report/releases/v0.4.0/freeze.json`); tower reused unchanged from the verified v0.3.0 asset (parity confirmed, score diff 0.0).
 
 ## Explanations, robustness and interface
