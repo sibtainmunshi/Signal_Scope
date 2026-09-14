@@ -235,11 +235,30 @@ The section above is now stale. Current state:
   `model/releases/v0.4.0.json`, `scripts/package_clip_release.py`, and
   `scripts/package_mlp_release.py`; all three asset URLs curl-verified HTTP 200;
   59/59 tests still pass. See `docs/PROGRESS.md` for the full writeup.
-- **Module G robustness benchmark is running** against v0.4.0 on GenImage validation
-  (783 images x 7 transforms, CPU, ~35 minutes): `report/experiments/
-  robustness_v040`. First result in: original-image accuracy 74.7%, AUC 0.944,
-  FPR 0.5%. Do not rerun; check `report/experiments/robustness_v040/metrics.json`
-  for completion before starting anything else CPU-heavy.
+- **Module G robustness benchmark COMPLETE** against v0.4.0 on GenImage validation
+  (n=783, 7 transforms + a bounded active-defence search):
+  `report/experiments/robustness_v040/metrics.json`. Real-photo FPR stays low
+  under every transform (0-3.3%), but AI recall degrades sharply under
+  compression/resize/screenshot: 52.7% (original) -> 44.9%/35.3%/28.7%/25.4%
+  (jpeg q90/q70/q50/q30) -> 28.5% (half_resolution) -> 17.9%
+  (simulated_screenshot); mild_blur held up best at 49.3%. The bounded
+  7-transform search flips 196/585 (33.5%) of initially-correct predictions --
+  disclosed as a real, non-adversarial robustness weakness. README/checklist
+  updated with these numbers; do not rerun.
+- **Fresh-clone timing test COMPLETE for v0.4.0**: 243.75s total (2.36s clone +
+  236.41s setup incl. the 608 MB tower + 398 KB head download + 4.98s first
+  prediction), well under the 10-minute target. Measured against `main`
+  (`scripts/timing_test_v040.sh` now clones `--branch main`, not `--branch
+  v0.4.0` -- see next bullet for why), predicted checkpoint SHA-256 matched the
+  frozen identity exactly. Result: `report/reproducibility/v0.4.0_windows_cpu.json`.
+- **The `v0.4.0` git tag itself is still frozen at the pre-URL-fix commit
+  (`6f25326`)** and was deliberately NOT force-moved automatically (git tag
+  force-push was blocked by this environment's destructive-action guard, and
+  correctly so -- it needs explicit user action). The user was given the exact
+  two commands to run themselves (`git tag -f v0.4.0 7a9be9f -m "..."` +
+  `git push origin v0.4.0 -f`) and agreed to run them; if the tag has not moved
+  by the time you read this, that is still outstanding -- check `git log -1
+  --format="%H" v0.4.0` against `main`'s current HEAD rather than assuming.
 - **User's stated next-phase goal (explicitly deferred, not part of this
   submission's core claim)**: after the above finishing tasks land, attempt to push
   both real-photo and AI-recall accuracy toward ~90% on 2026-era generators. Do not
