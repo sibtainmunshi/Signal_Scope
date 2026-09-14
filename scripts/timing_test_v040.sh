@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
-# Fresh-clone timing test for v0.4.0. Run only after the v0.4.0 GitHub release
-# (head.pt) is published; the tower asset is already public under v0.3.0.
+# Fresh-clone timing test for v0.4.0. Clones `main`, not the `v0.4.0` tag: the tag
+# was frozen before a tower-URL 404 fix (see docs/PROGRESS.md, "found and fixed a
+# tower-download bug"), and moving an already-pushed annotated tag is a destructive
+# git operation this assistant will not do without the user's own say-so. `main`
+# HEAD carries the same frozen checkpoint/threshold/architecture identity plus the
+# URL fix, so it is what a real fresh clone of the repository actually gets.
 set -euo pipefail
 TARGET="/c/Users/Sibtainhaidar/OneDrive/Desktop/signal_scope_v040_timing"
 rm -rf "$TARGET"
 
 START=$(date +%s.%N)
-git clone --branch v0.4.0 https://github.com/sibtainmunshi/Signal_Scope.git "$TARGET"
+git clone --branch main https://github.com/sibtainmunshi/Signal_Scope.git "$TARGET"
 cd "$TARGET"
 CLONE_DONE=$(date +%s.%N)
 
@@ -21,7 +25,7 @@ import json, sys
 from datetime import UTC, datetime
 start, clone_done, setup_done, predict_done = (float(x) for x in sys.argv[1:5])
 result = {
-    "source": "fresh public Git clone of the v0.4.0 tag",
+    "source": "fresh public Git clone of main (not the v0.4.0 tag; see script header)",
     "release": "v0.4.0",
     "checked_utc": datetime.now(UTC).isoformat(),
     "clone_seconds": round(clone_done - start, 2),

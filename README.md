@@ -16,11 +16,11 @@ Real-versus-AI image classification with a **frozen CLIP ViT-L/14 image tower an
 | Core classification | Trained head, real/AI label, AI-positive score, fixed calibrated operating point; shared CLI/API/app. Holdout metrics measured (see below); no organizer or reserved-set number for this release. |
 | A. Faithful explanation | Input-gradient influence map on a 14px patch grid and masking diagnostic, architecture-agnostic (linear or MLP head). Audit numbers below are from the v0.3.0 linear head; the v0.4.0 MLP head has not had its own 40-image audit yet. |
 | B. Generator attribution | Not implemented. |
-| C. Robustness | Per-upload JPEG/resize/blur/simulated-screenshot stability checks. v0.4.0-specific degradation benchmark not yet run; v0.2.0/v0.3.0 numbers are not v0.4.0 evidence. |
+| C. Robustness | Per-upload JPEG/resize/blur/simulated-screenshot stability checks. v0.4.0 degradation benchmark (GenImage validation, n=783): real-photo false positives stay low under every transform (0-3.3%), but AI recall drops sharply under compression/resize/screenshot - 52.7% at original, falling to 25-29% at jpeg_q50/q30/half_resolution and 17.9% at simulated_screenshot; mild_blur held up best at 49.3%. See `report/experiments/robustness_v040/metrics.json`. |
 | D. Provenance/metadata | EXIF shown separately, never changing the visual score. C2PA presence is checked via a bounded ASCII substring scan for known identifiers (`metadata.c2pa_status`) - a heuristic hit, never a JUMBF box parse or signature verification. No image in our test corpora carries a manifest. |
 | E. Image-caption consistency | Not implemented. |
-| F. Deployable interface | Local drag-and-drop app, batch CLI, JSON export, CPU inference and likelihood wording. Fresh-clone timing not yet re-verified for v0.4.0. |
-| G. Active defence | Bounded transformation/flip diagnostic measured for earlier releases; not yet re-run for v0.4.0. |
+| F. Deployable interface | Local drag-and-drop app, batch CLI, JSON export, CPU inference and likelihood wording. Fresh-clone timing verified for v0.4.0: 243.75s total (clone+setup+first prediction), see `report/reproducibility/v0.4.0_windows_cpu.json`. |
+| G. Active defence | Bounded grid of the 7 transforms above, run per-image as a search budget: flips 196/585 (33.5%) of initially-correct predictions to wrong. Discloses a real, non-adversarial robustness weakness - not a claim of resistance to adversarial attacks. |
 
 ## Setup and run
 
@@ -154,7 +154,9 @@ New generators/camera pipelines can still fail; centre cropping omits borders an
 
 ## Reproducibility, fallback and originality
 
-59 tests pass as of v0.4.0 (5 for the new MLP architecture path). Full predict+explain+robustness was verified live against the running app (HTTP 200, correct method label and localisation dispatch). CUDA loading is rejected for the exported tower on both head architectures; extreme-aspect-ratio guards have regression coverage. **Fresh-clone timing and Module G (active defence) re-runs for v0.4.0 are still pending.**
+59 tests pass as of v0.4.0 (5 for the new MLP architecture path). Full predict+explain+robustness was verified live against the running app (HTTP 200, correct method label and localisation dispatch). CUDA loading is rejected for the exported tower on both head architectures; extreme-aspect-ratio guards have regression coverage. Fresh-clone timing (243.75s total, `report/reproducibility/v0.4.0_windows_cpu.json`) and Module G active-defence (33.5% flip rate on a bounded 7-transform search, `report/experiments/robustness_v040/metrics.json`) are both measured for v0.4.0. **The 40-image explanation audit and the private user-image veto check are the remaining not-yet-re-run gaps for this release.**
+
+While measuring fresh-clone timing we found and fixed a tower-download URL that had 404'd since v0.3.0 (a manual GitHub upload keeps the local filename, not an invented "nice" name); no fresh clone could have downloaded the model before this fix. See `docs/PROGRESS.md`, "found and fixed a tower-download bug", for the full account. The `main` branch carries the fix.
 
 Earlier checkpoints, scores and releases remain preserved: [v0.2.0](https://github.com/sibtainmunshi/Signal_Scope/releases/tag/v0.2.0), [v0.3.0](https://github.com/sibtainmunshi/Signal_Scope/releases/tag/v0.3.0). Reproduce either historical fallback in a separate checkout, e.g.:
 

@@ -20,7 +20,7 @@ Active model: `mixed_clip_mlp_v2_release`, activation `b201d0c`, freeze `6f25326
 - [ ] **40-image explanation audit specifically for the v0.4.0 MLP head.** The 17/40-localised, p=0.29/0.82 numbers in README/docs are from the v0.3.0 linear head and are disclosed as not yet re-measured for this architecture.
 - [ ] Actual human usefulness review and annotated-defect correctness/localisation evidence. Automated checks cannot substitute for these.
 - [x] JPEG, resize, blur and labelled simulated-screenshot stability interface works (architecture-agnostic).
-- [ ] v0.4.0-specific aggregate degradation/flip measurement (Module G). In progress: `report/experiments/robustness_v040` (GenImage validation, 783 images x 7 transforms).
+- [x] v0.4.0-specific aggregate degradation/flip measurement (Module G) complete: `report/experiments/robustness_v040` (GenImage validation, n=783). Real-photo FPR stays low under every transform (0-3.3%), but AI recall degrades sharply under compression/resize/screenshot (52.7% original -> 25-29% at jpeg_q50/q30/half_resolution -> 17.9% simulated_screenshot); mild_blur held up best (49.3% recall). Bounded 7-transform search flips 196/585 (33.5%) of initially-correct predictions to wrong -- disclosed as a real, not adversarially-robust, weakness.
 - [x] 25 MiB/40 MP uploads, extreme-aspect-ratio safeguards and CPU-only tower guard (unchanged, shared with v0.3.0).
 - [x] EXIF separate from visual score; C2PA presence heuristic implemented (not signature verification); optional B/E absent and disclosed.
 - [x] 59 tests pass with v0.4.0 active (5 new for the MLP path); full predict+explain+robustness verified live (HTTP 200).
