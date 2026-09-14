@@ -1,0 +1,10 @@
+{
+  "source": "fresh public Git clone of main (not the v0.4.0 tag; see script header)",
+  "release": "v0.4.0",
+  "checked_utc": "2026-09-14T09:18:34.675033+00:00",
+  "clone_seconds": 2.36,
+  "setup_seconds": 236.41,
+  "first_prediction_seconds": 4.98,
+  "total_seconds": 243.75,
+  "note": "Includes the 608 MB tower + 398 KB head download inside setup; package_download_cache state depends on this machine's pip cache."
+}

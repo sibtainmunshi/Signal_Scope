@@ -170,3 +170,13 @@ Fixed the URLs in `model/manifest.json`, `model/releases/v0.3.0.json`,
 repackaging keeps the correct filenames. Verified all three corrected URLs
 return HTTP 200 via direct `curl`, and re-ran the full test suite (59 passed).
 No checkpoint, threshold, or weight changed - this is a metadata/URL fix only.
+
+The `v0.4.0` git tag was frozen before this fix and still has the broken URL
+baked into its `model/manifest.json`; moving it forward needs a force-push,
+which was deliberately left for the user to authorize rather than done
+automatically. Re-pointed `scripts/timing_test_v040.sh` at `main` instead
+(the actual fresh-clone experience) and re-ran it: clone 2.36s + setup
+236.41s (includes the 608 MB tower + 398 KB head download) + first
+prediction 4.98s = **243.75s total**, well under the 10-minute target.
+Predicted checkpoint SHA-256 matched the frozen identity exactly. Result at
+`report/reproducibility/v0.4.0_windows_cpu.json`.
