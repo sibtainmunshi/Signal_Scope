@@ -131,14 +131,29 @@ A model that flags two-thirds of real photographs as AI-generated is not usable.
 
 Real-photo recognition is strong on both. AI recall is decent on AIDA, weaker on CommunityForensics (which mixes some older GAN generators alongside current diffusion models). Aggregate accuracy looks better than AI-recall alone because real photos dominate correctness in both sets.
 
-### Private user-image veto diagnostic (v0.2.0 vs v0.3.0, pre-dating v0.4.0)
+### Required metrics: overall AUC, unseen-generator-split AUC, macro-F1, confusion matrix
+
+No organizer-provided dataset or held-out sample was distributed for this internal hackathon; "overall" below is our own in-distribution validation (GenImage/CIFAKE, generators seen during training) and "unseen-generator split" is the two independent public benchmarks above (generators absent from training), evaluated at the frozen threshold `0.8388091705052073`.
+
+| Evaluation surface | AUC | Macro-F1 | Accuracy | Confusion matrix [real, ai_generated] rows=actual |
+|---|---:|---:|---:|---|
+| **Overall** - GenImage val (seen generators, n=783) | 0.944 | 0.738 | 74.7% | real: [366, 3] / ai: [195, 219] |
+| **Overall** - CIFAKE val (seen generators, n=4000) | 0.820 | 0.609 | 64.5% | real: [1900, 100] / ai: [1319, 681] |
+| **Unseen-generator split** - AIDA holdout (17 generators, n=755) | **0.948** | 0.852 | 85.2% | real: [329, 26] / ai: [86, 314] |
+| **Unseen-generator split** - CommunityForensics holdout (~20 generators, n=1374) | **0.936** | 0.717 | 71.8% | real: [539, 12] / ai: [375, 448] |
+
+The unseen-generator AUC (0.936-0.948) is not lower than the seen-generator AUC (0.820-0.944) - the model's *ranking* of real-vs-AI generalises well to new generators. The gap that matters is accuracy/FPR at the fixed threshold (Section 4.2's "fixed operating point"), which is where the deployment tradeoff above actually shows up: the threshold was fit on GenImage/CIFAKE only and was never informed by AIDA/CommunityForensics score distributions (see the threshold-recalibration finding in [POST_RELEASE_EXPERIMENTS.md](docs/POST_RELEASE_EXPERIMENTS.md), which raises pooled unseen-generator accuracy to 80.6% with zero weight change, not yet activated on the frozen v0.4.0 release).
+
+### Private user-image veto diagnostic (v0.3.0 vs v0.4.0)
 
 | Model / protocol | AI images detected | Real photos flagged | Small-sample AUC |
 |---|---:|---:|---:|
-| v0.2.0, as uploaded | 0/11 | 8/18 | 0.101 |
-| v0.3.0 candidate, as uploaded | 9/11 | 9/18 | 0.732 |
+| v0.3.0, as uploaded | 9/11 | 9/18 | 0.732 |
+| v0.3.0, matched format | 9/11 | 4/18 | 0.788 |
+| **v0.4.0, as uploaded** | 8/11 | **4/18** | **0.843** |
+| **v0.4.0, matched format** | 6/11 | **1/18** | 0.803 |
 
-**These 29 images do not support an accuracy, precision or recall percentage claim.** No user image was used for training, calibration or threshold fitting; per-image results stay private. v0.4.0 has not yet been checked against this private set.
+**These 29 images do not support an accuracy, precision or recall percentage claim** - the sample is too small (a single flip changes the count by ~9 points). No user image was used for training, calibration or threshold fitting; per-image results stay private (`tmp/`, gitignored). Directionally, v0.4.0 cuts real-photo false positives on this private set roughly in half versus v0.3.0, consistent with the holdout numbers above; AI-image catch rate on these 11 images is comparable, not clearly better or worse at this sample size.
 
 ### Third-party reference
 
@@ -172,3 +187,7 @@ python scripts/run.py --port 8001
 Repository: `src/signalscope/` shared inference/metrics; `app/` FastAPI/React; `model/` training/evaluation; `scripts/` setup/download/reports; `report/` measurements; `docs/` protocols; `tests/` regressions. v0.4.0 training recipe: `model/train_clip_mlp_v2.py`; architecture: `src/signalscope/clipmodel.py` (`ClipMlpModel`); release packaging: `scripts/package_mlp_release.py`. Report rebuilding needs the development environment, Node and local Chrome.
 
 Project code was developed during 10-15 September with AI coding assistants; no public real/fake notebook was copied wholesale. Credit [OpenAI CLIP](https://github.com/openai/CLIP) for the pretrained backbone/preprocessing, [UniversalFakeDetect](https://github.com/WisconsinAIVision/UniversalFakeDetect) for the frozen-feature method/evaluation data, [AI Detect Arena](https://github.com/AI-Detect-Arena/benchmark-dataset) and [CommunityForensics](https://github.com/JeongsooP/Community-Forensics) (Park et al., CVPR 2025) for the current-generator training/evaluation data. PyTorch, NumPy, Pillow, scikit-learn, SciPy, PyArrow, FastAPI, React and Vite underpin the implementation. Dataset sources/terms are above; B-Free is credited only as a reference.
+
+### Originality declaration
+
+No public real-vs-fake notebook, Kaggle kernel or third-party detector codebase was copied, in whole or in part. Third-party code/weights actually used: the pretrained [OpenAI CLIP](https://github.com/openai/CLIP) ViT-L/14 backbone (frozen, not fine-tuned); the evaluation-format methodology from [UniversalFakeDetect](https://github.com/WisconsinAIVision/UniversalFakeDetect) (their released external-development images, not their model code); standard open-source libraries (PyTorch, FastAPI, React, etc., listed above). Third-party public *data* referenced: CIFAKE, GenImage, AI Detect Arena Benchmark, CommunityForensics-Eval, Defactify_Image_Dataset (post-submission exploration only, see [POST_RELEASE_EXPERIMENTS.md](docs/POST_RELEASE_EXPERIMENTS.md)) - all cited with sources/licences above. No organizer-provided baseline dataset or model was distributed for this internal hackathon; the "Overall" evaluation surface above is our own in-distribution validation split, not an organizer baseline.
