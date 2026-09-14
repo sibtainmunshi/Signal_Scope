@@ -1,0 +1,24 @@
+{
+  "run": "mlp_v2_threshold_v1",
+  "hypothesis": "The released threshold was fit only on GenImage/CIFAKE and never saw AIDA or CommunityForensics score distributions. Given high holdout AUC (0.948/0.936) but mediocre holdout accuracy (85.2%/71.8%) with large FPR headroom (7.3%/2.2% against a 35% ceiling), a threshold fit across all four domains should raise AI-recall on both holdouts without any weight change.",
+  "declared_before_reading_holdout_scores": true,
+  "checkpoint_sha256": "174ef56251011a7d5618d32759768807ebe02cc679c014e434906bbb81be5fdd",
+  "fit_domains": "genimage_val, cifake_val, aida_train, communityforensics_train (as_distributed format)",
+  "fit_target_fpr": 0.05,
+  "aggregation": "median of the four per-domain FPR<=5% thresholds, replacing the released rule's max-over-genimage/cifake-only",
+  "evaluation_kind": "One-shot evaluation of the single resulting threshold against AIDA-holdout, CommunityForensics-holdout and external-dev. Neither holdout is used for fitting. No alternative threshold is tried after seeing these results.",
+  "gate": {
+    "min_holdout_accuracy": 0.852,
+    "max_holdout_fpr": 0.35,
+    "max_train_domain_fpr_increase": 0.1,
+    "max_external_fpr_increase": 0.1,
+    "description": "Passes only if both AIDA-holdout and CommunityForensics-holdout accuracy stay at or above the currently released 85.2%/71.8% (no regression) with FPR at or below 0.35 (unchanged release bar), AND GenImage/CIFAKE validation FPR does not rise by more than 0.10 absolute versus the old threshold, AND no external-dev generator's FPR rises by more than 0.10 absolute versus the old threshold. External-dev mean AUC is reported as a sanity check only (threshold-independent, must equal the released value bit-for-bit modulo floating point)."
+  },
+  "protected": "No weight, temperature or architecture change. Does not touch or replace model/checkpoints/mixed_clip_mlp_v2_release/head.pt or model/manifest.json. Deploying a new threshold, if this passes, is a separate explicit step.",
+  "limits": [
+    "Both holdouts are single fixed splits of public benchmarks, not new blind tests.",
+    "A better operating point does not establish real-world accuracy on unseen generators.",
+    "This is the only threshold value tried; a retry after seeing results would be fitting to holdout labels."
+  ],
+  "created_utc": "2026-09-14T10:10:49.245404+00:00"
+}

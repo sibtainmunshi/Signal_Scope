@@ -283,3 +283,43 @@ above, not summarised into a single misleading headline number. No further
 weight or threshold change occurred after the freeze (`report/releases/v0.4.0/
 freeze.json`); GLIDE/DALLE and COCO reserved evaluation was deliberately not
 re-run for v0.4.0, so no reserved-set number exists for this release.
+
+## Post-submission exploration toward ~90%: threshold-only recalibration (first attempt)
+
+Explicitly out of scope for the frozen v0.4.0 submission, per the user's own
+sequencing: finalise first, explore further only once the finishing tasks are
+done. This experiment does not touch, replace or activate any change to the
+released checkpoint or `model/manifest.json` (`release_changed: false`).
+
+Motivation: on both untouched holdouts, ROC-AUC is high (0.948 AIDA, 0.936
+CommunityForensics) but holdout accuracy is only 85.2%/71.8%, with real-photo FPR
+far below the 0.35 gate ceiling (7.3%/2.2%). High AUC plus mediocre accuracy plus
+large FPR headroom together suggest the operating threshold, not the model, was
+the limiting factor - and indeed the released threshold (0.8388) was fit
+exclusively on GenImage/CIFAKE validation scores and never saw an AIDA or
+CommunityForensics score at all.
+
+Declared before touching either holdout: refit the threshold as the median of
+four per-domain FPR<=5% thresholds (GenImage-val, CIFAKE-val, AIDA-train,
+CommunityForensics-train), replacing the old max-over-two-domains rule, then
+evaluate that single threshold once against both holdouts and external-dev. No
+weight or temperature change; no second threshold value tried after seeing
+results. [Protocol/results](../report/experiments/mlp_v2_threshold_v1/results.json).
+
+**Result: the declared gate passed.** New threshold 0.7454 (down from 0.8388):
+
+| Holdout | Accuracy: old -> new | FPR: old -> new | TPR: old -> new |
+|---|---|---|---|
+| AIDA | 85.2% -> 87.2% | 7.3% -> 11.0% | 78.5% -> 85.5% |
+| CommunityForensics | 71.8% -> 77.0% | 2.2% -> 4.4% | 54.4% -> 64.5% |
+| Pooled (count-weighted) | 76.6% -> 80.6% | - | - |
+
+Side effects, all within the predeclared bounds: GenImage/CIFAKE validation FPR
+rose by at most 6.5 points (cifake); external-dev per-generator FPR rose by at
+most 5.6 points (ldm_200, as-distributed); external-dev mean AUC is exactly
+unchanged (threshold-independent, as expected). This is a real, disclosed,
+zero-weight-change improvement - but it does **not** reach the ~90% target on its
+own (80.6% pooled, up from 76.6%). Per the user's own stated plan, the next step
+is a per-generator error diagnostic on the CommunityForensics holdout (its 35.5%
+miss rate is the larger remaining gap) before deciding whether a further,
+bounded retraining attempt is worthwhile in the remaining time.
