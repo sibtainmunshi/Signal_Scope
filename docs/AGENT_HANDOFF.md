@@ -180,3 +180,58 @@ The section above is now stale. Current state:
 - Next after the reserved run completes: read `reserved_summary.json`, report the
   actual numbers (good or bad) in README/model report/checklist, no retuning
   regardless of outcome.
+
+## 14 September - v0.4.0: MLP head, deployed by explicit decision, not a gate pass
+
+**The sections above are now historical.** Current state:
+
+- **Active model is `mixed_clip_mlp_v2_release` (v0.4.0)**, not the v0.3.0 linear
+  head. Activation `b201d0c`, freeze `6f25326`. `model/manifest.json` points here.
+- **Why:** two independent evaluations on genuinely 2025-2026-vintage generators
+  (AI Detect Arena, CommunityForensics-Eval, both new since the section above was
+  written) showed v0.3.0 scored ~55-60% accuracy with 66-68% real-photo FPR on
+  current generators - the 2021-2023-vintage reserved AUC (0.849/0.833) did not
+  predict this. Two bounded, gated fix attempts followed:
+  1. `mixed_clip_l14_aida_v1` (linear head, AIDA only, 40% loss mass): AIDA holdout
+     AUC 0.614->0.981 (overfitting signature), external-dev AUC 0.771->0.652.
+     **Rejected**, no checkpoint saved.
+  2. `mixed_clip_mlp_v2` (2-layer MLP, AIDA+CommunityForensics, 60% combined mass):
+     AIDA holdout 85.2% accuracy/7.3% FPR (passed), CommunityForensics holdout 71.8%
+     accuracy/2.2% FPR (accuracy just short of the 75% bar), external-dev AUC
+     0.771->0.637. **Failed its own declared gate** on the external-dev check.
+- **The user reviewed attempt 2's actual holdout numbers and explicitly chose to
+  deploy it anyway**, because the real goal is current-generator accuracy (~80%
+  target, user-stated), not preserving the old development benchmark. This is
+  recorded as a decision, not a gate success, in `report/releases/v0.4.0/freeze.json`
+  and throughout README/docs. Do not describe the gate as passed.
+- **A real counting bug was found and fixed without rerunning inference**: a
+  duplicate dict key silently overwrote each generator's own image count with the
+  pooled total in `model/evaluate_aidetectarena.py`; fixed by recomputing from the
+  already-saved per-image score CSVs.
+- **New training/evaluation data this session**: AI Detect Arena Benchmark v0.1
+  (`data/manifests/aidetectarena_v01.csv`, 1,938 retained, 17 current generators,
+  CC BY 4.0/Unsplash) and CommunityForensics-Eval (`data/manifests/
+  communityforensics_v1.csv`, 3,496 retained, ~20 generators including older GANs,
+  CC BY-NC-SA 4.0, Park et al. CVPR 2025). Both have declared 60/40 train/holdout
+  splits; holdouts were never used for fitting either model.
+- **Not yet re-verified for v0.4.0** (explicit gaps, not implied continuity):
+  the 40-image explanation audit (17/40-localised numbers on record are from the
+  v0.3.0 linear head only), Module G/robustness benchmark (running now, see below),
+  fresh-clone timing (script ready at `scripts/timing_test_v040.sh`, blocked on the
+  user publishing the v0.4.0 GitHub release - only a 398,527-byte head, the 608 MB
+  tower is reused unchanged from v0.3.0's release), and the private 11-ChatGPT/
+  18-phone-photo veto check.
+- **Module G robustness benchmark is running** against v0.4.0 on GenImage validation
+  (783 images x 7 transforms, CPU, ~35 minutes): `report/experiments/
+  robustness_v040`. First result in: original-image accuracy 74.7%, AUC 0.944,
+  FPR 0.5%. Do not rerun; check `report/experiments/robustness_v040/metrics.json`
+  for completion before starting anything else CPU-heavy.
+- **User's stated next-phase goal (explicitly deferred, not part of this
+  submission's core claim)**: after the above finishing tasks land, attempt to push
+  both real-photo and AI-recall accuracy toward ~90% on 2026-era generators. Do not
+  start this before the checklist's pending items are closed, and do not let it
+  block the actual submission deadline.
+- **UI improvements are explicitly deferred to Astra, after everything above is
+  verified** - not before, per user direction.
+- v0.2.0 and v0.3.0 checkpoints, tags, reports and reserved-evaluation results
+  remain untouched and preserved as historical fallbacks.
