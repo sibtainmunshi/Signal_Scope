@@ -71,6 +71,9 @@ def measured(detector, *names):
 
 
 def training_description(detector) -> dict:
+    override = detector.config.get("training_description")
+    if override:
+        return override
     summary = detector.config.get("data_summary") or {}
     if "genimage" not in summary:
         return {"dataset": "CIFAKE", "training_source": "CIFAKE · Stable Diffusion 1.4 + CIFAR-10",
@@ -103,7 +106,9 @@ def model_report():
         unseen_status = "Not evaluated yet"
     return {"ready": True, "model_version": detector.model_version,
             "checkpoint_sha256": detector.checkpoint_hash,
-            "architecture": "CLIP ViT-L/14 + trained linear head" if detector.architecture == "clip_vitl14_linear" else "ResNet-18",
+            "architecture": {"clip_vitl14_linear": "CLIP ViT-L/14 + trained linear head",
+                            "clip_vitl14_mlp": "CLIP ViT-L/14 + trained MLP head"}.get(
+                                detector.architecture, "ResNet-18"),
             "visual_sha256": detector.visual_hash,
             "image_size": detector.image_size, "preprocessing": detector.preprocessing,
             **training_description(detector),
