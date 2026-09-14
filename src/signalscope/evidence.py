@@ -157,9 +157,9 @@ def _resnet_attribution(detector: Detector, tensor: torch.Tensor) -> tuple:
 def _clip_attribution(detector: Detector, tensor: torch.Tensor, model=None) -> tuple:
     """Input-gradient attribution, pooled to the vision transformer's patch grid.
 
-    Grad-CAM needs a convolutional stage that this backbone does not have. The head is
-    linear on the embedding, so one backward pass gives an exact input gradient; taking
-    gradient times input and pooling to the 14 px patch grid keeps the map at the
+    Grad-CAM needs a convolutional stage that this backbone does not have. One backward
+    pass through our trained head (linear or a small MLP) gives an exact input gradient;
+    taking gradient times input and pooling to the 14 px patch grid keeps the map at the
     granularity the model actually consumes instead of implying per-pixel precision.
     """
     patch = 14
@@ -174,8 +174,10 @@ def _clip_attribution(detector: Detector, tensor: torch.Tensor, model=None) -> t
         signed = (gradients*probe.detach()).sum(dim=1, keepdim=True).relu().detach()
         pooled = F.avg_pool2d(signed, patch, stride=patch)
         heatmap, peak = _normalize_map(pooled, detector.image_size)
-    return heatmap, peak, ai_score, target_ai, "input-gradient attribution",         ("Input-gradient attribution on the frozen CLIP ViT-L/14 embedding with our linear "
-         f"head, pooled to the {patch} px patch grid; model-influence visualization")
+    head_kind = "linear" if getattr(detector, "architecture", None) == "clip_vitl14_linear" else "MLP"
+    return (heatmap, peak, ai_score, target_ai, "input-gradient attribution",
+            (f"Input-gradient attribution on the frozen CLIP ViT-L/14 embedding with our trained {head_kind} "
+             f"head, pooled to the {patch} px patch grid; model-influence visualization"))
 
 
 def explain_prediction(detector: Detector, image: Image.Image) -> dict:
@@ -185,7 +187,8 @@ def explain_prediction(detector: Detector, image: Image.Image) -> dict:
     if detector.preprocessing == "native_multicrop_v1":
         return _explain_multicrop(detector, image, start)
     tensor = detector.tensor(image)
-    attribution = (_clip_attribution if detector.architecture == "clip_vitl14_linear"
+    attribution = (_clip_attribution
+                   if detector.architecture in {"clip_vitl14_linear", "clip_vitl14_mlp"}
                    else _resnet_attribution)
     heatmap, peak, ai_score, target_ai, attribution_label, method = attribution(detector, tensor)
     values = heatmap.cpu().numpy()

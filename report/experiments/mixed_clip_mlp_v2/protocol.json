@@ -1,0 +1,48 @@
+{
+  "run": "mixed_clip_mlp_v2",
+  "hypothesis": "A small MLP head with two independent fresh-generator training sources (AIDA + CommunityForensics), each with an untouched holdout, generalises to current generators without the catastrophic external-dev collapse a single linear head showed when trained on one source alone.",
+  "prior_failure": "mixed_clip_l14_aida_v1: AIDA holdout AUC 0.614->0.981, external-dev AUC 0.771->0.652 (as distributed); rejected as overfitting to one benchmark's own characteristics.",
+  "architecture": {
+    "type": "2-layer MLP",
+    "hidden_units": 128,
+    "dropout": 0.3,
+    "activation": "ReLU",
+    "note": "Linear head could not be aggressively reweighted without a global decision-boundary shift; a nonlinear head has more capacity to fit more than one region of the embedding space at once."
+  },
+  "aida_manifest_sha256": "4b5ab6e3fa3199ecfba797625ae4795fb6732fdc44324c4e2dfb84152f45e520",
+  "cf_manifest_sha256": "79fb33821e491f8e99a719f94cc3653821ab13b7bb677135db8d5e44fcb18709",
+  "aida_split": "60/40, fixed before mixed_clip_l14_aida_v1; unchanged; holdout never used for fitting",
+  "cf_split": "60/40, fixed before this run; holdout never used for fitting",
+  "training_views": [
+    "as_distributed",
+    "matched"
+  ],
+  "loss_mass": {
+    "genimage": 0.25,
+    "cifake": 0.15,
+    "aida": 0.25,
+    "communityforensics": 0.35
+  },
+  "optimizer": {
+    "type": "Adam",
+    "lr": 0.001,
+    "weight_decay": 0.001,
+    "epochs": 60,
+    "model_selection": "best internal-validation mean AUC epoch (genimage+cifake val, both formats); no AIDA/CF/external scoring used for epoch selection"
+  },
+  "temperature": "Refit on unchanged complete GenImage/CIFAKE calibration only, equal domain BCE",
+  "threshold": "Unchanged rule: max of original GenImage/CIFAKE validation thresholds at internal FPR<=5%. Neither holdout is used to fit any threshold.",
+  "gate": {
+    "external_dev_max_auc_drop": 0.05,
+    "min_holdout_accuracy": 0.75,
+    "max_holdout_real_fpr": 0.35,
+    "description": "Passes only if external-dev mean AUC does not drop by more than 0.05 in either protocol from the current candidate's own 0.771/0.789, AND both the AIDA holdout and the CommunityForensics holdout reach at least 0.75 accuracy with real-photo FPR at or below 0.35 at the fitted threshold. This is a usable-accuracy bar, deliberately relaxed from a zero-regression bar, matching the stated goal."
+  },
+  "reserve": "GLIDE/DALLE reserved and COCO reserved are not read here.",
+  "limits": [
+    "Both holdouts are single fixed splits of public benchmarks, not new blind tests.",
+    "This is the last attempt on this data combination; a further retry after seeing these results would be fitting to holdout labels.",
+    "CommunityForensics-Eval is CC BY-NC-SA 4.0: noncommercial research use."
+  ],
+  "created_utc": "2026-09-14T06:35:14.712695+00:00"
+}

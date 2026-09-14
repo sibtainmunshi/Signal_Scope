@@ -86,5 +86,8 @@
     "pHash overlap check is heuristic; exact and near overlap cannot be exhaustively ruled out.",
     "CC BY-NC-SA 4.0: noncommercial research use only, matching this project's own licence posture.",
     "Not the organizers' held-out set; a third-party academic benchmark used as an additional check."
-  ]
+  ],
+  "split_rule": "60/40 hash split per (label, model-or-real-source) stratum; holdout untouched until fitting completes",
+  "train_count": 2122,
+  "holdout_count": 1374
 }

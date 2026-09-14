@@ -12,7 +12,7 @@ import numpy as np
 import torch
 from PIL import Image, ImageOps, ImageStat
 
-from .clipmodel import ClipLinearModel, load_visual
+from .clipmodel import ClipLinearModel, ClipMlpModel, load_visual
 from .limits import MAX_IMAGE_PIXELS
 from .network import build_model, preprocess_batch
 from .paths import root_path
@@ -74,6 +74,15 @@ class Detector:
             self.device = torch.device("cpu")
             tower, self.visual_hash = load_visual(payload, self.device)
             self.model = ClipLinearModel(tower, payload["weight"], payload["bias"])
+        elif self.architecture == "clip_vitl14_mlp":
+            if device not in {"auto", "cpu"}:
+                raise ValueError(
+                    f"CLIP checkpoints only support device='cpu' (requested '{device}'); "
+                    "the exported image tower cannot run on other devices.")
+            self.device = torch.device("cpu")
+            tower, self.visual_hash = load_visual(payload, self.device)
+            self.model = ClipMlpModel(tower, payload["state_dict"], int(payload["hidden_units"]),
+                                      float(payload["dropout"]))
         else:
             raise ValueError("Unsupported checkpoint architecture.")
         self.model.to(self.device).eval()
@@ -82,7 +91,8 @@ class Detector:
         if self.preprocessing not in {"torch_bilinear_v1", "pil_bilinear_v1", "pil_center_crop_v1",
                                       "native_multicrop_v1", "clip_center_crop_v1"}:
             raise ValueError("Unsupported checkpoint preprocessing version.")
-        if (self.architecture == "clip_vitl14_linear") != (self.preprocessing == "clip_center_crop_v1"):
+        clip_architecture = self.architecture in {"clip_vitl14_linear", "clip_vitl14_mlp"}
+        if clip_architecture != (self.preprocessing == "clip_center_crop_v1"):
             raise ValueError("CLIP checkpoints require clip_center_crop_v1 preprocessing.")
         self.threshold = float(payload.get("threshold", .5))
         self.temperature = float(payload.get("temperature", 1.))

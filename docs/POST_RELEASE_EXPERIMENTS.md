@@ -220,3 +220,42 @@ holdout labels rather than testing a hypothesis. The real-photo false-positive
 weakness on genuinely current generators (66.2% FPR, AI Detect Arena Benchmark)
 remains a disclosed, open limitation of the deployed model.
 [Protocol/results](../report/experiments/mixed_clip_l14_aida_v1/results.json).
+
+## A second training attempt (MLP head, two independent sources) also failed
+
+Reasoning that the first failure came from a linear head's inability to specialise
+without a global decision-boundary shift, a second attempt used a small 2-layer MLP
+head (768->128->1, dropout 0.3) trained on CIFAKE+GenImage+AIDA-train+CommunityForensics-train
+combined, with independent 60/40 holdouts from both new sources never touched during
+fitting. Gate deliberately relaxed to a usable-accuracy bar (>=75% holdout accuracy,
+<=35% real-photo FPR on each holdout) rather than the earlier zero-regression bar,
+plus <=0.05 external-dev AUC drop in either protocol.
+
+| Check | Result |
+|---|---|
+| AIDA holdout accuracy / FPR | 85.2% / 7.3% - **passed both** |
+| CommunityForensics holdout accuracy / FPR | 71.8% / 2.2% - **FPR passed, accuracy 3.2 points short** |
+| External dev AUC, as distributed | 0.771 -> 0.637 (0.134 drop) - **failed** |
+| External dev AUC, matched | 0.789 -> 0.658 (0.131 drop) - **failed** |
+
+**Gate failed on external-dev regression, essentially as badly as the first
+attempt** (0.13+ AUC lost on both protocols, comparable to the rejected linear
+head's 0.12-0.14 loss). This is a confound worth stating plainly: the loss mass was
+also *more* aggressively shifted toward new data this time (60% combined AIDA+CF vs
+the first attempt's 40% AIDA alone), so the architecture change (linear -> MLP) was
+not tested in isolation from the weighting change. The holdout numbers themselves
+are far more plausible than the first attempt's suspicious 0.981 AUC (85.2% and
+71.8% accuracy, not near-perfect), suggesting less overfitting to either benchmark's
+own idiosyncrasies specifically - but that did not prevent the external-dev collapse.
+
+**No checkpoint was saved; v0.3.0 remains the served model.** Two independent
+attempts (different architecture, different data combination, both under a properly
+declared protocol and untouched holdouts) now show the same pattern: meaningfully
+adapting to current-generator data costs far more on the 2021-2023-vintage
+development/reserved distribution than the gain is worth, at this data scale with a
+frozen CLIP backbone. Per the declared protocol, this is the last attempt; the
+result is reported as a real, evidenced limitation rather than a lack of effort.
+Fixing it properly would need substantially more paired data across both
+distributions, or fine-tuning the backbone itself rather than only a head - both
+out of scope for the remaining time.
+[Protocol/results](../report/experiments/mixed_clip_mlp_v2/results.json).

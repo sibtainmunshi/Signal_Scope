@@ -59,3 +59,30 @@ class ClipLinearModel(nn.Module):
 
     def forward(self, batch: torch.Tensor) -> torch.Tensor:
         return self.embed(batch) @ self.weight.T + self.bias
+
+
+class ClipMlpModel(nn.Module):
+    """Traced CLIP image tower, L2-normalized embedding, then a small trained MLP head.
+
+    Same shape of contract as ClipLinearModel (one logit per row), so the rest of the
+    Detector, explanation and calibration code is unchanged. The head here has real
+    capacity (a hidden ReLU layer) rather than a single hyperplane, which is what let a
+    training mixture spanning both older and newer generators avoid the catastrophic
+    global decision-boundary shift a linear head showed under the same reweighting.
+    """
+
+    def __init__(self, tower: nn.Module, state_dict: dict, hidden_units: int, dropout: float):
+        super().__init__()
+        self.tower = tower
+        self.net = nn.Sequential(
+            nn.Linear(768, hidden_units), nn.ReLU(), nn.Dropout(dropout),
+            nn.Linear(hidden_units, 1))
+        # Saved from a module whose only child was also named "net"; strip that prefix.
+        self.net.load_state_dict({k.removeprefix("net."): v for k, v in state_dict.items()})
+        self.net.eval().requires_grad_(False)
+
+    def embed(self, batch: torch.Tensor) -> torch.Tensor:
+        return F.normalize(self.tower(batch).float(), dim=-1)
+
+    def forward(self, batch: torch.Tensor) -> torch.Tensor:
+        return self.net(self.embed(batch))
