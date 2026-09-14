@@ -1,0 +1,45 @@
+{
+  "run": "mixed_clip_mlp_v3",
+  "hypothesis": "Adding a Midjourney-v6-focused domain (Defactify_Image_Dataset, 5,874 images, near-zero overlap with existing data) as a fifth training domain reduces the single largest diagnosed miss (MidjourneyV6_1, n=134, 32.1% miss on the CommunityForensics holdout) without regressing the released head's own numbers.",
+  "diagnostic_basis": "report/experiments/generator_error_diagnostic_v1.json",
+  "defactify_manifest_sha256": "ea6ae056da37f43cfae3ed85c21af3b11b7caa9d84bea2beae8d526d7edd36bc",
+  "aida_manifest_sha256": "4b5ab6e3fa3199ecfba797625ae4795fb6732fdc44324c4e2dfb84152f45e520",
+  "cf_manifest_sha256": "79fb33821e491f8e99a719f94cc3653821ab13b7bb677135db8d5e44fcb18709",
+  "defactify_split": "Dataset's own train/test shard split used directly; holdout never used for fitting",
+  "training_views": [
+    "as_distributed",
+    "matched"
+  ],
+  "loss_mass": {
+    "genimage": 0.2,
+    "cifake": 0.1,
+    "aida": 0.2,
+    "communityforensics": 0.3,
+    "defactify": 0.2
+  },
+  "optimizer": {
+    "type": "Adam",
+    "lr": 0.001,
+    "weight_decay": 0.001,
+    "epochs": 60,
+    "model_selection": "best internal-validation mean AUC epoch (genimage+cifake val, both formats); no AIDA/CF/defactify/external scoring used for epoch selection"
+  },
+  "temperature": "Refit on unchanged complete GenImage/CIFAKE calibration only, equal domain BCE",
+  "threshold": "Unchanged rule: max of original GenImage/CIFAKE validation thresholds at internal FPR<=5%. No holdout is used to fit any threshold.",
+  "gate": {
+    "baseline": "The currently released v0.4.0 head's own numbers, not the original v0.3.0 numbers.",
+    "external_dev_max_auc_drop": 0.05,
+    "min_aida_holdout_accuracy": 0.8516556291390729,
+    "min_cf_holdout_accuracy": 0.7183406113537117,
+    "min_defactify_holdout_accuracy": 0.75,
+    "max_holdout_real_fpr": 0.35,
+    "description": "Passes only if external-dev mean AUC does not drop by more than 0.05 from the released head's own 0.6375/0.6576 in either protocol, AND AIDA and CommunityForensics holdout accuracy do not regress below the released head's own 85.2%/71.8%, AND the new Defactify holdout reaches at least 0.75 accuracy, AND real-photo FPR stays at or below 0.35 on all three holdouts."
+  },
+  "protected": "Does not touch or replace model/checkpoints/mixed_clip_mlp_v2_release/head.pt or model/manifest.json. Activation is a separate, explicit step.",
+  "limits": [
+    "This is the last attempt on this data combination; a further retry after seeing these results would be fitting to holdout labels.",
+    "Defactify_Image_Dataset license is unstated; non-commercial research use only.",
+    "Only 2 of 7 train shards and 1 of 8 test shards of Defactify were used."
+  ],
+  "created_utc": "2026-09-14T10:38:18.131793+00:00"
+}

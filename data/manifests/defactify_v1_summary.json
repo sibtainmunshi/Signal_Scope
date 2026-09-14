@@ -1,0 +1,44 @@
+{
+  "created_utc": "2026-09-14T10:33:59.539480+00:00",
+  "dataset": "Defactify_Image_Dataset, Midjourney-v6 + real (COCO) rows only, train/test shards used as our train/holdout split",
+  "source": "https://huggingface.co/datasets/Rajarshi-Roy-research/Defactify_Image_Dataset",
+  "paper": "Roy et al., A Comprehensive Dataset for Human vs. AI Generated Image Detection, 2026 (arXiv:2601.00553)",
+  "licence": "Not stated on the dataset card; used here for non-commercial research benchmarking only, matching this project's CommunityForensics-Eval posture.",
+  "scoping": "Only Label_B in {0 real, 5 Midjourney v6} kept; SD2.1/SDXL/SD3/DALL-E3 rows skipped as already reasonably represented via GenImage.",
+  "total_images": 5878,
+  "retained": 5874,
+  "excluded": {
+    "within_dataset_exact_duplicate": 2,
+    "possible_overlap_with_existing_or_protected_data_phash_le_4": 2
+  },
+  "label_counts": {
+    "0": 2935,
+    "1": 2939
+  },
+  "split_counts": {
+    "train": 3997,
+    "holdout": 1877
+  },
+  "manifest_sha256": "ea6ae056da37f43cfae3ed85c21af3b11b7caa9d84bea2beae8d526d7edd36bc",
+  "shard_sha256": {
+    "train-00000-of-00007.parquet": "d18283f316c9a34b6dfae6ddd5b9e6f382a8da0c5928a1ba434f34b6493c2706",
+    "train-00001-of-00007.parquet": "b8366ca6c318fa9b24f6b25ed109f288a95ac583e67f6738824e9b1f504e455a",
+    "test-00000-of-00008.parquet": "f4fe57e74c65427c283b3b38eccf58af4ef4cf286f63e0d11dc27f4e181e22fd"
+  },
+  "protected_manifests": {
+    "cifake": "b1bddb1d857b3d6926a9a39796d437256fc02536ff2af772e47adae88f686f3d",
+    "external": "8149884f168b1db3093fd8632516539f085dfef0c1d458b191eef9b88c1e2335",
+    "genimage": "6cc079dccf326403e4507c039420874eba091cf984266bd2fd0e3b476a91e636",
+    "genimage_vqdm": "66bb0cba36b1e5d7b8892ac75e112127372ae2344b32f8a39e10590117f1b433",
+    "genimage_midjourney": "3414cfc2c36c7433f893670d3e747a103a0b9305cd8903f014283ccb44118d4d",
+    "coco_real_v1": "0dbe25fd6455976bb2323e939e237329c090336ecf5d83cb4ca952daa3fc34b1",
+    "aidetectarena_v01": "4b5ab6e3fa3199ecfba797625ae4795fb6732fdc44324c4e2dfb84152f45e520",
+    "communityforensics_v1": "79fb33821e491f8e99a719f94cc3653821ab13b7bb677135db8d5e44fcb18709"
+  },
+  "limits": [
+    "Only 2 of 7 train shards and 1 of 8 test shards were downloaded, not the full dataset.",
+    "pHash overlap check is heuristic; exact and near overlap cannot be exhaustively ruled out.",
+    "License unstated; non-commercial research use only.",
+    "Not the organizers' held-out set; a third-party academic sample used as additional data."
+  ]
+}

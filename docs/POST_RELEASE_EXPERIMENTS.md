@@ -323,3 +323,65 @@ own (80.6% pooled, up from 76.6%). Per the user's own stated plan, the next step
 is a per-generator error diagnostic on the CommunityForensics holdout (its 35.5%
 miss rate is the larger remaining gap) before deciding whether a further,
 bounded retraining attempt is worthwhile in the remaining time.
+
+## Post-submission exploration toward ~90%: per-generator diagnostic
+
+Diagnostic only (`model/diagnose_generator_errors.py`); no weight, threshold or
+release change. Result: `report/experiments/generator_error_diagnostic_v1.json`.
+CommunityForensics' low AI-recall is **concentrated, not uniform**: Hourglass is
+essentially undetected (97.7% miss even at the recalibrated threshold, n=44);
+GALIP, kandinsky_2_2, the LCM-lora family and kvikontent_midjourney_v6 all miss
+40-55%; MidjourneyV6_1 is the single largest-volume contributor (n=134, 32.1%
+miss). AIDA shows no comparably catastrophic generator (worst case ~20-25%
+miss). This pointed at a plausible fix: more Midjourney-v6 training exposure,
+since MidjourneyV6_1 was both the largest-volume miss and a generator family
+(commercial diffusion) with a large, cleanly available public dataset.
+
+## Post-submission exploration toward ~90%: third bounded attempt (Defactify Midjourney data) - FAILED
+
+A new public dataset was located and audited: Defactify_Image_Dataset (Roy et
+al. 2026, arXiv:2601.00553, HuggingFace `Rajarshi-Roy-research/
+Defactify_Image_Dataset`), scoped to its Midjourney-v6 and real (MS COCO) rows
+only (`data/manifests/defactify_v1.csv`, 5,874 retained of 5,878; only 4
+exclusions on overlap/duplicate check against all existing protected data,
+confirming it is a genuinely independent sample). License is unstated on the
+dataset card; used here for non-commercial research benchmarking only, matching
+this project's CommunityForensics-Eval posture.
+
+Declared before touching any holdout (`model/train_clip_mlp_v3.py`): add
+Defactify as a fifth training domain (loss mass 0.20, redistributed from the
+existing four domains), gated against the **currently released v0.4.0 head's
+own numbers** (85.2%/71.8% holdout accuracy, 0.6375/0.6576 external-dev mean
+AUC) rather than the original v0.3.0 numbers. [Protocol/results](../report/experiments/mixed_clip_mlp_v3/results.json).
+
+**Result: the gate failed**, on three of eight checks:
+
+| Check | Released (baseline) | v3 attempt | Gate |
+|---|---|---|---|
+| AIDA holdout accuracy | 85.2% | **79.6%** | FAILED (regressed) |
+| CommunityForensics holdout accuracy | 71.8% | 71.8% (71.76%, a hair below) | FAILED (regressed) |
+| Defactify holdout accuracy (new) | - | 86.2% | passed |
+| External-dev mean AUC, as-distributed | 0.6375 | **0.5713** | FAILED (dropped 0.066, over the 0.05 bound) |
+| External-dev mean AUC, matched | 0.6576 | 0.6254 | passed |
+
+The new domain itself was learned very well (Defactify holdout AUC 0.987) - but
+at real cost elsewhere: AIDA's own AUC dropped from 0.948 to 0.888, and
+external-dev regressed further than the already-accepted v0.4.0 cost. This is
+the same failure signature as the first attempt (`mixed_clip_l14_aida_v1`):
+aggressively reweighting toward one attractive new domain trades away
+generalisation elsewhere, even with a nonlinear (MLP) head. No checkpoint was
+saved (the training script only saves on a gate pass); the released
+`mixed_clip_mlp_v2_release` checkpoint and `model/manifest.json` were never
+touched, and 59/59 tests pass unaffected.
+
+**This is the third and last training-based attempt on this line of work,
+matching the stopping rule declared in every prior attempt's protocol.** The
+only verified, safe improvement toward ~90% from this entire post-submission
+exploration remains the threshold-only recalibration above (76.6% -> 80.6%
+pooled holdout accuracy, zero weight change, gate passed). Independent 2025-2026
+research on this exact problem (surveyed while looking for training data) found
+current commercial generators such as Midjourney and FLUX score only 18-30%
+detection accuracy across published methods generally - context suggesting the
+remaining gap to 90% is a genuinely hard, actively-studied problem rather than
+something this project's remaining time budget is likely to close through
+further data alone.
