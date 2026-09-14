@@ -39,20 +39,6 @@ export; drag/drop, file replacement and rejection; all three pages at desktop,
 320px, 390px and 768px; reduced motion; optional results; localisation states;
 all C2PA statuses; structured errors and unavailable model. No browser JS errors.
 
-## 15 September - compact layout revision
-
-Reduced header, upload, option and card spacing. Image and assessment occupy the
-top row; the evidence tabs now span a dedicated section below, with localisation
-and explanation statements in adjacent desktop columns. Re-analysis controls
-become a compact row after a result. A dark assessment surface strengthens the
-score hierarchy. Report and About layouts also use less empty padding.
-
-At the same 1440px desktop width and 1050px viewport height, the published animal
-fixture's full result screenshot decreased from 1745px to 1302px in height (25%).
-All returned statements, limitations and confidence fields remain available.
-Production build and the existing real-inference/UI regression suite passed;
-desktop and mobile screenshots were visually reviewed.
-
 ## Data boundary
 
 At verification, `/api/model` returned null validation metrics, confusion matrix
