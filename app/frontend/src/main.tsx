@@ -45,7 +45,7 @@ const c2paStatus = (value: string) => ({ no_marker_found: 'No marker found', mar
 function EvidenceDetails({ explanation }: { explanation: Explanation }) {
   const localisation = explanation.localisation
   return <>
-    <div className="evidence-heading"><span className="evidence-label"><Layers3 size={15} /> MODEL INFLUENCE</span><span className="timing">{(explanation.elapsed_ms / 1000).toFixed(1)} s</span></div>
+    <div className="evidence-overview"><div className="evidence-heading"><span className="evidence-label"><Layers3 size={15} /> MODEL INFLUENCE</span><span className="timing">{(explanation.elapsed_ms / 1000).toFixed(1)} s</span></div>
     <div className={`localisation-card ${localisation?.supported ? 'supported' : ''}`}>
       <CircleDot size={18} />
       <div><strong>{localisation ? localisation.supported ? 'Local influence supported' : 'Verdict is not localised' : 'Influence map available'}</strong>
@@ -59,8 +59,8 @@ function EvidenceDetails({ explanation }: { explanation: Explanation }) {
       <div><span>Corner comparison</span><strong>{points(localisation.comparison_drop)}</strong></div>
       <p>Change in the returned-class score after masking. Positive = score decreased. pp = percentage points.</p>
     </div>}
-    <div className="statement-list">{explanation.statements.map((statement, index) => <p className="evidence-statement" key={index}><span>{String(index + 1).padStart(2, '0')}</span>{statement}</p>)}</div>
-    <details className="technical-details"><summary>Explanation method & limits <ChevronRight size={14} /></summary><p>{explanation.method}</p><p>{explanation.masking_diagnostic?.limitation || 'Model attribution is not a map of verified image defects.'}</p><p>Verified visual artifact: {explanation.semantic_artifact_verified ? 'Reported by the model service' : 'Not established'}</p></details>
+    </div><div className="evidence-narrative"><div className="statement-list">{explanation.statements.map((statement, index) => <p className="evidence-statement" key={index}><span>{String(index + 1).padStart(2, '0')}</span>{statement}</p>)}</div>
+    <details className="technical-details"><summary>Explanation method & limits <ChevronRight size={14} /></summary><p>{explanation.method}</p><p>{explanation.masking_diagnostic?.limitation || 'Model attribution is not a map of verified image defects.'}</p><p>Verified visual artifact: {explanation.semantic_artifact_verified ? 'Reported by the model service' : 'Not established'}</p></details></div>
   </>
 }
 
@@ -204,22 +204,22 @@ function App() {
           <div className="page-heading analyze-heading"><div><div className="eyebrow"><span className="eyebrow-line" /> LOOK A LITTLE CLOSER</div><h1>Every image has <span>a signal.</span></h1><p>A closer look at what's real, what's synthetic, and the evidence in between.</p></div><div className="heading-aside"><ScanLine size={26} strokeWidth={1.2} /><span>From pixels<br />to perspective.</span></div></div>
           <div className="workflow-strip" aria-label="Analysis workflow"><span className={!file ? 'current' : 'done'}><i>{file ? <Check size={12} /> : '01'}</i>Add an image</span><ChevronRight size={13} /><span className={file && !analysis ? 'current' : analysis ? 'done' : ''}><i>{analysis ? <Check size={12} /> : '02'}</i>Read the signal</span><ChevronRight size={13} /><span className={analysis ? 'current' : ''}><i>03</i>Explore the evidence</span></div>
           {!health?.ready && health && <div role="status" className="notice"><Info size={17} /><div><strong>Model unavailable</strong><p>{health.message || 'The local detector is not ready.'} Start the local inference service to analyze an image.</p></div></div>}
-          <div className="analysis-grid">
+          <div className={`analysis-grid ${analysis ? 'has-analysis' : ''}`}>
             <section className="panel input-panel" aria-labelledby="image-panel-title">
               <div className="panel-heading"><span className="number">01</span><h2 id="image-panel-title">Image workspace</h2><span className="panel-caption">{analysis?.explanation ? 'INTERACTIVE VIEW' : 'YOUR SOURCE IMAGE'}</span></div>
               <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp" onChange={e => selectFile(e.target.files?.[0])} className="visually-hidden" aria-label="Choose image" disabled={busy} />
               <div className={`drop-zone ${preview ? 'has-image' : ''} ${dragging ? 'dragging' : ''}`} onDragOver={e => { e.preventDefault(); if (!busy) setDragging(true) }} onDragLeave={() => setDragging(false)} onDrop={e => { e.preventDefault(); setDragging(false); selectFile(e.dataTransfer.files[0]) }}>
                 {preview ? <HeatmapViewer original={preview} overlay={analysis?.explanation?.overlay_data_url} filename={file?.name || 'Uploaded image'} busy={busy} onRemove={clearImage} />
-                : <button className="upload-button" onClick={openFilePicker}><span className="upload-corner top-left" /><span className="upload-corner bottom-right" /><div className="upload-illustration" aria-hidden="true"><span className="image-card-back" /><span className="image-card-front"><ImagePlus size={35} strokeWidth={1.25} /></span><span className="upload-plus">+</span></div><strong>Bring an image.<br />Find some clarity.</strong><span>Drag & drop here, or <em>browse files <ArrowUpRight size={12} /></em></span><small>JPEG, PNG, WEBP <i /> UP TO 25 MiB</small></button>}
+                : <button className="upload-button" onClick={openFilePicker}><span className="upload-corner top-left" /><span className="upload-corner bottom-right" /><div className="upload-illustration" aria-hidden="true"><span className="image-card-back" /><span className="image-card-front"><ImagePlus size={35} strokeWidth={1.25} /></span><span className="upload-plus">+</span></div><strong>Drop an image to begin.</strong><span>Drag & drop here, or <em>browse files <ArrowUpRight size={12} /></em></span><small>JPEG, PNG, WEBP <i /> UP TO 25 MiB</small></button>}
               </div>
               {file && <div className="file-details"><FileImage size={13} /><span>{(file.size / 1024).toFixed(0)} KB</span><span>{verdict ? `${verdict.image_width} × ${verdict.image_height} px` : 'Ready for analysis'}</span><button disabled={busy} onClick={openFilePicker}>Change image <ArrowUpRight size={12} /></button></div>}
-              <div className="analysis-options"><div className="option-heading"><SlidersHorizontal size={13} /> GO A LITTLE DEEPER <span>OPTIONAL</span></div>
+              <div className="input-actions"><div className="analysis-options"><div className="option-heading"><SlidersHorizontal size={13} /> GO A LITTLE DEEPER <span>OPTIONAL</span></div>
                 <label><span className="option-icon"><Layers3 size={17} /></span><span>Model influence map<small>Inspect the regions that affect the score</small></span><input type="checkbox" checked={explain} onChange={e => setExplain(e.target.checked)} disabled={busy} /></label>
                 <label><span className="option-icon"><Activity size={17} /></span><span>Robustness check<small>Test compression, resizing, blur & screenshot simulation</small></span><input type="checkbox" checked={robustness} onChange={e => setRobustness(e.target.checked)} disabled={busy} /></label>
               </div>
               {error && <div className="error" role="alert"><Info size={16} />{error}</div>}
               <button className="analyze-button" disabled={!file || busy || !health?.ready} onClick={runAnalysis}>{busy ? <><LoaderCircle className="spin" size={18} /> Analyzing image…</> : <><ScanLine size={18} /><span>Analyze image</span><ArrowRight size={18} /></>}</button>
-              <p className="privacy-note"><LockKeyhole size={12} /> Processed on this machine. Uploads are not saved.</p>
+              <p className="privacy-note"><LockKeyhole size={12} /> Processed on this machine. Uploads are not saved.</p></div>
             </section>
             <section className="panel results-panel" aria-labelledby="result-panel-title" aria-busy={busy}>
               <div className="panel-heading"><span className="number">02</span><h2 id="result-panel-title">The assessment</h2>{analysis ? <button className="export-button" onClick={downloadAnalysis} aria-label="Download analysis JSON"><ArrowDownToLine size={14} /><span>Export</span></button> : <span className="panel-caption">{busy ? 'PROCESSING' : 'AWAITING IMAGE'}</span>}</div>
@@ -240,8 +240,15 @@ function App() {
                   <p className="calibration-note">{verdict!.calibrated ? 'Calibrated on held-out development data.' : 'Uncalibrated model score.'} Class confidence is a model score, not the probability that this verdict is correct.</p>
                 </div>
                 {verdict!.limitations.length > 0 && <details className="model-limitations" open={verdict!.review_recommended || undefined}><summary><Info size={14} /> Model notes & limitations <span>{verdict!.limitations.length}</span><ChevronRight size={14} /></summary><ul>{verdict!.limitations.map((note, index) => <li key={index}>{note}</li>)}</ul></details>}
+
+              </>}
+            </section>
+            {analysis && <section className="panel evidence-panel" aria-label="Supporting evidence">
+              <div className="evidence-navigation"><div className="evidence-section-title"><span className="number">03</span><h2>Inside the evidence</h2></div>
                 <div className="result-tabs" role="tablist" aria-label="Evidence types" onKeyDown={onTabKeyDown}>{TABS.map(([id, label]) => <button key={id} id={`tab-${id}`} ref={element => { tabRefs.current[id] = element }} role="tab" aria-selected={tab === id} aria-controls={PANEL_ID} tabIndex={tab === id ? 0 : -1} className={tab === id ? 'selected' : ''} onClick={() => setTab(id)}>{id === 'evidence' ? <Layers3 size={14} /> : id === 'stability' ? <Activity size={14} /> : <FileImage size={14} />}{label}</button>)}</div>
-                <div className="tab-content" role="tabpanel" id={PANEL_ID} aria-labelledby={`tab-${tab}`} tabIndex={0}>
+              </div>
+
+                <div className={`tab-content ${tab === 'evidence' && analysis.explanation ? 'evidence-layout' : ''}`} role="tabpanel" id={PANEL_ID} aria-labelledby={`tab-${tab}`} tabIndex={0}>
                   {tab === 'evidence' && (analysis.explanation ? <EvidenceDetails explanation={analysis.explanation} /> : <div className="optional-empty"><Layers3 size={24} /><h3>Take a closer look</h3><p>Enable the model influence map, then analyze again to explore the visual evidence.</p></div>)}
                   {tab === 'stability' && (analysis.robustness ? <>
                     <div className={`stability-summary ${analysis.robustness.label_flip_count ? 'has-flips' : ''}`}><Activity size={21} /><div><strong>{analysis.robustness.label_flip_count === 0 ? 'Verdict remained stable' : `${analysis.robustness.label_flip_count} verdict change${analysis.robustness.label_flip_count === 1 ? '' : 's'}`}</strong><span>across {analysis.robustness.transformations_tested} tested transformations</span></div></div>
@@ -251,8 +258,7 @@ function App() {
                   </> : <div className="optional-empty"><Activity size={24} /><h3>How well does the signal hold up?</h3><p>Enable the robustness check, then analyze again to compare image transformations.</p></div>)}
                   {tab === 'metadata' && <><div className="evidence-label"><FileImage size={15} /> FILE & PROVENANCE</div><div className="metadata-row"><span>File format</span><strong>{analysis.metadata.format}</strong></div><div className="metadata-row"><span>EXIF metadata</span><strong>{analysis.metadata.exif_present ? 'Present' : 'Not present'}</strong></div><div className="metadata-row"><span>Content Credentials</span><strong>{c2paStatus(analysis.metadata.c2pa_status)}</strong></div>{Object.entries(analysis.metadata.fields).map(([key, value]) => <div className="metadata-row" key={key}><span>{key}</span><strong>{value}</strong></div>)}<div className="provenance-note"><Info size={15} /><p>C2PA marker detection is a limited scan, not signature validation. Missing metadata does not establish that an image is synthetic.</p></div><p className="subtle-note">{analysis.metadata.note}</p><p className="subtle-note">{analysis.metadata.fusion_policy}</p></>}
                 </div>
-              </>}
-            </section>
+            </section>}
           </div>
           <div className="transparency"><ShieldCheck size={21} /><div><strong>Useful signals. Honest limits.</strong><p>{model?.transparency_note || 'New generators and unfamiliar image sources can cause errors. Use this assessment to support a closer review.'}</p></div><button onClick={() => setPage('report')}>Explore model report <ArrowUpRight size={16} /></button></div>
         </>}
