@@ -18,7 +18,7 @@
     {
       "name": "frozen_generic_clip_image_tower",
       "path": "model/checkpoints/clip_vitl14_visual/visual_fp16.ts",
-      "url": "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.3.0/signalscope-clip-vitl14-visual-fp16.ts",
+      "url": "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.3.0/visual_fp16.ts",
       "bytes": 608352029,
       "sha256": "12403c44d349dee827e7d0fe016c2f255ec51ccf2750d5b4260ab9c878bf7989"
     }

@@ -43,13 +43,15 @@ def main():
     destination.parent.mkdir(parents=True, exist_ok=True)
     torch.save(payload, destination)
     base_url = "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.3.0/"
+    # Manual GitHub web-UI uploads keep the local filename (head.pt / visual_fp16.ts),
+    # not a "nice" suggested name -- do not invent a renamed URL here.
     manifest = {"schema_version": 2, "release": "v0.3.0", "model_version": run,
                 "path": str(destination.relative_to(ROOT)).replace("\\", "/"),
-                "url": base_url + "signalscope-clip-l14-balanced-head.pt", "bytes": destination.stat().st_size,
+                "url": base_url + "head.pt", "bytes": destination.stat().st_size,
                 "sha256": digest(destination), "architecture": "clip_vitl14_linear", "preprocessing": "clip_center_crop_v1",
                 "image_size": 224, "threshold": payload["threshold"], "temperature": payload["temperature"], "calibrated": True,
                 "artifacts": [{"name": "frozen_generic_clip_image_tower", "path": DEFAULT_VISUAL,
-                               "url": base_url + "signalscope-clip-vitl14-visual-fp16.ts",
+                               "url": base_url + "visual_fp16.ts",
                                "bytes": visual.stat().st_size, "sha256": visual_sha}],
                 "training_data": "Our head: CIFAKE8000 + GenImageBigGAN/SD1.5 6239; original and matched views,90% GenImage weight. Generic CLIP tower is pretrained, not ours.",
                 "status": "Prepared candidate release; activation requires completed explanation/integration verification. Development AUC0.771/0.789; gate FAILED due to22.0% LAION real FPR.",

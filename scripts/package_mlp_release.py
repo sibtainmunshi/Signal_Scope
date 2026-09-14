@@ -13,7 +13,8 @@ import torch
 
 ROOT = Path(__file__).resolve().parents[1]
 TOWER = ROOT / "model/checkpoints/clip_vitl14_visual/visual_fp16.ts"
-TOWER_URL = "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.3.0/signalscope-clip-vitl14-visual-fp16.ts"
+# Manual GitHub web-UI uploads keep the local filename, not a "nice" suggested name.
+TOWER_URL = "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.3.0/visual_fp16.ts"
 
 
 def digest(path):

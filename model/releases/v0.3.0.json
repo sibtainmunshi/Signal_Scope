@@ -3,7 +3,7 @@
   "release": "v0.3.0",
   "model_version": "mixed_clip_l14_balanced_v1_release",
   "path": "model/checkpoints/mixed_clip_l14_balanced_v1_release/head.pt",
-  "url": "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.3.0/signalscope-clip-l14-balanced-head.pt",
+  "url": "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.3.0/head.pt",
   "bytes": 7949,
   "sha256": "51e1e07d9b0fed13895b7f7a7fe7b207133cae68eca585582fb3c9c05606613f",
   "architecture": "clip_vitl14_linear",
@@ -16,7 +16,7 @@
     {
       "name": "frozen_generic_clip_image_tower",
       "path": "model/checkpoints/clip_vitl14_visual/visual_fp16.ts",
-      "url": "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.3.0/signalscope-clip-vitl14-visual-fp16.ts",
+      "url": "https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.3.0/visual_fp16.ts",
       "bytes": 608352029,
       "sha256": "12403c44d349dee827e7d0fe016c2f255ec51ccf2750d5b4260ab9c878bf7989"
     }

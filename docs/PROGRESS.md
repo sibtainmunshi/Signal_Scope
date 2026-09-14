@@ -138,3 +138,35 @@ with formats equalised). Those user files are no longer in the working tree.
 Ruff passes across model, src, app, tests and scripts after fixing loop-variable
 binding, an unused import and two import blocks. 34 tests pass. v0.2.0 remains the
 released model and no reserved or test data was touched.
+
+## 14 September - v0.4.0 release published
+
+Published [v0.4.0](https://github.com/sibtainmunshi/Signal_Scope/releases/tag/v0.4.0)
+with the frozen `mixed_clip_mlp_v2_release/head.pt` checkpoint, uploaded as
+`signalscope-clip-mlp-v2-head.pt` to match the existing manifest URL. Preserved the
+existing tag at freeze commit `6f25326`; no checkpoint or manifest changes.
+
+Unauthenticated download from the manifest URL returned HTTP 200: 398,527 bytes,
+SHA-256 `174ef56251011a7d5618d32759768807ebe02cc679c014e434906bbb81be5fdd`,
+matching both the local checkpoint and frozen manifest. The tower stays on the
+unchanged v0.3.0 release. Fresh-clone CPU setup/prediction timing remains pending;
+its release-download blocker is resolved.
+
+## 14 September - found and fixed a tower-download bug present since v0.3.0
+
+Running the fresh-clone timing test surfaced `HTTP Error 404` on the CLIP image
+tower download. The manifest and release JSON files referenced an invented
+"nice" filename (`signalscope-clip-vitl14-visual-fp16.ts`); manual GitHub web-UI
+uploads keep the local filename as-is, so the actual asset on both the v0.3.0
+and v0.4.0 releases is named `visual_fp16.ts` (v0.3.0's head asset is likewise
+`head.pt`, not `signalscope-clip-l14-balanced-head.pt`). Confirmed via the
+GitHub releases API and a direct `curl` 404 against the old URL. This means no
+fresh clone could ever have downloaded the tower through `scripts/setup.py` for
+v0.3.0 or v0.4.0 - a real, previously undetected reproducibility break.
+
+Fixed the URLs in `model/manifest.json`, `model/releases/v0.3.0.json`,
+`model/releases/v0.4.0.json`, and the two packaging scripts that generate them
+(`scripts/package_clip_release.py`, `scripts/package_mlp_release.py`), so future
+repackaging keeps the correct filenames. Verified all three corrected URLs
+return HTTP 200 via direct `curl`, and re-ran the full test suite (59 passed).
+No checkpoint, threshold, or weight changed - this is a metadata/URL fix only.

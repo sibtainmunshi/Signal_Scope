@@ -217,10 +217,24 @@ The section above is now stale. Current state:
 - **Not yet re-verified for v0.4.0** (explicit gaps, not implied continuity):
   the 40-image explanation audit (17/40-localised numbers on record are from the
   v0.3.0 linear head only), Module G/robustness benchmark (running now, see below),
-  fresh-clone timing (script ready at `scripts/timing_test_v040.sh`, blocked on the
-  user publishing the v0.4.0 GitHub release - only a 398,527-byte head, the 608 MB
-  tower is reused unchanged from v0.3.0's release), and the private 11-ChatGPT/
-  18-phone-photo veto check.
+  fresh-clone timing (script ready at `scripts/timing_test_v040.sh`; the release
+  download is now available), and the private 11-ChatGPT/18-phone-photo veto check.
+- **v0.4.0 release published and public download verified on 14 September 2026:**
+  https://github.com/sibtainmunshi/Signal_Scope/releases/tag/v0.4.0.
+  Asset `signalscope-clip-mlp-v2-head.pt` is 398,527 bytes; the manifest URL returned
+  HTTP 200 without authentication and SHA-256
+  `174ef56251011a7d5618d32759768807ebe02cc679c014e434906bbb81be5fdd`.
+  Existing tag remains at freeze commit `6f25326`; the 608 MB tower is reused
+  unchanged from v0.3.0. Fresh-clone timing is still pending.
+- **Found and fixed a tower-download 404 bug that has existed since v0.3.0:**
+  `model/manifest.json` and both release JSONs referenced an invented filename
+  (`signalscope-clip-vitl14-visual-fp16.ts`) instead of the real uploaded asset
+  name (`visual_fp16.ts` - manual GitHub web-UI uploads keep the local filename).
+  No fresh clone could ever have downloaded the tower before this fix, for either
+  v0.3.0 or v0.4.0. Fixed in `model/manifest.json`, `model/releases/v0.3.0.json`,
+  `model/releases/v0.4.0.json`, `scripts/package_clip_release.py`, and
+  `scripts/package_mlp_release.py`; all three asset URLs curl-verified HTTP 200;
+  59/59 tests still pass. See `docs/PROGRESS.md` for the full writeup.
 - **Module G robustness benchmark is running** against v0.4.0 on GenImage validation
   (783 images x 7 transforms, CPU, ~35 minutes): `report/experiments/
   robustness_v040`. First result in: original-image accuracy 74.7%, AUC 0.944,

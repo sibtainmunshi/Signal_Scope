@@ -35,7 +35,7 @@ Active model: `mixed_clip_mlp_v2_release`, activation `b201d0c`, freeze `6f25326
 - [x] CLIP model runtime uses torch without clip/torchvision/ftfy/regex; ordinary application dependencies remain pinned. CPU-only serving stated for both head architectures.
 - [x] README rewritten around v0.4.0: the gate-failure history, the two independent current-generator evaluations that motivated a fix, both failed remediation attempts, and the explicit deployment decision.
 - [ ] One-page model report rebuilt for v0.4.0 (currently reflects v0.3.0 only).
-- [ ] Publish v0.4.0 release assets (new head only, 398 KB; tower already public under v0.3.0); verify unauthenticated download and digest.
+- [x] Published [v0.4.0](https://github.com/sibtainmunshi/Signal_Scope/releases/tag/v0.4.0) with `signalscope-clip-mlp-v2-head.pt` (398,527 bytes); unauthenticated download returned HTTP 200 and matched the frozen SHA-256. Shared tower remains under v0.3.0.
 - [ ] Fresh public checkout/CPU setup and prediction under ~10 minutes, measured with the 608 MB tower + new head. Never yet measured for any CLIP-based release.
 - [ ] Updated 3-5 minute v0.4.0 demo showing actual prediction, explanation, robustness, and an honest failure case (e.g. a missed CommunityForensics-generator image). Existing 4m15s v0.2.0 demo is labelled historical and does not reflect this model or UI.
 - [x] v0.2.0 and v0.3.0 checkpoints/results/releases preserved; separate-tag fallback documented for both.
