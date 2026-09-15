@@ -50,7 +50,8 @@ python scripts/run.py
 
 `setup.py` never calls Git, so an extracted ZIP behaves identically to a clone.
 
-**Then open http://127.0.0.1:8000** and drop in an image.
+**Then open http://127.0.0.1:8000** and drop in an image. If that port is already
+taken, `python scripts/run.py --port 8001` moves it.
 
 `setup.py` creates the virtual environment, installs the pinned CPU dependencies,
 downloads the model (608 MB tower + 398 KB head) from the GitHub release, and
