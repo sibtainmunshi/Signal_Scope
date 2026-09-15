@@ -4,6 +4,18 @@ Real-versus-AI image classification with a **frozen CLIP ViT-L/14 image tower an
 
 **[v0.4.0](https://github.com/sibtainmunshi/Signal_Scope/releases/tag/v0.4.0) is active and frozen at `b201d0c`.** Deployed by explicit decision, not a gate pass: on genuinely 2025-2026-vintage generators (AI Detect Arena Benchmark, CommunityForensics-Eval) this head reaches **85.2%/71.8% accuracy** with **7.3%/2.2%** real-photo false positives on two untouched holdouts, against v0.3.0's measured **~55-60% accuracy** and **66-68%** false positives on the same benchmarks. In exchange, the 2021-2023-vintage development benchmark that v0.3.0 was selected on regresses from **0.771/0.789** to **0.637/0.658** mean AUC. Both facts are measured and disclosed; neither is hidden. This is a research detector, not proof of image origin. No organizer hidden-test score is claimed.
 
+### At a glance
+
+| | |
+|---|---|
+| **Unseen-generator ROC-AUC** | **0.948** (AI Detect Arena, 17 generators) · **0.936** (CommunityForensics, ~20 generators) |
+| **Macro-F1 / accuracy at the frozen threshold** | 0.852 / 85.2% · 0.717 / 71.8% on the same two holdouts |
+| **Real photo called real** | 92.7% · 97.8% (real-photo false positives 7.3% · 2.2%) |
+| **Fresh clone to first prediction** | **243.75 s** measured, CPU-only, no GPU and no training data needed |
+| **Modules built** | Core + **A** (explanation) · **C** (robustness) · **D** (provenance) · **F** (deployable) · **G** (active defence). B and E deliberately not attempted. |
+| **Interfaces** | Local web app · documented HTTP API · batch CLI, all on one frozen checkpoint |
+| **Tests** | 59 passing · ruff clean · every number below reproducible from committed artifacts |
+
 - [Submission checklist](docs/SUBMISSION_CHECKLIST.md), [API contract](docs/API_CONTRACT.md)
 - [Full experiment history: gate failures, four independent evaluations, the deployment decision](docs/POST_RELEASE_EXPERIMENTS.md)
 - [Explanation audit](docs/EXPLANATION_AUDIT.md) (measured on both the v0.3.0 linear head and the v0.4.0 MLP head: statistically indistinguishable, same 17/40 localisation count)
@@ -20,8 +32,20 @@ Real-versus-AI image classification with a **frozen CLIP ViT-L/14 image tower an
 | C. Robustness | Per-upload JPEG/resize/blur/simulated-screenshot stability checks. v0.4.0 degradation benchmark (GenImage validation, n=783): real-photo false positives stay low under every transform (0-3.3%), but AI recall drops sharply under compression/resize/screenshot - 52.7% at original, falling to 25-29% at jpeg_q50/q30/half_resolution and 17.9% at simulated_screenshot; mild_blur held up best at 49.3%. See `report/experiments/robustness_v040/metrics.json`. |
 | D. Provenance/metadata | EXIF shown separately, never changing the visual score. C2PA presence is checked via a bounded ASCII substring scan for known identifiers (`metadata.c2pa_status`) - a heuristic hit, never a JUMBF box parse or signature verification. No image in our test corpora carries a manifest. |
 | E. Image-caption consistency | Not implemented. |
-| F. Deployable interface | Local drag-and-drop app, batch CLI, JSON export, CPU inference and likelihood wording. Fresh-clone timing verified for v0.4.0: 243.75s total (clone+setup+first prediction), see `report/reproducibility/v0.4.0_windows_cpu.json`. |
+| F. Deployable interface | Local drag-and-drop app, batch CLI, JSON export, CPU inference and likelihood wording ("Likely real" / "Likely AI-generated" / "Review recommended" - never "certain"). Accessibility: skip link, full ARIA tab pattern with roving `tabindex` and arrow-key navigation, visible focus rings, live-region status announcements, and `prefers-reduced-motion` honoured; checked at 1920/1366/768/390 px with no horizontal overflow and no console errors. Fresh-clone timing verified: 243.75s total (clone+setup+first prediction), see `report/reproducibility/v0.4.0_windows_cpu.json`. |
 | G. Active defence | Bounded grid of the 7 transforms above, run per-image as a search budget: flips 196/585 (33.5%) of initially-correct predictions to wrong. Discloses a real, non-adversarial robustness weakness - not a claim of resistance to adversarial attacks. |
+
+## What is different about this build
+
+Four things here were not obvious choices, and each is measurable rather than asserted:
+
+**1. The app refuses to claim localisation it cannot support.** Most detectors show a heat map and let the viewer assume it points at the reason. This one runs a masking test on every single verdict: it blanks the highest-influence patch, re-scores, and compares that drop against equally sized corner patches. If the highlighted region does not move the score by at least one percentage point *and* more than the corners, the interface states **"Verdict is not localised"** and labels the overlay as model influence only. On the 40-image audit that rule fires for 23 of 40 images - so the app disagrees with its own heat map more often than it endorses it. Suppressing a plausible-looking explanation 57% of the time costs demo polish and buys honesty ([audit](docs/EXPLANATION_AUDIT.md), [`evidence.py`](src/signalscope/evidence.py)).
+
+**2. Every gate was declared in writing before the data was touched, and two of them failed.** Each training attempt has a `protocol.json` committed *before* the run, stating the hypothesis and the pass criteria. Two attempts then failed those criteria on external-generator regression and are reported in full rather than quietly retried - including the one that became this release, which ships by an explicit, disclosed human decision rather than a gate pass ([full history](docs/POST_RELEASE_EXPERIMENTS.md), [`freeze.json`](report/releases/v0.4.0/freeze.json)).
+
+**3. Generalisation is measured against two independent 2025-2026 benchmarks, not one.** The prior release scored well on 2021-2023-vintage development data and then collapsed to ~55-60% accuracy with 66-68% false positives on genuinely current generators. Fixing that against a single new benchmark reproduced the same overfitting in the other direction; it took two unrelated sources (a community benchmark and a CVPR 2025 academic sample, ~37 generators combined) before the result held on both at once.
+
+**4. The cost of that fix is printed next to the benefit, everywhere.** The release trades roughly 0.13 mean AUC on the older development benchmark for roughly 30 accuracy points and a >60-point false-positive reduction on current generators. That regression appears in the README, in the one-page report, inside the running product's own Model Report page, and in the demo video - not only in a footnote.
 
 ## Setup and run
 
