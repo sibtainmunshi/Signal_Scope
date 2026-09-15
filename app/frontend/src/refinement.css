@@ -226,3 +226,8 @@ select:focus-visible { outline: 3px solid #7c8cff; outline-offset: 2px; }
 @media(max-width:370px) { main { padding-inline: 13px; } h1 { font-size: 30px; } .brand { font-size: 19px; } .workflow-strip { gap: 5px; } .workflow-strip > span { font-size: 9px; } .panel-caption { display: none; } .stage-labels span { font-size: 8px; } .inspector-stage { height: 280px; } .file-details { gap: 7px; font-size: 11px; } .score-row > strong { font-size: 34px; } }
 @media(min-width:1001px) and (max-height:800px) { .sidebar { padding-top: 25px; } .brand { margin-bottom: 30px; } .sidebar-note { padding-block: 18px; } .sidebar-note .eyebrow { display: none; } .sidebar-note p { margin-top: 8px; } }
 @media(min-width:701px) and (max-height:1000px) { .input-panel:has(.has-image) { position: static; } }
+
+.option-estimate { display: flex; align-items: center; gap: 7px; margin: 14px 0 0; padding-top: 13px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+.option-estimate svg { flex-shrink: 0; color: #6d8d79; }
+.option-estimate strong { font-weight: 600; color: #33573d; }
+.stage-line { min-height: 44px; transition: opacity .25s ease; }

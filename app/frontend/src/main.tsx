@@ -97,6 +97,7 @@ function App() {
   const [explain, setExplain] = useState(true)
   const [robustness, setRobustness] = useState(true)
   const [tab, setTab] = useState<TabId>('evidence')
+  const [stage, setStage] = useState(0)
   const fileInput = useRef<HTMLInputElement>(null)
   const tabRefs = useRef<Partial<Record<TabId, HTMLButtonElement | null>>>({})
   const controller = useRef<AbortController | null>(null)
@@ -113,6 +114,14 @@ function App() {
     return () => URL.revokeObjectURL(url)
   }, [file])
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }) }, [page])
+  // Paces the status line through the stages this request actually runs. The
+  // server returns one response with no progress events, so this is even pacing,
+  // not measured progress; it holds on the last stage rather than looping.
+  useEffect(() => {
+    if (!busy) { setStage(0); return }
+    const timer = setInterval(() => setStage(current => current + 1), 2200)
+    return () => clearInterval(timer)
+  }, [busy])
 
   // Clearing the input lets the same path be chosen again; browsers fire no
   // change event when the selected file is identical to the previous one.
@@ -182,6 +191,15 @@ function App() {
   const verdict = analysis?.prediction
   const title = verdict ? verdictTitle(verdict) : ''
   const releaseMatched = hasReleaseEvidence(model)
+  const stages = ['Reading the image and applying EXIF orientation…',
+    'Encoding with the frozen CLIP ViT-L/14 vision tower…',
+    'Scoring the embedding against the trained MLP head…',
+    ...(explain ? ['Mapping which regions influence this score…'] : []),
+    ...(robustness ? ['Re-testing under compression, resize, blur and a simulated screenshot…'] : [])]
+  // Measured CPU costs: ~0.4 s to score, ~5.5 s for the influence map, ~5 s for
+  // the transformation set. Stated as a range because image size moves it.
+  const estimate = explain && robustness ? 'usually 10-12 seconds'
+    : explain ? 'usually 6-7 seconds' : robustness ? 'usually 5-6 seconds' : 'usually under a second'
 
   return <div className="shell">
     <a className="skip-link" href="#main-content">Skip to main content</a>
@@ -218,6 +236,7 @@ function App() {
               <div className="analysis-options"><div className="option-heading"><SlidersHorizontal size={13} /> GO A LITTLE DEEPER <span>OPTIONAL</span></div>
                 <label><span className="option-icon"><Layers3 size={17} /></span><span>Model influence map<small>Inspect the regions that affect the score</small></span><input type="checkbox" checked={explain} onChange={e => setExplain(e.target.checked)} disabled={busy} /></label>
                 <label><span className="option-icon"><Activity size={17} /></span><span>Robustness check<small>Test compression, resizing, blur & screenshot simulation</small></span><input type="checkbox" checked={robustness} onChange={e => setRobustness(e.target.checked)} disabled={busy} /></label>
+                <p className="option-estimate"><Info size={13} /> Local CPU inference: <strong>{estimate}</strong> with the checks you have selected.</p>
               </div>
               {error && <div className="error" role="alert"><Info size={16} />{error}</div>}
               <button className="analyze-button" disabled={!file || busy || !health?.ready} onClick={runAnalysis}>{busy ? <><LoaderCircle className="spin" size={18} /> Analyzing image…</> : <><ScanLine size={18} /><span>Analyze image</span><ArrowRight size={18} /></>}</button>
@@ -227,9 +246,9 @@ function App() {
               <div className="panel-heading"><span className="number">02</span><h2 id="result-panel-title">The assessment</h2>{analysis ? <button className="export-button" onClick={downloadAnalysis} aria-label="Download analysis JSON"><ArrowDownToLine size={14} /><span>Export</span></button> : <span className="panel-caption">{busy ? 'PROCESSING' : 'AWAITING IMAGE'}</span>}</div>
               {!analysis ? <div className={`empty-state ${busy ? 'is-loading' : ''}`}>
                 <div className={`radar ${busy ? 'scanning' : ''}`} aria-hidden="true"><span /><span /><span /><div className="radar-core"><ScanLine size={30} strokeWidth={1.2} /></div><i /><i /></div>
-                <span className="eyebrow">{busy ? 'FOLLOWING THE SIGNAL' : 'EVIDENCE, IN FOCUS'}</span><h3>{busy ? 'Taking a closer look.' : 'More than a real-or-AI label.'}</h3><p>{busy ? 'The local model is reading visual patterns and running your selected evidence checks.' : 'Understand the assessment, see the model’s influence, and discover how the result holds up.'}</p>
+                <span className="eyebrow">{busy ? 'FOLLOWING THE SIGNAL' : 'EVIDENCE, IN FOCUS'}</span><h3>{busy ? 'Taking a closer look.' : 'More than a real-or-AI label.'}</h3><p className={busy ? 'stage-line' : undefined} role={busy ? 'status' : undefined}>{busy ? stages[Math.min(stage, stages.length - 1)] : 'Understand the assessment, see the model’s influence, and discover how the result holds up.'}</p>
                 {busy ? <div className="processing-track" aria-label="Analysis in progress"><span /></div> : <div className="empty-evidence"><span><CircleDot size={15} />Visual score</span><span><Layers3 size={15} />Influence map</span><span><Activity size={15} />Stability</span></div>}
-                <span className="empty-footnote">{busy ? 'Results will appear here when all selected checks finish.' : 'Your analysis will appear here.'}</span>
+                <span className="empty-footnote">{busy ? `Results appear when all selected checks finish — ${estimate} on this machine.` : 'Your analysis will appear here.'}</span>
               </div> : <>
                 <div className={`verdict-card ${verdict!.review_recommended ? 'uncertain' : verdict!.label === 'ai_generated' ? 'synthetic' : 'real'}`}>
                   <div className="verdict-top"><span className="eyebrow"><span className="verdict-dot" /> VISUAL ASSESSMENT</span><span className="timing">{verdict!.inference_ms.toFixed(0)} ms inference</span></div>
