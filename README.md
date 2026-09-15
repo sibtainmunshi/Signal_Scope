@@ -36,6 +36,10 @@ The first line matters on Windows: PowerShell often opens in `C:\WINDOWS\system3
 which is not writable, and the clone fails there with `Permission denied`. Any
 folder you own works - `cd $HOME\Desktop` is the PowerShell spelling.
 
+No Git installed? Use **Code -> Download ZIP** on the GitHub page, extract it
+anywhere you can write, then run the last two commands from inside the extracted
+folder. Git is only a convenience here; `setup.py` does not use it.
+
 Then open **http://127.0.0.1:8000** and drop in an image. `setup.py` creates the
 virtual environment, installs the pinned CPU dependencies, downloads the model
 (608 MB tower + 398 KB head) from the GitHub release, and verifies both by
