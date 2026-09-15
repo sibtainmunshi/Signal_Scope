@@ -102,6 +102,11 @@ def model_report():
                          "Frozen public reserved GLIDE/DALLE evaluation completed; organizer hidden result unavailable")
     elif external:
         unseen_status = "External development measured; reserved final generators not evaluated"
+    elif detector.architecture == "clip_vitl14_mlp":
+        # v0.4.0's unseen-generator evidence lives in report/experiments/, not the
+        # per-checkpoint report/runs/ layout `measured()` reads; see release-evidence.json.
+        unseen_status = ("AI Detect Arena (17 generators, AUC 0.948) and CommunityForensics-Eval "
+                         "(~20 generators, AUC 0.936) holdouts measured; organizer hidden result unavailable")
     else:
         unseen_status = "Not evaluated yet"
     return {"ready": True, "model_version": detector.model_version,

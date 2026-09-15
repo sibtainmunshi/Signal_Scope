@@ -44,7 +44,7 @@ python scripts/download_model.py --manifest model/manifest.json
 python scripts/run.py --manifest model/manifest.json
 ```
 
-**Clean fresh-clone setup timing has not yet been re-measured for v0.4.0**; v0.2.0's 204.81-second warm-cache setup is historical only and does not reflect the current 608 MB+ download.
+**Fresh-clone setup timing, measured for v0.4.0**: 243.75s total from a public `git clone` through `scripts/setup.py` to a first prediction (2.36s clone + 236.41s setup, including the 608 MB tower + 398 KB head download, + 4.98s first prediction), well under the ~10-minute reproducibility bar. `report/reproducibility/v0.4.0_windows_cpu.json`. v0.2.0's 204.81-second warm-cache number is historical only and does not reflect the current 608 MB+ download.
 
 Measured local CPU costs (v0.3.0/v0.4.0 share the same CLIP tower, so these carry over): **~0.38 s/image prediction**, **~5.5 s explanation**, **~5.1 s robustness** (the older ResNet release predicted in ~64 ms). These are component measurements, not a combined request latency or a guarantee for every machine/image size.
 
