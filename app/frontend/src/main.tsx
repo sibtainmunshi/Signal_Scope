@@ -200,7 +200,6 @@ function App() {
       <div className="sidebar-bottom"><span className={`status-dot ${health?.ready ? 'online' : ''}`} /><span>{health?.ready ? 'Local model connected' : health ? 'Model unavailable' : 'Connecting to model…'}</span><small>SIH 2026 <span>RESEARCH BUILD</span></small></div>
     </aside>
     <div className="workspace">
-      <header className="topbar"><div className="breadcrumb">Workspace <ChevronRight size={13} /><span>{page === 'analyze' ? 'Image analysis' : page === 'report' ? 'Model report' : 'How it works'}</span></div><span className="local-badge"><LockKeyhole size={12} /> LOCAL PROCESSING</span></header>
       <p className="visually-hidden" role="status">{announcement}</p>
       <main id="main-content" tabIndex={-1}>
         {page === 'analyze' && <>
