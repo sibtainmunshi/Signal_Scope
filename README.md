@@ -20,9 +20,12 @@ Real-versus-AI image classification with a **frozen CLIP ViT-L/14 image tower an
 
 **[v0.4.0 demo - 4 min 15 s](https://drive.google.com/file/d/1UM2loX7ykTyobLKsYX_rOWVJ-p2Cb7d-/view?usp=drive_link)** - a live CPU recording against this exact frozen checkpoint. It shows a real photo correctly called real, a freshly generated AI image the model had never seen correctly caught at 96%, an honest failure case (a CommunityForensics generator missed at 74%, flagged "review recommended" by the model's own uncertainty signal and flipping under one robustness transform), the explanation, stability and metadata tabs, and the running Model Report page's two unseen-generator benchmark panels. It closes on the disclosed 0.637 AUC regression and the declared gate this release failed. Every number spoken in the video matches the measurements below.
 
-### Run it yourself - four commands
+### Run it yourself
 
-Requires **Python 3.13** and Git. Nothing else: no GPU, no API key, no training data.
+Requires **Python 3.13**. Nothing else: no GPU, no API key, no training data, and
+no dataset download. Pick either route below - they end at the same place.
+
+**Option A - with Git**
 
 ```shell
 cd ~
@@ -32,21 +35,33 @@ python scripts/setup.py
 python scripts/run.py
 ```
 
-The first line matters on Windows: PowerShell often opens in `C:\WINDOWS\system32`,
-which is not writable, and the clone fails there with `Permission denied`. `cd ~`
-moves to your user folder, which always exists and is always writable - PowerShell
-also spells it `cd $HOME`. Avoid `~/Desktop`: when OneDrive backup is on, the real
-Desktop lives under `~/OneDrive/Desktop` and the plain path does not exist.
+**Option B - without Git, download the ZIP**
 
-No Git installed? Use **Code -> Download ZIP** on the GitHub page, extract it
-anywhere you can write, then run the last two commands from inside the extracted
-folder. Git is only a convenience here; `setup.py` does not use it.
+1. Open [the repository](https://github.com/sibtainmunshi/Signal_Scope) and choose
+   **Code -> Download ZIP**.
+2. Extract it somewhere you can write - your user folder is safest. You will get a
+   folder named `Signal_Scope-main`.
+3. Open PowerShell (or a terminal) in that folder and run:
 
-Then open **http://127.0.0.1:8000** and drop in an image. `setup.py` creates the
-virtual environment, installs the pinned CPU dependencies, downloads the model
-(608 MB tower + 398 KB head) from the GitHub release, and verifies both by
-SHA-256. Measured end to end on a clean clone: **243.75 seconds** to the first
-prediction. On Windows, `py -3.13` can replace `python`.
+```shell
+python scripts/setup.py
+python scripts/run.py
+```
+
+`setup.py` never calls Git, so an extracted ZIP behaves identically to a clone.
+
+**Then open http://127.0.0.1:8000** and drop in an image.
+
+`setup.py` creates the virtual environment, installs the pinned CPU dependencies,
+downloads the model (608 MB tower + 398 KB head) from the GitHub release, and
+verifies both by SHA-256. Measured end to end on a clean clone: **243.75 seconds**
+to the first prediction. On Windows, `py -3.13` can replace `python`.
+
+> **Windows note.** PowerShell often opens in `C:\WINDOWS\system32`, which is not
+> writable - cloning or extracting there fails with `Permission denied`. `cd ~`
+> (PowerShell: `cd $HOME`) moves to your user folder, which always exists and is
+> always writable. Avoid `~/Desktop`: with OneDrive backup enabled the real Desktop
+> lives under `~/OneDrive/Desktop`, and the plain path does not exist.
 
 Prefer the command line? `python model/predict.py --image photo.jpg --device cpu`
 returns the same verdict as JSON, from the same frozen checkpoint. Full details,
