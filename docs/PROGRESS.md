@@ -205,3 +205,38 @@ polish). Also found and fixed two stale checkbox entries left over from
 earlier work: the v0.4.0 one-page model report already existed
 (`report/releases/v0.4.0/model_report.pdf`) and the `v0.4.0` git tag was
 already force-moved by the user to the corrected-URL commit.
+
+## 15 September - deadline-day finishing pass (see docs/AGENT_HANDOFF.md for full detail)
+
+Explored a ~90% accuracy push post-submission (threshold recalibration -
+passed its gate, not activated by user choice; a per-generator diagnostic; a
+third training attempt with a new Midjourney-v6 dataset - failed its gate; a
+user-requested fresh 200+200 sanity check on the untouched deployed model -
+86.25% accuracy, 99% real-photo accuracy). No path to 90% found; the release
+is unchanged either way.
+
+Read the actual PS-2 problem-statement PDF in full for the first time this
+session and audited every section against the repo. Found and fixed: missing
+explicit "overall AUC"/"unseen-generator-split AUC" + macro-F1 + confusion
+matrix labelling in README and the model report; no "Originality declaration"
+section; a live `/api/model` bug reporting "Not evaluated yet" for the MLP
+checkpoint's unseen-generator evidence while the frontend's own evidence panel
+showed the correct numbers on the same page; two other stale README lines; a
+missing direct link to the v0.4.0 release tag. Verified all README links
+resolve, the repo is public, and every commit falls inside the required
+10-15 September window.
+
+Recorded the v0.4.0 demo video (4m24s, automated Playwright recording against
+the current UI with Windows TTS narration) - rewrote `record_demo.mjs` for
+Astra's redesigned UI and v0.4.0's real numbers throughout. Ran an automated
+desktop/tablet/mobile browser check (zero overflow, zero errors at four
+widths). Told the user Vercel will not work for this app (PyTorch alone is
+~4.3 GB; far past any serverless size limit) and suggested alternatives.
+
+Cleaned a large amount of accumulated `tmp/` scratch from the whole multi-day
+session. One real mistake happened in that pass: the actual problem-statement
+PDF, sitting at the repo root under an opaque random filename, was deleted
+before its importance was checked. It was not recoverable locally; the user
+re-supplied their own copy. Nothing else of consequence was lost - see
+`docs/AGENT_HANDOFF.md`'s 15 September section for the full list of what was
+removed and why each item was judged safe.
