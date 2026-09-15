@@ -1,0 +1,369 @@
+{
+  "identity": {
+    "manifest_sha256": "087bf26806d0e590d63dda860b54b8e1410dd011d25e7edd41ee7f893c98a54b",
+    "checkpoint_sha256": "174ef56251011a7d5618d32759768807ebe02cc679c014e434906bbb81be5fdd",
+    "tower_sha256": "12403c44d349dee827e7d0fe016c2f255ec51ccf2750d5b4260ab9c878bf7989",
+    "threshold": 0.8388091705052073,
+    "temperature": 0.2264166552312184,
+    "architecture": "clip_vitl14_mlp"
+  },
+  "model_version": "mixed_clip_mlp_v2_release",
+  "evaluations": [
+    {
+      "name": "GenImage",
+      "split": "Validation",
+      "count": 783,
+      "real_count": 369,
+      "ai_count": 414,
+      "roc_auc": 0.9439600434651689,
+      "macro_f1": 0.7378880097382836,
+      "accuracy": 0.7471264367816092,
+      "false_positive_rate": 0.008130081300813009,
+      "true_positive_rate": 0.5289855072463768,
+      "brier_score": 0.10637958012810741,
+      "threshold": 0.8388091705052073,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          366,
+          3
+        ],
+        [
+          195,
+          219
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    },
+    {
+      "name": "CIFAKE",
+      "split": "Validation",
+      "count": 4000,
+      "real_count": 2000,
+      "ai_count": 2000,
+      "roc_auc": 0.8203450000000001,
+      "macro_f1": 0.6089303604599656,
+      "accuracy": 0.64525,
+      "false_positive_rate": 0.05,
+      "true_positive_rate": 0.3405,
+      "brier_score": 0.18186870412936265,
+      "threshold": 0.8388091705052073,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          1900,
+          100
+        ],
+        [
+          1319,
+          681
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    },
+    {
+      "name": "AI Detect Arena",
+      "split": "Fixed image holdout",
+      "count": 755,
+      "real_count": 355,
+      "ai_count": 400,
+      "roc_auc": 0.9477535211267606,
+      "macro_f1": 0.8515970515970516,
+      "accuracy": 0.8516556291390729,
+      "false_positive_rate": 0.07323943661971831,
+      "true_positive_rate": 0.785,
+      "brier_score": 0.09989848437947475,
+      "threshold": 0.8388091705052073,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          329,
+          26
+        ],
+        [
+          86,
+          314
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    },
+    {
+      "name": "CommunityForensics",
+      "split": "Fixed image holdout",
+      "count": 1374,
+      "real_count": 551,
+      "ai_count": 823,
+      "roc_auc": 0.9356345361245322,
+      "macro_f1": 0.7170996943490486,
+      "accuracy": 0.7183406113537117,
+      "false_positive_rate": 0.021778584392014518,
+      "true_positive_rate": 0.5443499392466585,
+      "brier_score": 0.119471416719704,
+      "threshold": 0.8388091705052073,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          539,
+          12
+        ],
+        [
+          375,
+          448
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    }
+  ],
+  "transformations": [
+    {
+      "transformation": "original",
+      "count": 783,
+      "real_count": 369,
+      "ai_count": 414,
+      "roc_auc": 0.9440844166895775,
+      "macro_f1": 0.7376254044759751,
+      "accuracy": 0.7471264367816092,
+      "false_positive_rate": 0.005420054200542005,
+      "true_positive_rate": 0.5265700483091788,
+      "brier_score": 0.10626592996315978,
+      "threshold": 0.8388091705052073,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          367,
+          2
+        ],
+        [
+          196,
+          218
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    },
+    {
+      "transformation": "jpeg_q90",
+      "count": 783,
+      "real_count": 369,
+      "ai_count": 414,
+      "roc_auc": 0.9421468127724755,
+      "macro_f1": 0.6885200167387362,
+      "accuracy": 0.7049808429118773,
+      "false_positive_rate": 0.008130081300813009,
+      "true_positive_rate": 0.4492753623188406,
+      "brier_score": 0.10837077228236368,
+      "threshold": 0.8388091705052073,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          366,
+          3
+        ],
+        [
+          228,
+          186
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    },
+    {
+      "transformation": "jpeg_q70",
+      "count": 783,
+      "real_count": 369,
+      "ai_count": 414,
+      "roc_auc": 0.9349920793893929,
+      "macro_f1": 0.6253243254739052,
+      "accuracy": 0.6551724137931034,
+      "false_positive_rate": 0.005420054200542005,
+      "true_positive_rate": 0.3526570048309179,
+      "brier_score": 0.1288829192020522,
+      "threshold": 0.8388091705052073,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          367,
+          2
+        ],
+        [
+          268,
+          146
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    },
+    {
+      "transformation": "jpeg_q50",
+      "count": 783,
+      "real_count": 369,
+      "ai_count": 414,
+      "roc_auc": 0.9295327494337745,
+      "macro_f1": 0.5773547311983771,
+      "accuracy": 0.6194125159642401,
+      "false_positive_rate": 0.008130081300813009,
+      "true_positive_rate": 0.28743961352657005,
+      "brier_score": 0.15047727499773425,
+      "threshold": 0.8388091705052073,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          366,
+          3
+        ],
+        [
+          295,
+          119
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    },
+    {
+      "transformation": "jpeg_q30",
+      "count": 783,
+      "real_count": 369,
+      "ai_count": 414,
+      "roc_auc": 0.9304950054331462,
+      "macro_f1": 0.5547476688142836,
+      "accuracy": 0.6053639846743295,
+      "false_positive_rate": 0.0,
+      "true_positive_rate": 0.2536231884057971,
+      "brier_score": 0.16302225905734458,
+      "threshold": 0.8388091705052073,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          369,
+          0
+        ],
+        [
+          309,
+          105
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    },
+    {
+      "transformation": "half_resolution",
+      "count": 783,
+      "real_count": 369,
+      "ai_count": 414,
+      "roc_auc": 0.846124137569878,
+      "macro_f1": 0.566226833199033,
+      "accuracy": 0.6066411238825032,
+      "false_positive_rate": 0.032520325203252036,
+      "true_positive_rate": 0.28502415458937197,
+      "brier_score": 0.1718896733920864,
+      "threshold": 0.8388091705052073,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          357,
+          12
+        ],
+        [
+          296,
+          118
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    },
+    {
+      "transformation": "mild_blur",
+      "count": 783,
+      "real_count": 369,
+      "ai_count": 414,
+      "roc_auc": 0.9313656180040062,
+      "macro_f1": 0.7158040027605246,
+      "accuracy": 0.7279693486590039,
+      "false_positive_rate": 0.008130081300813009,
+      "true_positive_rate": 0.4927536231884058,
+      "brier_score": 0.11463139688727436,
+      "threshold": 0.8388091705052073,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          366,
+          3
+        ],
+        [
+          210,
+          204
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    },
+    {
+      "transformation": "simulated_screenshot",
+      "count": 783,
+      "real_count": 369,
+      "ai_count": 414,
+      "roc_auc": 0.9319285704934344,
+      "macro_f1": 0.49301912264811937,
+      "accuracy": 0.5644955300127714,
+      "false_positive_rate": 0.0027100271002710027,
+      "true_positive_rate": 0.178743961352657,
+      "brier_score": 0.16711713854911386,
+      "threshold": 0.8388091705052073,
+      "positive_class": "ai_generated",
+      "confusion_matrix": [
+        [
+          368,
+          1
+        ],
+        [
+          340,
+          74
+        ]
+      ],
+      "confusion_matrix_order": [
+        "real",
+        "ai_generated"
+      ]
+    }
+  ],
+  "active_defence": {
+    "threat_model": "bounded grid of 7 common post-processing transformations",
+    "initially_correct": 585,
+    "successfully_flipped": 196,
+    "attack_success_rate": 0.335042735042735,
+    "search_budget_per_image": 7,
+    "limitation": "This does not establish robustness to arbitrary adversarial attacks."
+  },
+  "explanation": {
+    "count": 40,
+    "supported": 17,
+    "mean_p": 0.8057269839482615,
+    "blur_p": 0.7749952346202917
+  }
+}

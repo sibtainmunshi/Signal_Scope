@@ -99,7 +99,36 @@ try {
 
   await nav('Model report');
   await page.getByRole('heading', { name: 'Model report.', exact: true }).waitFor();
-  if (model.metrics === null) assert.equal(await page.getByText('Not supplied for this checkpoint', { exact: true }).count(), 4);
+  const archived = JSON.parse(await fs.readFile(path.join(frontend, 'src/release-evidence.json'), 'utf8'));
+  const readRecord = async name => JSON.parse(await fs.readFile(path.join(root, name), 'utf8'));
+  const freeze = await readRecord('report/releases/v0.4.0/freeze.json');
+  const measured = await readRecord('report/experiments/mixed_clip_mlp_v2/results.json');
+  const degradation = await readRecord('report/experiments/robustness_v040/metrics.json');
+  const audit = await readRecord('report/explanation_audit/mixed_clip_mlp_v2_release/summary.json');
+  assert.deepEqual(archived.identity, freeze.identity);
+  assert.deepEqual(archived.evaluations.map(({ name, split, ...metrics }) => metrics), [measured.validation_operating_point.genimage, measured.validation_operating_point.cifake, measured.aida_holdout, measured.communityforensics_holdout]);
+  assert.deepEqual(archived.transformations, degradation.transformations);
+  assert.deepEqual(archived.active_defence, degradation.active_defence);
+  assert.equal(archived.explanation.supported, audit.localisation_supported_count);
+  assert.equal(archived.explanation.mean_p, audit.mean.wilcoxon_p);
+  assert.equal(archived.explanation.blur_p, audit.blur.wilcoxon_p);
+  checks.push('Archived frontend measurements match the original frozen release records');
+  const releaseMatched = model.ready && model.model_version === archived.model_version && model.checkpoint_sha256 === archived.identity.checkpoint_sha256 && model.threshold === archived.identity.threshold;
+  if (model.metrics === null && !releaseMatched) assert.equal(await page.getByText('Not supplied for this checkpoint', { exact: true }).count(), 4);
+  if (releaseMatched) {
+    await page.getByRole('region', { name: 'Published release evidence' }).waitFor();
+    for (const [index, measurement] of archived.evaluations.entries()) {
+      await page.getByLabel('Evaluation set', { exact: true }).selectOption(String(index));
+      assert.equal(await page.locator('.benchmark-stats strong').first().innerText(), measurement.roc_auc.toFixed(3));
+      assert.deepEqual(await page.locator('.confusion-table td').allTextContents(), measurement.confusion_matrix.flat().map(String));
+    }
+    await page.getByLabel('Evaluation set', { exact: true }).selectOption('2');
+    await page.locator('.release-study summary').first().click();
+    assert.equal(await page.locator('.degradation-row').count(), archived.transformations.length);
+    await shot('desktop-release-study');
+    await page.locator('.release-study summary').first().click();
+    checks.push('Archived benchmark selector, exact confusion matrices and degradation study');
+  }
   if (model.external_reserved) await page.getByRole('heading', { name: 'Reserved generators: final results' }).waitFor();
   await shot('desktop-report');
   await nav('How it works');
@@ -207,6 +236,15 @@ try {
   assert.equal(await page.getByRole('button', { name: 'Analyze image', exact: true }).last().isDisabled(), true);
   await shot('test-fixture-unavailable');
   checks.push('Structured API errors and unavailable model');
+  // Archived results must never be attributed to another model or operating point.
+  for (const overrides of [{ checkpoint_sha256: 'different-checkpoint' }, { threshold: .5 }, { model_version: 'different-model' }, { ready: false }]) {
+    await page.unroute('**/api/model');
+    await page.route('**/api/model', route => route.fulfill({ json: { ...model, ...overrides } }));
+    await page.reload({ waitUntil: 'networkidle' });
+    await nav('Model report');
+    assert.equal(await page.locator('.release-evidence').count(), 0);
+  }
+  checks.push('Archived evidence hidden for mismatched checkpoint, threshold, version or unavailable model');
   assert.deepEqual(errors, []);
   const summary = { ok: true, checks, live_model: result.prediction.model_version, live_prediction: result.prediction, javascript_errors: errors };
   await fs.writeFile(path.join(out, 'summary.json'), JSON.stringify(summary, null, 2));
