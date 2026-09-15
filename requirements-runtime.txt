@@ -1,4 +1,8 @@
-# Tested runtime pins (Python 3.13); CPU torch is installed by scripts/setup.py.
+# SignalScope - inference runtime, fully pinned (Python 3.13).
+#
+# Installed by scripts/setup.py after the CPU torch build. Everything the web
+# app, the HTTP API and the batch CLI need to produce a prediction; nothing
+# needed only for training or dataset preparation appears here.
 numpy==2.5.2
 Pillow==12.3.0
 fastapi==0.141.1

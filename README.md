@@ -16,10 +16,16 @@ Real-versus-AI image classification with a **frozen CLIP ViT-L/14 image tower an
 | **Interfaces** | Local web app · documented HTTP API · batch CLI, all on one frozen checkpoint |
 | **Tests** | 59 passing · ruff clean · every number below reproducible from committed artifacts |
 
+### Watch the demo first
+
+**[v0.4.0 demo - 4 min 15 s](https://drive.google.com/file/d/1UM2loX7ykTyobLKsYX_rOWVJ-p2Cb7d-/view?usp=drive_link)** - a live CPU recording against this exact frozen checkpoint. It shows a real photo correctly called real, a freshly generated AI image the model had never seen correctly caught at 96%, an honest failure case (a CommunityForensics generator missed at 74%, flagged "review recommended" by the model's own uncertainty signal and flipping under one robustness transform), the explanation, stability and metadata tabs, and the running Model Report page's two unseen-generator benchmark panels. It closes on the disclosed 0.637 AUC regression and the declared gate this release failed. Every number spoken in the video matches the measurements below.
+
+### Documentation
+
 - [Submission checklist](docs/SUBMISSION_CHECKLIST.md), [API contract](docs/API_CONTRACT.md)
 - [Full experiment history: gate failures, four independent evaluations, the deployment decision](docs/POST_RELEASE_EXPERIMENTS.md)
 - [Explanation audit](docs/EXPLANATION_AUDIT.md) (measured on both the v0.3.0 linear head and the v0.4.0 MLP head: statistically indistinguishable, same 17/40 localisation count)
-- **[v0.4.0 demo (4m15s)](https://drive.google.com/file/d/1UM2loX7ykTyobLKsYX_rOWVJ-p2Cb7d-/view?usp=drive_link):** live-CPU recording against the current UI and this exact checkpoint -- a correct real-photo call, a correct AI-image call on a fresh never-seen image, an honest failure case (a missed CommunityForensics generator, flagged "review recommended" by the model's own uncertainty signal), the explanation/stability/metadata tabs, and the live Model Report page's two unseen-generator benchmark panels, closing with the disclosed 0.637 AUC regression and declared-gate failure. All numbers spoken in the video match the measurements in this README.
+- [One-page model report](report/releases/v0.4.0/model_report.pdf) (PDF), [frozen release identity](report/releases/v0.4.0/freeze.json)
 - Historical only: [4m15s v0.2.0 demonstration](https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.2.0/signalscope-demo-v0.2.0.mp4), [English subtitles](https://github.com/sibtainmunshi/Signal_Scope/releases/download/v0.2.0/signalscope-demo-en.srt) -- shows neither the current model's outputs nor its UI.
 
 ## Core and bonus modules

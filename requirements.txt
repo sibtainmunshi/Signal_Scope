@@ -1,5 +1,36 @@
-# Install the appropriate torch/torchvision build first; see README.
+# SignalScope - dependency manifest
+#
+# You do not need to install anything by hand. `python scripts/setup.py`
+# creates .venv, installs the CPU build of torch, then installs
+# requirements-runtime.txt, and verifies the model files by SHA-256.
+#
+# This repository ships three dependency files:
+#
+#   requirements.txt          This file. The two heavyweight pins that must be
+#                             resolved from the PyTorch CPU index, plus the
+#                             package itself. Use it only if you are installing
+#                             manually instead of running scripts/setup.py.
+#   requirements-runtime.txt  Everything the app, API and CLI need at inference
+#                             time, fully pinned. This is what setup.py installs.
+#   requirements-experiments.txt
+#                             Training and dataset-preparation extras only
+#                             (OpenAI CLIP, pyarrow, tqdm). Never needed to run
+#                             a prediction or reproduce a reported number.
+#
+# Manual install, if you are not using scripts/setup.py:
+#
+#   python -m venv .venv
+#   .venv/Scripts/python -m pip install torch==2.10.0 torchvision==0.25.0 \
+#       --index-url https://download.pytorch.org/whl/cpu
+#   .venv/Scripts/python -m pip install -r requirements-runtime.txt
+#   .venv/Scripts/python scripts/download_model.py --manifest model/manifest.json
+#
+# The CPU index URL matters: the default PyPI wheel pulls CUDA packages this
+# project never uses.
+#
+# Use .venv/bin/python on Linux and macOS. Python 3.13.
+# Inference is CPU-only; no CUDA build is required or used.
+
 torch==2.10.0
 torchvision==0.25.0
 -e .
-
