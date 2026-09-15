@@ -25,7 +25,7 @@ Real-versus-AI image classification with a **frozen CLIP ViT-L/14 image tower an
 Requires **Python 3.13** and Git. Nothing else: no GPU, no API key, no training data.
 
 ```shell
-cd ~/Desktop
+cd ~
 git clone https://github.com/sibtainmunshi/Signal_Scope.git
 cd Signal_Scope
 python scripts/setup.py
@@ -33,8 +33,10 @@ python scripts/run.py
 ```
 
 The first line matters on Windows: PowerShell often opens in `C:\WINDOWS\system32`,
-which is not writable, and the clone fails there with `Permission denied`. Any
-folder you own works - `cd $HOME\Desktop` is the PowerShell spelling.
+which is not writable, and the clone fails there with `Permission denied`. `cd ~`
+moves to your user folder, which always exists and is always writable - PowerShell
+also spells it `cd $HOME`. Avoid `~/Desktop`: when OneDrive backup is on, the real
+Desktop lives under `~/OneDrive/Desktop` and the plain path does not exist.
 
 No Git installed? Use **Code -> Download ZIP** on the GitHub page, extract it
 anywhere you can write, then run the last two commands from inside the extracted
@@ -89,14 +91,14 @@ Use **Python 3.13** and Git. Clone into a folder you own; a PowerShell window th
 opened in `C:\WINDOWS\system32` cannot write there.
 
 ```shell
-cd ~/Desktop
+cd ~
 git clone https://github.com/sibtainmunshi/Signal_Scope.git
 cd Signal_Scope
 python scripts/setup.py
 python scripts/run.py
 ```
 
-Open **http://127.0.0.1:8000**. On Windows, `py -3.13` can replace `python`, and `cd $HOME\Desktop` is the PowerShell spelling of the first line. Setup creates `.venv`, installs pinned CPU PyTorch and app dependencies, and checks the size and SHA-256 of both files in [model/manifest.json](model/manifest.json). The prebuilt UI is included; Node is not required to run it.
+Open **http://127.0.0.1:8000**. On Windows, `py -3.13` can replace `python`, and `cd $HOME` is the PowerShell spelling of the first line. Setup creates `.venv`, installs pinned CPU PyTorch and app dependencies, and checks the size and SHA-256 of both files in [model/manifest.json](model/manifest.json). The prebuilt UI is included; Node is not required to run it.
 
 **The shared CLIP tower download is 608,352,029 bytes (608.35 MB), plus a 398,527-byte head** (the head changed for v0.4.0; the tower is the same verified v0.3.0 asset, not re-uploaded). Python packages are additional downloads. The model runtime needs **torch**, without `clip`, `torchvision`, `ftfy` or `regex`. Ordinary app dependencies such as Pillow, NumPy and FastAPI remain required. The tower is stored fp16 and upcast to fp32; **this exported runtime is CPU-only**. No training data, CUDA or paid API is needed for inference. Processing is local; uploads are not saved by default.
 
