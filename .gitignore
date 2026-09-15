@@ -8,6 +8,7 @@
 /model/checkpoints/
 /report/predictions/
 /*.pdf
+/*.mp4
 /SIGNALSCOPE_EXECUTION_PLAN.md
 __pycache__/
 *.py[cod]

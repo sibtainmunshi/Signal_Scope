@@ -7,7 +7,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
-const out = path.join(root, 'tmp/demo/recording');
+const noCaptionsDir = process.env.SIGNALSCOPE_DEMO_NO_CAPTIONS === '1';
+const out = path.join(root, noCaptionsDir ? 'tmp/demo/recording_raw' : 'tmp/demo/recording');
 await fs.mkdir(out, { recursive: true });
 const segments = JSON.parse(await fs.readFile(path.join(root, 'tmp/demo/narration.json'), 'utf8'));
 const base = process.env.SIGNALSCOPE_URL || 'http://127.0.0.1:8002';
@@ -21,7 +22,9 @@ const errors = [];
 page.on('pageerror', e => errors.push(e.message));
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const escape = text => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+const noCaptions = process.env.SIGNALSCOPE_DEMO_NO_CAPTIONS === '1';
 async function caption(text, number) {
+  if (noCaptions) return;
   await page.evaluate(({text, number, total}) => {
     document.querySelector('#demo-caption')?.remove();
     const overlay = document.createElement('div'); overlay.id = 'demo-caption';

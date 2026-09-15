@@ -463,10 +463,10 @@ user specifically:
 2. Human explanation-usefulness review - genuinely needs real people; cannot
    be automated or fabricated.
 3. UI polish - Astra was working on this; the user then said they were
-   pausing UI work ("kal uth ke time mila to kar dunga, warna yahi wala submit
-   kar denge" - if they don't get more time tomorrow, the current UI ships as
-   final) and asked the assistant to run a full end-to-end review of what
-   exists now rather than wait. That review is the bulk of this section and
+   pausing UI work (they would resume it the next morning if time allowed,
+   otherwise the current UI ships as final) and asked the assistant to run a
+   full end-to-end review of what exists now rather than wait. That review is
+   the bulk of this section and
    found the `/api/model` bug above plus the link/PDF-compliance gaps, all
    fixed. The current UI (Astra's redesign, commit `fb47061` at last check)
    passed every automated check run against it.
