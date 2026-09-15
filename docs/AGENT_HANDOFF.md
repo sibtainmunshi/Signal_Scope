@@ -268,3 +268,215 @@ The section above is now stale. Current state:
   verified** - not before, per user direction.
 - v0.2.0 and v0.3.0 checkpoints, tags, reports and reserved-evaluation results
   remain untouched and preserved as historical fallbacks.
+
+## 15 September - submission finishing pass; deadline is today, 17:00 IST
+
+**If you are picking this up cold: read this section fully before touching
+anything.** The user is asleep (3-4 hours from roughly early morning IST on the
+deadline day) and explicitly asked the assistant to keep going on the agreed
+plan without waking them for anything except genuinely blocking decisions.
+Nothing below required or used destructive/irreversible actions.
+
+**The `v0.4.0` git tag was fixed** (the prior section's open item): the user
+ran the two given commands themselves; `git log -1 --format=%H v0.4.0` now
+returns `7a9be9f`, matching `main`'s corrected-URL commit at that point. Do not
+re-move this tag without a fresh reason.
+
+**Post-submission ~90% exploration (out of scope for the frozen release, all
+disclosed in `docs/POST_RELEASE_EXPERIMENTS.md`):**
+- Threshold-only recalibration (`model/retune_mlp_threshold.py`): refit the
+  decision threshold as the median of four per-domain FPR<=5% thresholds
+  instead of the released max-over-two-domains rule. Gate passed: pooled
+  holdout accuracy 76.6% -> 80.6% (AIDA 85.2%->87.2%, CF 71.8%->77.0%), zero
+  weight change, every side-effect bound respected. **Not activated** on the
+  release by user choice (they were told about the real-photo FPR cost - 7.3%
+  ->11.0% / 2.2%->4.4% - and declined for now). If asked to activate it later,
+  this is a clean, low-risk, already-verified change: only the threshold field
+  changes, nothing else.
+- Per-generator diagnostic (`model/diagnose_generator_errors.py`,
+  `report/experiments/generator_error_diagnostic_v1.json`): CommunityForensics'
+  weakness is concentrated, not uniform - Hourglass is ~98% missed (n=44),
+  GALIP/kandinsky_2_2/LCM-lora family/kvikontent_midjourney_v6 miss 40-55%,
+  MidjourneyV6_1 is the largest-volume miss (n=134, 32.1%).
+- Third training attempt (`model/train_clip_mlp_v3.py`, Defactify_Image_Dataset
+  Midjourney-v6 data as a 5th domain) **FAILED** its gate (AIDA accuracy
+  regressed 85.2%->79.6%, external-dev AUC dropped past bound). No checkpoint
+  saved; release untouched. This is the third and declared-last training
+  attempt on this line - do not start a fourth without the user explicitly
+  reopening this line of work.
+- A user-requested fresh 200+200 sanity check
+  (`model/fresh_check_defactify_sample.py`,
+  `report/experiments/fresh_check_defactify_sample.json`) on the **deployed,
+  unmodified** checkpoint: 200 real (MS COCO) + 200 Midjourney-v6 images, never
+  seen by this checkpoint in any form. Result: 86.25% accuracy, 99% real-photo
+  accuracy (FPR 1%), 73.5% AI recall, AUC 0.988.
+- Net conclusion communicated to the user: three attempts, one safe-but-declined
+  improvement, no path to 90% found in the available time. Independent
+  2025-2026 research (surveyed while sourcing training data) reports current
+  commercial generators score only 18-30% detection accuracy across published
+  methods generally - context that this is a genuinely hard, active problem,
+  not a sign the project under-invested.
+
+**Both remaining disclosed v0.4.0 gaps from the last section are now closed:**
+- 40-image explanation audit re-run for the MLP head
+  (`model/explanation_audit_mlp.py`,
+  `report/explanation_audit/mixed_clip_mlp_v2_release/summary.json`):
+  statistically indistinguishable from the v0.3.0 linear head - identical
+  17/40 (42.5%) localisation count, deletion test not significant on either
+  head, comparable JPEG stability and backbone-dependence (~0.83 randomization
+  Spearman on both). The limitation lives in the shared frozen CLIP backbone,
+  not either trained head.
+- Private veto check re-run against v0.4.0
+  (`model/compare_models_on_user_images.py`, updated to compare v0.3.0 vs
+  v0.4.0 released heads instead of the historical v0.2.0/v0.3.0-candidate
+  pair): real-photo false positives roughly halved (9/18->4/18 as-uploaded,
+  4/18->1/18 matched-format) versus v0.3.0 on the same 11 ChatGPT + 18
+  phone-camera images; AI catch rate comparable on this small sample.
+  Per-image detail stays under `tmp/` (private, gitignored) as always.
+
+**Full audit against the actual PS-2 problem-statement PDF.** The PDF
+(`x81oedo3sa0ye6enaouu.pdf`, repo root, gitignored, NOT tracked in git - it was
+accidentally deleted during a `tmp/` cleanup pass and the user re-supplied it;
+if it is ever missing again, ask the user rather than assuming it can be
+regenerated) was read in full and checked section by section against the repo.
+Found and fixed:
+- README and the one-page model report (`scripts/build_mlp_report.py`
+  regenerates `report/releases/v0.4.0/model_report.pdf`) were missing an
+  explicit "overall AUC" (GenImage/CIFAKE val) + "unseen-generator-split AUC"
+  (AIDA/CommunityForensics) table with macro-F1 and confusion matrices by
+  name - Section 7.2.4/7.3 require these labels explicitly; the numbers existed
+  in `report/experiments/mixed_clip_mlp_v2/results.json` all along but were
+  only ever surfaced as accuracy/FPR/AUC.
+  Added.
+- No "Originality declaration" existed (Section 8 requires listing third-party
+  code/notebooks referenced) - added a dedicated README section.
+  Confirmed with the user directly: no organizer-provided baseline
+  dataset/model was ever distributed for this internal hackathon; the model
+  report's "Baseline" field and README now say this plainly instead of leaving
+  it ambiguous.
+- `/api/model` was reporting `unseen_generator_status: "Not evaluated yet"`
+  for the MLP checkpoint on the live app's Model Report page, directly
+  contradicting the correct AIDA/CommunityForensics numbers the frontend's own
+  `ReleaseEvidence` component (built by Astra, reads
+  `app/frontend/src/release-evidence.json`) shows on the same page. Root
+  cause: `measured()` in `app/backend/main.py` reads the older
+  `report/runs/<version>/<name>/metrics.json` layout, which was never
+  populated for `mixed_clip_mlp_v2_release` (v0.4.0's evidence lives under
+  `report/experiments/` instead). Fixed with a targeted architecture-check
+  branch in `app/backend/main.py`; did not touch the `report/runs/` pipeline
+  itself since `release-evidence.json` has already superseded it for this
+  release. Verified live before and after the fix.
+- README had two other stale lines found and fixed: fresh-clone timing said
+  "not yet re-measured" (it had been, 243.75s) and the private-veto section
+  still said "v0.4.0 has not yet been checked" (it now has).
+- The `v0.4.0` GitHub release tag was never linked directly from the README
+  (only v0.2.0/v0.3.0 were) - added.
+- Verified: every internal README link resolves to an existing file; all 12
+  external links (dataset sources, three release tags, demo assets) return
+  HTTP 200; no TODO/placeholder text anywhere in README or docs; the GitHub
+  repo itself is confirmed public (`private: false` via the API); every commit
+  falls within the required 10-15 September window (`git log --format=%ad
+  --date=short | sort -u`).
+
+**v0.4.0 demo video: recorded, not yet uploaded.** `tmp/demo/
+signalscope_v040_demo.mp4` (gitignored, ~17.5 MB, 4m24s, H.264+AAC). Built by
+substantially rewriting `app/frontend/scripts/record_demo.mjs` for the current
+(Astra-redesigned) UI - new CSS-class/role selectors throughout, new sample
+images, new Model Report navigation (the `<select aria-label="Evaluation
+set">` dropdown in `ReleaseEvidence.tsx`), new v0.4.0-accurate ending screen.
+Narration script: `tmp/demo/narration.json` (gitignored). Windows TTS
+(`Microsoft Zira Desktop` via `tmp/demo/generate_tts.ps1`, also gitignored)
+generated per-segment audio; `audio_seconds` per segment was recalibrated to
+the *actual measured* TTS duration (not an estimate) before the final
+recording pass, then muxed onto the Playwright video via `ffmpeg`
+(`adelay`+`amix`, `normalize=0` - important, otherwise 15 mixed near-silent
+tracks quietly divide the audible speech volume by 15). Zero JS/console errors
+during recording.
+
+Two new, individually scope-checked (not just category-filtered) sample
+images now live in `report/explanation_samples/` (tracked in git):
+- `generated_new_correct.png` - an AI-generated mountain/lake/product-still
+  image the *user personally supplied* for this recording (never seen by the
+  model in any training or evaluation set before). Model calls it AI-generated
+  at 96.1%, correctly, with high confidence.
+- `generated_new_missed.jpg` - a CommunityForensics **MidjourneyV6_1** holdout
+  image (a silver wing-shaped bracelet, product shot). Model misses it (74.3%,
+  labelled "real"), but the app's own `review_recommended` flag catches this
+  exact case, and one robustness transform flips the verdict outright (a
+  48.7-point swing) - an honest, three-layered failure-disclosure moment used
+  deliberately in the demo.
+- **Do not reuse CommunityForensics' "Hourglass" generator for any future
+  public asset.** All 3 sampled Hourglass images during this selection were
+  close-up AI-generated human faces (a child, a young woman), unsuitable for
+  public use under the PS's own scope rules (Section 1: "do not source your
+  own images of identifiable individuals" - these are AI-generated, not real
+  people, but a close-up face is still exactly the kind of content the rule is
+  aimed at avoiding in public material). MidjourneyV6_1 was used instead and
+  is a safe, general-purpose generator for this dataset.
+
+**Still needed for the demo video, and this needs the user specifically**
+(their YouTube/Drive account, not something the assistant can do): upload
+`tmp/demo/signalscope_v040_demo.mp4` somewhere with a shareable/unlisted link,
+then add that link to README (replace the "(4m24s, recorded, link pending
+upload)" phrasing in the bullet list near the top with the actual link).
+
+**Automated desktop/tablet/mobile browser check** (Playwright/Chrome,
+1920/1366/768/390px, all three pages plus a completed results page at each
+width): zero horizontal overflow, zero console/page errors anywhere. One
+cosmetic-only note: the accessibility skip-link appeared mid-screenshot once
+at 390px during one automated run - this is its designed keyboard-focus
+behaviour (not reproduced at any other width), not a layout bug.
+
+**Vercel deployment: told the user directly it will not work** and why -
+PyTorch alone is ~4.3 GB installed and the tower is 608 MB, both far past any
+serverless function size limit Vercel offers; this is a CPU-heavy local ML app,
+not a serverless-shaped one. Suggested alternatives if the user still wants a
+shareable live link before the deadline: Hugging Face Spaces (proper fit, more
+setup time) or a temporary tunnel (ngrok/cloudflared) to the already-running
+local server (minutes, not a real deployment, dies when the local process
+stops). Nothing was set up automatically since this needs the user's own
+accounts either way; the PS itself does not require a live deployed link, only
+the repo and the demo video.
+
+**Local disk cleanup done** (`tmp/`, all gitignored, zero effect on the
+submitted repo): removed dozens of old fresh-install/.venv QA directories, old
+experiment logs, and stray root-level pytest-cache directories accumulated
+across the whole multi-day session. **One real mistake happened and was
+caught and fixed**: `x81oedo3sa0ye6enaouu.pdf` (the actual SIH problem
+statement, referenced from the gitignored `SIGNALSCOPE_EXECUTION_PLAN.md` as
+"the primary contract") was deleted in this pass because its random filename
+gave no hint of its importance. It was not recoverable from any local backup
+(only 0-byte stub copies and 3-of-9 page PNG renders existed); the user had
+their own copy and re-supplied the full file. **Lesson for future cleanup
+passes in this repo: never delete a file at the project root without opening
+it or grepping for references to its exact filename first, no matter how
+disposable the name looks** - this file's importance was invisible from its
+name alone. `tmp/user_eval/` (the private 11+18 veto-check images) and
+`tmp/demo/` were deliberately preserved throughout.
+
+**Submission checklist status as of this section**: every item is checked
+except four, and all four are either out of scope by design or require the
+user specifically:
+1. GLIDE/DALLE reserved-set re-evaluation - deliberately not re-run (would be
+   a third use of the same public reserve; the deployment decision already
+   accepts this tradeoff).
+2. Human explanation-usefulness review - genuinely needs real people; cannot
+   be automated or fabricated.
+3. UI polish - Astra was working on this; the user then said they were
+   pausing UI work ("kal uth ke time mila to kar dunga, warna yahi wala submit
+   kar denge" - if they don't get more time tomorrow, the current UI ships as
+   final) and asked the assistant to run a full end-to-end review of what
+   exists now rather than wait. That review is the bulk of this section and
+   found the `/api/model` bug above plus the link/PDF-compliance gaps, all
+   fixed. The current UI (Astra's redesign, commit `fb47061` at last check)
+   passed every automated check run against it.
+4. The user submitting the repository link on the SIH portal - only they can
+   do this, before 17:00 IST today.
+
+If you are a fresh assistant reading this because the user just woke up:
+start by asking what they want next given the above - most likely candidates
+are uploading the demo video and linking it, a final live look at the app
+themselves, or going straight to portal submission if they're satisfied. Do
+not re-run any of the completed audits/checks above without a specific reason
+to doubt them; do not start the deferred ~90% work unless the user explicitly
+asks for it and confirms the core submission is otherwise done.
