@@ -20,6 +20,27 @@ Real-versus-AI image classification with a **frozen CLIP ViT-L/14 image tower an
 
 **[v0.4.0 demo - 4 min 15 s](https://drive.google.com/file/d/1UM2loX7ykTyobLKsYX_rOWVJ-p2Cb7d-/view?usp=drive_link)** - a live CPU recording against this exact frozen checkpoint. It shows a real photo correctly called real, a freshly generated AI image the model had never seen correctly caught at 96%, an honest failure case (a CommunityForensics generator missed at 74%, flagged "review recommended" by the model's own uncertainty signal and flipping under one robustness transform), the explanation, stability and metadata tabs, and the running Model Report page's two unseen-generator benchmark panels. It closes on the disclosed 0.637 AUC regression and the declared gate this release failed. Every number spoken in the video matches the measurements below.
 
+### Run it yourself - four commands
+
+Requires **Python 3.13** and Git. Nothing else: no GPU, no API key, no training data.
+
+```shell
+git clone https://github.com/sibtainmunshi/Signal_Scope.git
+cd Signal_Scope
+python scripts/setup.py
+python scripts/run.py
+```
+
+Then open **http://127.0.0.1:8000** and drop in an image. `setup.py` creates the
+virtual environment, installs the pinned CPU dependencies, downloads the model
+(608 MB tower + 398 KB head) from the GitHub release, and verifies both by
+SHA-256. Measured end to end on a clean clone: **243.75 seconds** to the first
+prediction. On Windows, `py -3.13` can replace `python`.
+
+Prefer the command line? `python model/predict.py --image photo.jpg --device cpu`
+returns the same verdict as JSON, from the same frozen checkpoint. Full details,
+batch mode and the HTTP API are in [Setup and run](#setup-and-run) below.
+
 ### Documentation
 
 - [Submission checklist](docs/SUBMISSION_CHECKLIST.md), [API contract](docs/API_CONTRACT.md)
